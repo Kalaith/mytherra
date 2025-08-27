@@ -1,0 +1,47 @@
+meta {
+  name: Place Divine Bet
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{protocol}}://{{host}}:{{port}}/api/bets
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "betType": "settlement_growth",
+    "targetEntityId": "settlement-123e4567-e89b-12d3-a456-426614174000",
+    "targetEntityType": "settlement",
+    "wagerAmount": 100,
+    "timeframe": "6_months",
+    "specificOutcome": "Population will increase by at least 50 people",
+    "confidenceLevel": "medium"
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response contains bet details", function() {
+      const response = res.getBody();
+      expect(response).to.have.property('success', true);
+      expect(response).to.have.property('data');
+      
+      const bet = response.data;
+      expect(bet).to.have.property('id');
+      expect(bet).to.have.property('betType', 'settlement_growth');
+      expect(bet).to.have.property('wagerAmount', 100);
+      expect(bet).to.have.property('potentialPayout');
+      expect(bet).to.have.property('status', 'active');
+      expect(bet).to.have.property('odds');
+  });
+}

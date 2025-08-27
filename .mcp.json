@@ -1,0 +1,191 @@
+{
+  "mcpServers": {
+    "mytherra-context": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem"],
+      "env": {
+        "MCP_ROOT": "f:\\WebDevelopment\\Mytherra"
+      }
+    }
+  },
+  "projectContext": {
+    "name": "Mytherra Game Development Project",
+    "description": "A fantasy world simulation game with divine betting mechanics, built with PHP backend and React frontend",
+    "structure": {
+      "backend": {
+        "type": "PHP with Slim Framework",
+        "location": "backend/",
+        "description": "RESTful API backend using Slim framework, Eloquent ORM, and MySQL database",
+        "key_patterns": {
+          "controllers": "src/Controllers/ - Handle HTTP requests/responses",
+          "actions": "src/Actions/ - Business logic separated from controllers",
+          "models": "src/Models/ - Eloquent ORM models with database table definitions",
+          "scripts": "src/Scripts/ - Database initialization and maintenance scripts",
+          "routes": "src/Routes/ - API route definitions",
+          "services": "src/Services/ - Business service layer",
+          "external": "src/External/ - External service integrations (DatabaseService)",
+          "utils": "src/Utils/ - Helper utilities and configuration management"
+        },
+        "coding_standards": {
+          "namespace": "App\\",
+          "psr4_autoload": "Composer autoloading from src/",
+          "naming": "PascalCase for classes, camelCase for methods/variables",
+          "architecture": "Actions pattern - Controllers handle HTTP, Actions handle business logic",
+          "database": "Eloquent ORM with prepared statements, no raw SQL in controllers/actions",
+          "error_handling": "Try-catch blocks with JSON error responses",
+          "auth": "Middleware-based authentication on all endpoints"
+        }
+      },
+      "frontend": {
+        "type": "React with TypeScript",
+        "location": "frontend/",
+        "description": "React SPA with TypeScript, Vite build tool, and Tailwind CSS",
+        "key_patterns": {
+          "components": "Functional components with hooks",
+          "types": "Strict TypeScript typing, avoid 'any'",
+          "styling": "Tailwind CSS utility classes",
+          "api": "Separate service files for API calls",
+          "state": "React hooks for state management"
+        }
+      },
+      "database": {
+        "type": "MySQL",
+        "description": "Game world database with complex entity relationships",
+        "key_entities": {
+          "regions": "Geographic areas with climate and cultural influence",
+          "settlements": "Towns/cities with evolution mechanics and building systems",
+          "heroes": "Characters with roles, stats, and interaction history",
+          "events": "Game world events affecting regions/heroes",
+          "buildings": "Settlement infrastructure with types and conditions",
+          "divine_bets": "Player betting system on game outcomes",
+          "game_state": "Singleton tracking current game year and state"
+        },
+        "initialization": {
+          "location": "backend/src/Scripts/",
+          "main_script": "initializeDatabase.php",
+          "components": [
+            "EnvironmentManager.php - Environment setup and validation",
+            "DatabaseSchemaManager.php - Table creation with dependency order",
+            "GameDataSeeder.php - Initial game data seeding",
+            "GameConfigurationManager.php - Game configuration setup"
+          ]
+        }
+      }
+    },
+    "game_mechanics": {
+      "divine_influence": "Player acts as divine entity influencing the world",
+      "betting_system": "Players bet divine favor on game outcomes",
+      "settlement_evolution": "Settlements grow/decline based on various factors",
+      "hero_interactions": "Heroes interact with settlements affecting outcomes",
+      "regional_dynamics": "Regions have climate/culture affecting development",
+      "time_progression": "Game advances in years with tick-based updates"
+    },
+    "api_structure": {
+      "base_url": "http://localhost:5002",
+      "endpoints": {
+        "regions": "/api/regions - CRUD operations for regions",
+        "settlements": "/api/settlements - Settlement management",
+        "heroes": "/api/heroes - Hero information and actions",
+        "events": "/api/events - Game event history and filtering",
+        "buildings": "/api/buildings - Building management",
+        "divine_bets": "/api/divine-bets - Betting system",
+        "influence": "/api/divine-influence - Divine intervention actions",
+        "game_status": "/api/game-status - Current game state"
+      }
+    },
+    "development_workflow": {
+      "backend_start": "composer start (runs PHP dev server on :5002)",
+      "frontend_start": "npm run dev (Vite dev server)",
+      "database_init": "php src/scripts/initializeDatabase.php",
+      "testing": "composer test (PHPUnit tests)",
+      "api_testing": "Bruno API client in bruno/ directory"
+    },    "recent_refactoring": {
+      "database_initialization": {
+        "problem": "Monolithic initializeDatabase.php file was hard to maintain",
+        "solution": "Split into focused component classes with single responsibilities",
+        "benefits": [
+          "Better error isolation and reporting",
+          "Easier testing of individual components",
+          "Clearer separation of concerns",
+          "Improved maintainability and debugging"
+        ],
+        "new_structure": {
+          "EnvironmentManager": "Loads and validates .env configuration",
+          "DatabaseSchemaManager": "Creates tables in correct dependency order",
+          "GameDataSeeder": "Seeds all initial game data",
+          "GameConfigurationManager": "Initializes game configurations"
+        }
+      },
+      "game_year_bug_fix": {
+        "problem": "SQL error 'Unknown column value in field list' when getting game year",
+        "root_cause": "DivineInfluenceService was using incorrect SQL query structure for game_states table",
+        "solution": "Fixed SQL queries to match actual GameState model structure",
+        "files_fixed": [
+          "src/Services/DivineInfluenceService.php - Fixed getCurrentGameYear() SQL query",
+          "src/Actions/BettingActions.php - Updated to use GameState model instead of hardcoded value"
+        ],
+        "technical_details": {
+          "incorrect_query": "SELECT value FROM game_states WHERE key = 'current_year'",
+          "correct_query": "SELECT current_year FROM game_states WHERE singleton_id = 'GAME_STATE'",
+          "table_structure": {
+            "singleton_id": "Primary key, always 'GAME_STATE'",
+            "current_year": "Integer field storing the current game year",
+            "timestamps": "Created/updated timestamps"
+          }
+        }
+      }
+    },
+    "environment_variables": {
+      "location": "backend/.env",
+      "required": [
+        "DB_HOST - Database host (localhost)",
+        "DB_NAME - Database name (mytherra)", 
+        "DB_USER - Database user (root)",
+        "DB_PASSWORD - Database password",
+        "PORT - Server port (5002)",
+        "DEBUG - Debug mode flag",
+        "DIVINE_FAVOR_PER_TICK - Game mechanic parameter",
+        "ADVANCE_TICK_INTERVAL_MS - Game timing parameter"
+      ]
+    }
+  },
+  "copilot_instructions": {
+    "code_style": {
+      "php": [
+        "Follow PSR-4 autoloading and PSR-12 coding standards",
+        "Use Actions pattern: Controllers handle HTTP, Actions handle business logic",
+        "No raw SQL in Controllers/Actions - use Eloquent ORM",
+        "Implement proper error handling with try-catch blocks",
+        "Return consistent JSON response format",
+        "Use dependency injection for services",
+        "Follow naming conventions: PascalCase classes, camelCase methods"
+      ],
+      "typescript": [
+        "Use strict typing, avoid 'any' type",
+        "Prefer interfaces/types over implicit typing",
+        "Use functional components with React hooks",
+        "Separate API calls into service files",
+        "Use compound components for complex UI",
+        "Follow accessibility best practices"
+      ]
+    },
+    "architecture_patterns": [
+      "Separate business logic from HTTP handling",
+      "Use prepared statements for all database queries",
+      "Implement middleware for cross-cutting concerns",
+      "Store shared types in entities/, helpers in utils/",
+      "Use environment variables for configuration",
+      "Validate and sanitize all inputs"
+    ],
+    "file_locations": {
+      "new_controllers": "backend/src/Controllers/",
+      "new_actions": "backend/src/Actions/",
+      "new_models": "backend/src/Models/",
+      "new_services": "backend/src/Services/",
+      "new_scripts": "backend/src/Scripts/",
+      "frontend_components": "frontend/src/components/",
+      "frontend_services": "frontend/src/services/",
+      "frontend_types": "frontend/src/types/"
+    }
+  }
+}

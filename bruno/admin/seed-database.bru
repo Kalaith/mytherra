@@ -1,0 +1,37 @@
+meta {
+  name: Seed Database
+  type: script
+  seq: 1
+}
+
+script:shell {
+  # This command will be executed from the root of your Bruno collection (backend/bruno)
+  # So we need to navigate to the backend directory first.
+  # Alternatively, set the 'cwd' option if your Bruno client supports it for shell scripts.
+  # For simplicity, this assumes execution from the backend directory or that npm can find the package.json.
+  npm run seed
+}
+
+# If your Bruno client and setup support setting a current working directory for shell scripts,
+# you might prefer to configure it to run from f:\WebDevelopment\Mytherra\backend
+# For example, some clients might allow:
+# script:shell {
+#   command: "npm run seed"
+#   cwd: "../../"
+# }
+
+
+# No standard 'tests' block for shell scripts in the same way as HTTP requests.
+# You would typically check the console output in your terminal where Bruno CLI or the Bruno app runs the script.
+
+docs {
+  This action runs the `npm run seed` command defined in `backend/package.json`.
+  It will connect to the MongoDB instance specified in your `.env` file,
+  clear existing data from regions, heroes, and events collections,
+  and then populate them with data from `frontend/mockdata/`.
+
+  Ensure your MongoDB server is running and the `.env` file in the `backend` directory
+  is correctly configured with `MONGODB_URI` before running this.
+
+  Check the terminal output for success or error messages from the seed script.
+}

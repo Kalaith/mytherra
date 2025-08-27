@@ -1,0 +1,41 @@
+meta {
+  name: Get Betting Odds
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{protocol}}://{{host}}:{{port}}/api/betting-odds
+  body: none
+  auth: none
+}
+
+params:query {
+  betType: hero_visit
+  targetEntityId: settlement-123e4567-e89b-12d3-a456-426614174000
+  targetEntityType: settlement
+  timeframe: 3_months
+}
+
+headers {
+  Content-Type: application/json
+}
+
+tests {
+  test("Status code is 200", function() {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response contains odds calculation", function() {
+      const response = res.getBody();
+      expect(response).to.have.property('success', true);
+      expect(response).to.have.property('data');
+      
+      const odds = response.data;
+      expect(odds).to.have.property('probability');
+      expect(odds).to.have.property('payout');
+      expect(odds).to.have.property('confidence');
+      expect(odds.probability).to.be.a('number');
+      expect(odds.payout).to.be.a('number');
+  });
+}

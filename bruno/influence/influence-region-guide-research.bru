@@ -1,0 +1,36 @@
+meta {
+  name: Influence Region - Guide Research
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/influence/region/region-002
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "action": "Guide Research in Region"
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response indicates successful action", function() {
+    expect(res.body).to.have.property("message");
+    expect(res.body.message).to.contain("Influence action 'Guide Research in Region' applied to region region1");
+    expect(res.body.updatedRegion).to.exist;
+    expect(res.body.updatedRegion.influenceLastAction).to.equal("Guide Research in Region");
+  });
+}
+
+docs {
+  Sends a 'Guide Research in Region' influence action to region with ID 'region1'.
+  Expects a 200 OK response with details of the action taken and the updated region.
+  NOTE: Ensure 'region1' exists in the database or use a valid region ID.
+}

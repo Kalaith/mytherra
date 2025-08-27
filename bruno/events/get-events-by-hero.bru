@@ -1,0 +1,71 @@
+meta {
+  name: Get Events By Hero
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/events?heroId={{heroId}}&limit=20&page=1
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  // You can set up pre-request scripts here
+  // For example, to set a variable for the heroId if it's not already set
+  if (!bru.getVar("heroId")) {
+    // Fetch a hero ID dynamically
+    const heroesResponse = bru.fetch(`${bru.getVar("baseUrl")}/heroes`);
+    if (heroesResponse.status === 200 && heroesResponse.body.length > 0) {
+      bru.setVar("heroId", heroesResponse.body[0].id);
+    } else {
+      // Fallback to a hardcoded value if needed
+      bru.setVar("heroId", "sample-hero-id");
+    }
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response is an array", function() {
+    expect(res.body).to.be.an("array");
+  });
+  
+  test("Events are filtered by hero", function() {
+    const heroId = bru.getVar("heroId");
+    
+    // Skip if no events returned
+    if (res.body.length === 0) {
+      this.skip("No events to validate");
+      return;
+    }
+    
+    // Check each event to confirm it's related to the specified hero
+    const invalidEvents = res.body.filter(event => {
+      return !(Array.isArray(event.relatedHeroIds) && 
+              event.relatedHeroIds.includes(heroId));
+    });
+    
+    if (invalidEvents.length > 0) {
+      console.log(`Found ${invalidEvents.length} events not related to hero ${heroId}`);
+      console.log(JSON.stringify(invalidEvents[0], null, 2));
+    }
+    
+    // All returned events should be related to the specified hero
+    expect(invalidEvents.length).to.equal(0);
+  });
+}
+
+docs {
+  Returns a list of events related to a specific hero.
+  
+  This endpoint filters events that involve the specified hero.
+  
+  Query parameters:
+  - heroId: The ID of the hero to filter events by
+  - limit: Number of events to return (default 20)
+  - page: Page number for pagination (default 1)
+}

@@ -1,0 +1,41 @@
+{
+  "info": {
+    "name": "divine-influence-apply.bru",
+    "schema": "https://schema.bruno.dev/v1"
+  },
+  "request": {
+    "method": "POST",
+    "url": "{{baseUrl}}/api/divine-influence/apply",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "mode": "json",
+      "json": {
+        "targetId": "{{regionId}}",
+        "targetType": "region",
+        "influenceType": "environmental",
+        "strength": "subtle",
+        "description": "A subtle environmental influence to enhance the region's prosperity."
+      }
+    }
+  },
+  "vars": {
+    "baseUrl": "http://localhost:3000",
+    "regionId": "region-1"
+  },
+  "assertions": [
+    {
+      "name": "Status code is 200",
+      "assertion": "res.statusCode === 200"
+    },
+    {
+      "name": "Response contains success status",
+      "assertion": "typeof res.body.data.success === 'boolean'"
+    },
+    {
+      "name": "Response contains effects",
+      "assertion": "res.body.data.effects !== undefined"
+    }
+  ]
+}

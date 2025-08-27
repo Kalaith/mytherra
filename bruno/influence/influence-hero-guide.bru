@@ -1,0 +1,36 @@
+meta {
+  name: Influence Hero - Guide Hero
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/influence/hero/hero-001
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "action": "Guide Hero"
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response indicates successful action", function() {
+    expect(res.body).to.have.property("message");
+    expect(res.body.message).to.contain("Influence action 'Guide Hero' applied to hero hero1");
+    expect(res.body.updatedHero).to.exist;
+    expect(res.body.updatedHero.influenceLastAction).to.equal("Guide Hero");
+  });
+}
+
+docs {
+  Sends a 'Guide Hero' influence action to hero with ID 'hero1'.
+  Expects a 200 OK response with details of the action taken and the updated hero.
+  NOTE: Ensure 'hero1' exists in the database or use a valid hero ID.
+}

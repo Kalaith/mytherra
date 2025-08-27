@@ -1,0 +1,30 @@
+meta {
+  name: Get Event By ID (Not Found)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/events/event-999
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response is an empty object", function() {
+    expect(res.body).to.be.an("object");
+    expect(Object.keys(res.body).length).to.equal(0);
+  });
+}
+
+docs {
+  Tests the scenario where an event ID is not found.
+  
+  This endpoint currently does not require authentication.
+  
+  If the event is not found, an empty object {} is returned with a 200 status.
+}

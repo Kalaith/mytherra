@@ -1,0 +1,42 @@
+meta {
+  name: Get All Events
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/events
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response is an array", function() {
+    expect(res.body).to.be.an("array");
+  });
+
+  test("Events in array have correct structure if array is not empty", function() {
+    if (res.body.length > 0) {
+      const event = res.body[0];
+      expect(event).to.have.property("id");
+      expect(event).to.have.property("timestamp");
+      expect(event).to.have.property("description");
+      expect(event).to.have.property("relatedRegionIds");
+      expect(event.relatedRegionIds).to.be.an("array");
+      expect(event).to.have.property("relatedHeroIds");
+      expect(event.relatedHeroIds).to.be.an("array");
+    }
+  });
+}
+
+docs {
+  Returns a list of all available game events.
+  
+  This endpoint currently does not require authentication.
+  
+  Returns an array of event objects. If no events exist, an empty array is returned.
+}

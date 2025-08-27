@@ -1,0 +1,32 @@
+[
+  {
+    "id": "region-001",
+    "name": "The Sunken City of Aethel",
+    "color": "#3498DB",
+    "prosperity": 30,
+    "chaos": 70,
+    "magicAffinity": 85,
+    "status": "abandoned",
+    "eventIds": ["event-001", "event-003"]
+  },
+  {
+    "id": "region-002",
+    "name": "The Verdant Plains",
+    "color": "#2ECC71",
+    "prosperity": 80,
+    "chaos": 10,
+    "magicAffinity": 40,
+    "status": "peaceful",
+    "eventIds": []
+  },
+  {
+    "id": "region-003",
+    "name": "Cryspire Peaks",
+    "color": "#95A5A6",
+    "prosperity": 50,
+    "chaos": 25,
+    "magicAffinity": 60,
+    "status": "peaceful",
+    "eventIds": ["event-002"]
+  }
+]

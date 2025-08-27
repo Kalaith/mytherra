@@ -1,0 +1,38 @@
+meta {
+  name: Get Event By ID (Found)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/events/event-001
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response contains a single event object", function() {
+    expect(res.body).to.be.an("object");
+    expect(res.body).to.have.property("id");
+    expect(res.body.id).to.equal("event-001"); // Verify correct ID
+    expect(res.body).to.have.property("timestamp");
+    expect(res.body).to.have.property("description");
+    expect(res.body).to.have.property("relatedRegionIds");
+    expect(res.body.relatedRegionIds).to.be.an("array");
+    expect(res.body).to.have.property("relatedHeroIds");
+    expect(res.body.relatedHeroIds).to.be.an("array");
+  });
+}
+
+docs {
+  Returns a single game event by its unique ID.
+  
+  This endpoint currently does not require authentication.
+  
+  If the event is found, its object is returned.
+  Replace 'event-001' with an actual ID from your seeded data for testing.
+}

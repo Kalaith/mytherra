@@ -1,0 +1,24 @@
+RewriteEngine On
+
+# Handle frontend assets and files (let them be served directly)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule .* - [L]
+
+# Handle frontend assets in subdirectory
+RewriteCond %{REQUEST_URI} ^/mytherra/assets/
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule .* - [L]
+
+# Handle API routes - send to backend
+RewriteCond %{REQUEST_URI} ^/mytherra/api/
+RewriteRule ^mytherra/api/(.*)$ /mytherra/backend/public/index.php [QSA,L]
+
+# Handle frontend routes (for React Router) - send to index.html
+RewriteCond %{REQUEST_URI} ^/mytherra/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^mytherra/(.*)$ /mytherra/index.html [L]
+
+# Fallback for root-level API access
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^api/(.*)$ /mytherra/backend/public/index.php [QSA,L]

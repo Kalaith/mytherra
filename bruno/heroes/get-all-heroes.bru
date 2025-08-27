@@ -1,0 +1,42 @@
+meta {
+  name: Get All Heroes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/heroes
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response is an array", function() {
+    expect(res.body).to.be.an("array");
+  });
+
+  test("Heroes in array have correct structure if array is not empty", function() {
+    if (res.body.length > 0) {
+      const hero = res.body[0];
+      expect(hero).to.have.property("id");
+      expect(hero).to.have.property("name");
+      expect(hero).to.have.property("regionId");
+      expect(hero).to.have.property("role");
+      expect(hero).to.have.property("description");
+      expect(hero).to.have.property("feats");
+      expect(hero.feats).to.be.an("array");
+    }
+  });
+}
+
+docs {
+  Returns a list of all available heroes.
+  
+  This endpoint currently does not require authentication.
+  
+  Returns an array of hero objects. If no heroes exist, an empty array is returned.
+}

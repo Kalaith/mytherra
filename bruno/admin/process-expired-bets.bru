@@ -1,0 +1,15 @@
+meta {
+  name: Process Expired Bets
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseURL}}/api/admin/process-expired-bets
+  body: json
+  auth: none
+}
+
+body:json {
+  {}
+}

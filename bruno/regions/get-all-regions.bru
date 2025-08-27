@@ -1,0 +1,44 @@
+meta {
+  name: Get All Regions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/regions
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response is an array", function() {
+    expect(res.body).to.be.an("array");
+  });
+
+  test("Regions in array have correct structure if array is not empty", function() {
+    if (res.body.length > 0) {
+      const region = res.body[0];
+      expect(region).to.have.property("id");
+      expect(region).to.have.property("name");
+      expect(region).to.have.property("color");
+      expect(region).to.have.property("prosperity");
+      expect(region).to.have.property("chaos");
+      expect(region).to.have.property("magicAffinity");
+      expect(region).to.have.property("status");
+      expect(region).to.have.property("eventIds");
+      expect(region.eventIds).to.be.an("array");
+    }
+  });
+}
+
+docs {
+  Returns a list of all available regions.
+  
+  This endpoint currently does not require authentication.
+  
+  Returns an array of region objects. If no regions exist, an empty array is returned.
+}

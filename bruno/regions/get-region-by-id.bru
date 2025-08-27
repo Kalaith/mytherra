@@ -1,0 +1,40 @@
+meta {
+  name: Get Region By ID (Found)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/regions/region-001
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response contains a single region object", function() {
+    expect(res.body).to.be.an("object");
+    expect(res.body).to.have.property("id");
+    expect(res.body.id).to.equal("region-001"); // Verify correct ID
+    expect(res.body).to.have.property("name");
+    expect(res.body).to.have.property("color");
+    expect(res.body).to.have.property("prosperity");
+    expect(res.body).to.have.property("chaos");
+    expect(res.body).to.have.property("magicAffinity");
+    expect(res.body).to.have.property("status");
+    expect(res.body).to.have.property("eventIds");
+    expect(res.body.eventIds).to.be.an("array");
+  });
+}
+
+docs {
+  Returns a single region by its unique ID.
+  
+  This endpoint currently does not require authentication.
+  
+  If the region is found, its object is returned.
+  Replace 'region-001' with an actual ID from your seeded data for testing.
+}

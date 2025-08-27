@@ -1,0 +1,41 @@
+{
+  "info": {
+    "name": "divine-influence-calculate-cost.bru",
+    "schema": "https://schema.bruno.dev/v1"
+  },
+  "request": {
+    "method": "POST",
+    "url": "{{baseUrl}}/api/divine-influence/calculate-cost",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "mode": "json",
+      "json": {
+        "targetId": "{{regionId}}",
+        "targetType": "region",
+        "influenceType": "inspirational",
+        "strength": "minor",
+        "description": "A subtle inspirational influence to guide the region toward prosperity."
+      }
+    }
+  },
+  "vars": {
+    "baseUrl": "http://localhost:3000",
+    "regionId": "region-1"
+  },
+  "assertions": [
+    {
+      "name": "Status code is 200",
+      "assertion": "res.statusCode === 200"
+    },
+    {
+      "name": "Response contains cost",
+      "assertion": "typeof res.body.data.cost === 'number'"
+    },
+    {
+      "name": "Response contains effectivenessEstimate",
+      "assertion": "res.body.data.effectivenessEstimate !== undefined"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "event-001",
+    "timestamp": "2025-01-15T10:00:00Z",
+    "description": "A great flood submerged the ancient city of Aethel.",
+    "relatedRegionIds": ["region-001"]
+  },
+  {
+    "id": "event-002",
+    "timestamp": "2025-03-20T14:30:00Z",
+    "description": "Elvarwyn, a scholar from Cryspire, uncovered remnants of a forgotten star-language.",
+    "relatedRegionIds": ["region-003"],
+    "relatedHeroIds": []
+  },
+  {
+    "id": "event-003",
+    "timestamp": "2025-05-10T08:00:00Z",
+    "description": "A mysterious cult has taken root in the ruins of Aethel, performing strange rituals.",
+    "relatedRegionIds": ["region-001"],
+    "relatedHeroIds": ["hero-003"]
+  }
+]

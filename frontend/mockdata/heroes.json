@@ -1,0 +1,26 @@
+[
+  {
+    "id": "hero-001",
+    "name": "Elara Meadowlight",
+    "regionId": "region-002",
+    "role": "scholar",
+    "description": "A keen-eyed scholar from the Verdant Plains, always seeking lost knowledge.",
+    "feats": ["Deciphered ancient scrolls hinting at a forgotten power."]
+  },
+  {
+    "id": "hero-002",
+    "name": "Kaelen Stonehand",
+    "regionId": "region-003",
+    "role": "warrior",
+    "description": "A stoic warrior from Cryspire, rumored to have wrestled a mountain troll and won.",
+    "feats": ["Defended the village of Oakhaven from a goblin raid.", "Forged the Sunstone Hammer."]
+  },
+  {
+    "id": "hero-003",
+    "name": "Seraphina Moonwhisper",
+    "regionId": "region-001",
+    "role": "prophet",
+    "description": "A mysterious figure who appeared in the ruins of Aethel, speaking of visions and omens.",
+    "feats": ["Foretold the coming of the Crimson Comet."]
+  }
+]

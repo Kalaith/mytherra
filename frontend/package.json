@@ -1,0 +1,45 @@
+{
+  "name": "mytherra",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A simulation-style web game where players influence a magical world filled with evolving regions, dynamic events, and rising heroes.",
+  "type": "module",
+  "main": "src/app.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "game",
+    "simulation",
+    "web"
+  ],
+  "author": "Daniel Allan",
+  "license": "MIT",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.7",
+    "formik": "^2.4.6",
+    "globals": "^16.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.5.1",
+    "react-toastify": "^11.0.5",
+    "tailwindcss": "^4.1.4",
+    "yup": "^1.6.1",
+    "axios": "^1.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.2"
+  }
+}

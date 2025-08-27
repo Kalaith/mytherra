@@ -1,0 +1,83 @@
+
+# --- Backup / misc ---
+# --- Composer / PHP ---
+# --- Deployment / build artifacts ---
+# --- IDE / Editor ---
+# --- Logs ---
+# --- Node / Frontend ---
+# --- OS ---
+# =========================
+# Environment files (do not commit secrets)
+# Ignore compiled assets & IDE project files that may be created by editors
+# Logs
+# Merges backend, frontend and root ignore rules
+# Optional npm cache
+# PHP CS Fixer / static analysis
+# PHP runtime / cache / sessions
+# PHPUnit / test caches
+# WebHatchery combined .gitignore
+*.backup
+*.bak
+*.compiled
+*.db
+*.env.*
+*.lcov
+*.log
+*.njsproj
+*.ntvs*
+*.sln
+*.sqlite
+*.suo
+*.sw?
+*.swo
+*.swp
+*.tgz
+*.tmp
+.DS_Store
+.env
+.env.development.local
+.env.local
+.env.production.local
+.env.test.local
+.eslintcache
+.htaccess.bak
+.idea/
+.npm
+.npm/
+.nyc_output
+.php_cs.cache
+.phpstan/
+.phpunit.result.cache
+.psalm/
+.vscode/
+.vscode/*
+/.idea/
+/.yarn-integrity
+build/
+composer.lock
+coverage/
+debug.log
+deploy/
+dist/
+dist-ssr/
+error.log
+frontend/.env
+lerna-debug.log*
+logs/
+mcp
+node_modules/
+npm-debug.log*
+phpunit.xml
+pnpm-debug.log*
+releases/
+storage/cache/
+storage/logs/
+storage/sessions/
+temp/
+Thumbs.db
+tmp/
+var/cache/
+var/logs/
+vendor/
+yarn-debug.log*
+yarn-error.log*

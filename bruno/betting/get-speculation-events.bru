@@ -1,0 +1,44 @@
+meta {
+  name: Get Speculation Events
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{protocol}}://{{host}}:{{port}}/api/speculation-events
+  body: none
+  auth: none
+}
+
+params:query {
+  ~entityType: settlement
+  ~minProbability: 0.3
+  ~timeframe: 6_months
+  ~limit: 10
+}
+
+headers {
+  Content-Type: application/json
+}
+
+tests {
+  test("Status code is 200", function() {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response is an array of speculation events", function() {
+      const events = res.getBody();
+      expect(events).to.be.an('array');
+      
+      if (events.length > 0) {
+          const event = events[0];
+          expect(event).to.have.property('entityId');
+          expect(event).to.have.property('entityType');
+          expect(event).to.have.property('eventType');
+          expect(event).to.have.property('description');
+          expect(event).to.have.property('probability');
+          expect(event).to.have.property('timeframe');
+          expect(event).to.have.property('bettingOdds');
+      }
+  });
+}

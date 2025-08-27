@@ -1,0 +1,46 @@
+meta {
+  name: Get Game Status
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/status
+  body: none
+  auth: none
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response has success flag", function() {
+    expect(res.body).to.have.property("success");
+    expect(res.body.success).to.equal(true);
+  });
+
+  test("Response has data object", function() {
+    expect(res.body).to.have.property("data");
+    expect(res.body.data).to.be.an("object");
+  });
+
+  test("Response has currentYear in data", function() {
+    expect(res.body.data).to.have.property("currentYear");
+    expect(res.body.data.currentYear).to.be.a("number");
+  });
+
+  test("Response has divineFavor in data", function() {
+    expect(res.body.data).to.have.property("divineFavor");
+    expect(res.body.data.divineFavor).to.be.a("number");
+  });
+}
+
+docs {
+  Fetches the current game status, including the current year and player's divine favor.
+  
+  Response is wrapped in a standardized format with:
+  - success: boolean flag indicating success
+  - data: object containing game status information
+  - timestamp: ISO timestamp of the response
+}

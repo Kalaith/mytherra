@@ -1,0 +1,44 @@
+meta {
+  name: Influence Region - Corrupt
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/influence/region/region-002
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "action": "Corrupt Region"
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response message indicates success for region2", function() {
+    expect(res.body).to.have.property("message");
+    expect(res.body.message).to.be.a("string");
+    expect(res.body.message).to.contain("region2");
+  });
+  
+  test("Response actionTaken is correct", function() {
+    expect(res.body).to.have.property("actionTaken");
+    expect(res.body.actionTaken).to.equal("Corrupt Region");
+  });
+  
+  test("Response includes regionName", function() {
+    expect(res.body).to.have.property("regionName");
+    expect(res.body.regionName).to.be.a("string");
+  });
+}
+
+docs {
+  Sends a 'Corrupt Region' influence action to region with ID 'region2'.
+  Expects a 200 OK response with details of the action taken.
+}

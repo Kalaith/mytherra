@@ -1,0 +1,45 @@
+meta {
+  name: Get All Settlements
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{protocol}}://{{host}}:{{port}}/api/settlements
+  body: none
+  auth: none
+}
+
+params:query {
+  ~regionId: {{sampleRegionId}}
+  ~settlementType: village
+  ~minPopulation: 100
+  ~limit: 10
+}
+
+headers {
+  Content-Type: application/json
+}
+
+tests {
+  test("Status code is 200", function() {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response is an array", function() {
+      expect(res.getBody()).to.be.an('array');
+  });
+  
+  test("Each settlement has required fields", function() {
+      const settlements = res.getBody();
+      if (settlements.length > 0) {
+          const settlement = settlements[0];
+          expect(settlement).to.have.property('id');
+          expect(settlement).to.have.property('name');
+          expect(settlement).to.have.property('regionId');
+          expect(settlement).to.have.property('settlementType');
+          expect(settlement).to.have.property('population');
+          expect(settlement).to.have.property('status');
+      }
+  });
+}
