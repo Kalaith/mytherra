@@ -6,7 +6,7 @@ import { Building } from '../entities/building';
 import { Landmark } from '../entities/landmark';
 import { ResourceNode } from '../entities/resourceNode';
 import { DivineBet, SpeculationEvent, BettingOdds } from '../entities/divineBet';
-import authService from '../services/authService';
+import { getAuthHeaders } from '../contexts/AuthContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
 
@@ -15,32 +15,17 @@ export interface GameStatus {
   divineFavor: number; // Added divineFavor
 }
 
-// Helper function to get auth headers
-function getAuthHeaders(): HeadersInit {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
-  
-  const token = authService.getToken();
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  
-  return headers;
-}
-
 // Helper function to fetch data from the backend API
 async function fetchData<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}/${path}`, {
-    headers: getAuthHeaders()
+    headers: await getAuthHeaders()
   });
   
   if (!response.ok) {
     // Handle authentication errors
     if (response.status === 401) {
-      authService.logout();
-      // Redirect to login
-      await authService.redirectToLogin();
+      // Redirect to login - will be handled by Auth0
+      window.location.reload();
       throw new Error('Authentication required');
     }
     
@@ -82,15 +67,15 @@ async function fetchData<T>(path: string): Promise<T> {
 async function postData<T, R>(path: string, body: T): Promise<R> {
   const response = await fetch(`${API_BASE_URL}/${path}`, {
     method: 'POST',
-    headers: getAuthHeaders(),
+    headers: await getAuthHeaders(),
     body: JSON.stringify(body),
   });
   
   if (!response.ok) {
     // Handle authentication errors
     if (response.status === 401) {
-      authService.logout();
-      await authService.redirectToLogin();
+      // Redirect to login - will be handled by Auth0
+      window.location.reload();
       throw new Error('Authentication required');
     }
     

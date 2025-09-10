@@ -33,10 +33,10 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     $group->get('/auth/callback', [AuthController::class, 'callback']);
 
     // Auth0 endpoints
-    $group->group('/auth0', function (RouteCollectorProxy $auth) {
-        $auth->post('/verify', [Auth0Controller::class, 'verifyUser'])->add(new Auth0Middleware());
-        $auth->get('/me', [Auth0Controller::class, 'getCurrentUser'])->add(new Auth0Middleware());
-        $auth->get('/validate', [Auth0Controller::class, 'validateSession'])->add(new Auth0Middleware());
+    $group->group('/auth', function (RouteCollectorProxy $auth) {
+        $auth->post('/verify-user', [Auth0Controller::class, 'verifyUser'])->add(new Auth0Middleware());
+        $auth->get('/current-user', [Auth0Controller::class, 'getCurrentUser'])->add(new Auth0Middleware());
+        $auth->get('/validate-session', [Auth0Controller::class, 'validateSession'])->add(new Auth0Middleware());
     });
 
     // ==================================================

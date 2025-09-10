@@ -17,18 +17,20 @@ class Auth0Controller extends BaseController
             // Get user data from request body (sent by frontend)
             $data = json_decode($request->getBody()->getContents(), true);
             
-            if (!$data || !isset($data['auth0_id'])) {
+            if (!$data || !isset($data['auth0_user'])) {
                 return $this->json($response, [
                     'success' => false,
                     'message' => 'Invalid request data'
                 ], 400);
             }
 
+            $auth0UserData = $data['auth0_user'];
+            
             // Get authenticated user from middleware (for verification)
             $auth0User = $request->getAttribute('auth0_user');
             
             // Verify the auth0_id matches the token
-            if ($auth0User->sub !== $data['auth0_id']) {
+            if ($auth0User->sub !== $auth0UserData['sub']) {
                 return $this->json($response, [
                     'success' => false,
                     'message' => 'Auth0 ID mismatch'
@@ -36,15 +38,15 @@ class Auth0Controller extends BaseController
             }
 
             // Try to find existing user by Auth0 ID
-            $user = User::where('auth0_id', $data['auth0_id'])->first();
+            $user = User::where('auth0_id', $auth0UserData['sub'])->first();
             
             if (!$user) {
                 // Create new user with Mytherra MMO defaults
                 $user = User::create([
-                    'auth0_id' => $data['auth0_id'],
-                    'email' => $data['email'] ?? '',
-                    'username' => $data['username'] ?? explode('@', $data['email'] ?? 'user')[0],
-                    'display_name' => $data['display_name'] ?? $data['name'] ?? $data['username'] ?? 'Adventurer',
+                    'auth0_id' => $auth0UserData['sub'],
+                    'email' => $auth0UserData['email'] ?? '',
+                    'username' => $auth0UserData['nickname'] ?? explode('@', $auth0UserData['email'] ?? 'user')[0],
+                    'display_name' => $auth0UserData['name'] ?? $auth0UserData['email'] ?? 'Adventurer',
                     'divine_influence' => 100, // Starting divine influence for Mytherra
                     'divine_favor' => 100, // Starting divine favor
                     'level' => 1,
@@ -61,9 +63,9 @@ class Auth0Controller extends BaseController
             } else {
                 // Update existing user with latest data
                 $user->update([
-                    'email' => $data['email'] ?? $user->email,
-                    'username' => $data['username'] ?? $user->username,
-                    'display_name' => $data['display_name'] ?? $data['name'] ?? $user->display_name,
+                    'email' => $auth0UserData['email'] ?? $user->email,
+                    'username' => $auth0UserData['nickname'] ?? $user->username,
+                    'display_name' => $auth0UserData['name'] ?? $user->display_name,
                     'updated_at' => date('Y-m-d H:i:s')
                 ]);
             }
@@ -71,23 +73,22 @@ class Auth0Controller extends BaseController
             return $this->json($response, [
                 'success' => true,
                 'data' => [
-                    'user' => [
-                        'id' => $user->id,
-                        'auth0_id' => $user->auth0_id,
-                        'email' => $user->email,
-                        'username' => $user->username,
-                        'display_name' => $user->display_name,
-                        'divine_influence' => $user->divine_influence,
-                        'divine_favor' => $user->divine_favor,
-                        'level' => $user->level,
-                        'experience' => $user->experience,
-                        'character_class' => $user->character_class,
-                        'guild_id' => $user->guild_id,
-                        'guild_rank' => $user->guild_rank,
-                        'is_active' => $user->is_active,
-                        'created_at' => $user->created_at,
-                        'updated_at' => $user->updated_at
-                    ]
+                    'id' => $user->id,
+                    'auth0_id' => $user->auth0_id,
+                    'email' => $user->email,
+                    'username' => $user->username,
+                    'display_name' => $user->display_name,
+                    'divine_influence' => $user->divine_influence,
+                    'divine_favor' => $user->divine_favor,
+                    'level' => $user->level,
+                    'experience' => $user->experience,
+                    'character_class' => $user->character_class,
+                    'guild_id' => $user->guild_id,
+                    'guild_rank' => $user->guild_rank,
+                    'is_active' => $user->is_active,
+                    'role' => 'user', // Default role
+                    'created_at' => $user->created_at,
+                    'updated_at' => $user->updated_at
                 ],
                 'message' => 'User verified successfully'
             ]);

@@ -51,6 +51,7 @@ class Auth0Middleware implements MiddlewareInterface
             // Add both Auth0 user info and Mytherra user to request
             $request = $request->withAttribute('auth0_user', $decoded);
             $request = $request->withAttribute('user', $user);
+            $request = $request->withAttribute('user_id', $user['id']);
 
             return $handler->handle($request);
 
