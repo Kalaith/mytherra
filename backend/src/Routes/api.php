@@ -12,8 +12,10 @@ use App\Controllers\BuildingController;
 use App\Controllers\LandmarkController;
 use App\Controllers\BettingController;
 use App\Controllers\AuthController;
+use App\Controllers\Auth0Controller;
 use App\Middleware\JwtAuthMiddleware;
 use App\Middleware\AdminAuthMiddleware;
+use App\Middleware\Auth0Middleware;
 
 // API Routes
 $app->group('/api', function (RouteCollectorProxy $group) {
@@ -29,6 +31,13 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     $group->get('/auth/login-url', [AuthController::class, 'getLoginUrl']);
     $group->get('/auth/register-url', [AuthController::class, 'getRegisterUrl']);
     $group->get('/auth/callback', [AuthController::class, 'callback']);
+
+    // Auth0 endpoints
+    $group->group('/auth0', function (RouteCollectorProxy $auth) {
+        $auth->post('/verify', [Auth0Controller::class, 'verifyUser'])->add(new Auth0Middleware());
+        $auth->get('/me', [Auth0Controller::class, 'getCurrentUser'])->add(new Auth0Middleware());
+        $auth->get('/validate', [Auth0Controller::class, 'validateSession'])->add(new Auth0Middleware());
+    });
 
     // ==================================================
     // Protected Routes (Require Authentication)
