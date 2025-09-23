@@ -16,10 +16,13 @@
         "nyholm/psr7": "^1.8",
         "php-di/php-di": "^7.0",
         "firebase/php-jwt": "^6.11",
-        "auth0/auth0-php": "^8.0"
+        "auth0/auth0-php": "^8.0",
+        "respect/validation": "^2.2",
+        "guzzlehttp/guzzle": "^7.10"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^10.0",
+        "squizlabs/php_codesniffer": "^3.7"
     },
     "autoload": {
         "psr-4": {
@@ -39,7 +42,9 @@
             "@test:setup",
             "@php -r \"@mkdir('storage/test', 0777, true);\"",
             "phpunit"
-        ]
+        ],
+        "cs-check": "phpcs --standard=PSR12 src/ tests/",
+        "cs-fix": "phpcbf --standard=PSR12 src/ tests/"
     },
     "config": {
         "allow-plugins": {
