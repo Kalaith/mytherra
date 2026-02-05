@@ -28,6 +28,8 @@ class AuthPortalService
             $decoded = JWT::decode($token, new Key($this->jwtSecret, 'HS256'));
             return (array) $decoded;
         } catch (\Exception $e) {
+            $logMsg = date('[Y-m-d H:i:s] ') . "Error: " . $e->getMessage() . "\n";
+            file_put_contents(__DIR__ . '/../../jwt_debug.log', $logMsg, FILE_APPEND);
             error_log('JWT validation failed: ' . $e->getMessage());
             return null;
         }

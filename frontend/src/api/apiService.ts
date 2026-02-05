@@ -8,7 +8,7 @@ import { ResourceNode } from '../entities/resourceNode';
 import { DivineBet, SpeculationEvent, BettingOdds } from '../entities/divineBet';
 import { getAuthHeaders } from '../contexts/AuthContext';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
 export interface GameStatus {
   currentYear: number;
@@ -20,15 +20,16 @@ async function fetchData<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}/${path}`, {
     headers: await getAuthHeaders()
   });
-  
+
   if (!response.ok) {
     // Handle authentication errors
     if (response.status === 401) {
-      // Redirect to login - will be handled by Auth0
-      window.location.reload();
-      throw new Error('Authentication required');
+      // Redirect to login - allow app to handle it
+      console.warn('Authentication required (401) - redirect disabled');
+      // throw new Error('Authentication required');
+      return {} as T; // Return empty object/null to prevent crash but avoid redirect trigger
     }
-    
+
     // Attempt to parse error message from backend if available
     let errorMessage = `Failed to fetch ${path}: ${response.statusText}`;
     try {
@@ -41,24 +42,24 @@ async function fetchData<T>(path: string): Promise<T> {
     }
     throw new Error(errorMessage);
   }
-  
+
   const text = await response.text();
-  
+
   // Handle cases where backend might return an empty object for a single resource not found
-  if (text === "{}") { 
+  if (text === "{}") {
     // For list endpoints (e.g., /regions), an empty array is expected for no data.
     // For single item endpoints (e.g., /regions/id), an empty object means not found.
     // We will return it as is, and components can decide if {} means null or an empty entity.
     return JSON.parse(text) as T;
   }
-  
+
   const parsed = JSON.parse(text);
-  
+
   // Check if response is wrapped in { success: boolean, data: T } format
   if (parsed && typeof parsed === 'object' && 'success' in parsed && 'data' in parsed) {
     return parsed.data as T;
   }
-  
+
   // Otherwise return the parsed response directly
   return parsed as T;
 }
@@ -70,15 +71,16 @@ async function postData<T, R>(path: string, body: T): Promise<R> {
     headers: await getAuthHeaders(),
     body: JSON.stringify(body),
   });
-  
+
   if (!response.ok) {
     // Handle authentication errors
     if (response.status === 401) {
-      // Redirect to login - will be handled by Auth0
-      window.location.reload();
-      throw new Error('Authentication required');
+      // Redirect to login - allow app to handle it
+      console.warn('Authentication required (401) - redirect disabled');
+      // throw new Error('Authentication required');
+      return {} as R;
     }
-    
+
     let errorMessage = `Failed to post to ${path}: ${response.statusText}`;
     try {
       const errorBody = await response.json();
@@ -120,7 +122,7 @@ export const getGameEventById = (id: string): Promise<GameEvent | Record<string,
 };
 
 export const getGameStatus = async (): Promise<GameStatus> => {
-  const response = await fetchData<{success: boolean, data: GameStatus, timestamp: string}>('status');
+  const response = await fetchData<{ success: boolean, data: GameStatus, timestamp: string }>('status');
   // Extract the data property from the response
   return response.data;
 };

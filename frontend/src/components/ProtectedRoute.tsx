@@ -7,10 +7,10 @@ interface ProtectedRouteProps {
   fallback?: React.ReactNode;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
   requireAdmin = false,
-  fallback 
+  fallback
 }) => {
   const { isAuthenticated, isLoading, user, isAdmin } = useAuth();
 
@@ -40,16 +40,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             You need to be logged in to access Mytherra. Please log in with your WebHatchery account.
           </p>
           <button
-            onClick={() => {
-              console.log('Login button clicked - redirect disabled for debugging');
-              console.log('Token in localStorage:', localStorage.getItem('token'));
-              console.log('Is authenticated:', isAuthenticated);
-              console.log('User:', user);
-              // login() // Disabled for debugging
-            }}
+            onClick={() => login()}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition duration-200"
           >
-            Login with WebHatchery (Debug Mode)
+            Login with WebHatchery
           </button>
         </div>
       </div>

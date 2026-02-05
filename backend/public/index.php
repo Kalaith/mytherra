@@ -1,18 +1,38 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+$centralAutoload = __DIR__ . '/../../../vendor/autoload.php';
+if (!file_exists($centralAutoload)) {
+    throw new \RuntimeException('Central vendor autoload not found at ' . $centralAutoload);
+}
+$loader = require $centralAutoload;
+//$loader->addPsr4('App\\', __DIR__ . '/../src/', true); // Disabled to prevent conflicts
 
-use Slim\Factory\AppFactory;
+// Local autoloader MUST be registered AFTER composer to ensure it prepends successfully
+spl_autoload_register(function (string $class): void {
+    $prefix = 'App\\';
+    $baseDir = __DIR__ . '/../src/';
+    if (strncmp($class, $prefix, strlen($prefix)) !== 0) {
+        return;
+    }
+    $relative = substr($class, strlen($prefix));
+    $file = $baseDir . str_replace('\\', '/', $relative) . '.php';
+    if (file_exists($file)) {
+        require $file;
+    }
+}, true, true);
+
 use Dotenv\Dotenv;
 use App\External\DatabaseService;
 use App\Utils\ContainerConfig;
-
-// Determine if we're in test mode
-$isTestMode = defined('TEST_MODE') && TEST_MODE === true;
+use App\Core\Router;
 
 // Load environment variables first
-$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->safeLoad();
+$dotenvPath = __DIR__ . '/..';
+if (!file_exists($dotenvPath . '/.env')) {
+    throw new \RuntimeException('Missing .env at ' . $dotenvPath . '/.env');
+}
+$dotenv = Dotenv::createImmutable($dotenvPath);
+$dotenv->load();
 
 // Add required environment variables
 $required_env_vars = ['DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
@@ -28,50 +48,38 @@ $container = ContainerConfig::createContainer();
 // Initialize database service after environment variables are loaded
 $db = DatabaseService::getInstance();
 
-// Create app with DI container
-AppFactory::setContainer($container);
-global $app;
-$app = AppFactory::create();
+// Router (Custom, removing Slim App)
+$router = new Router($container);
 
-// Set base path for subdirectory deployment (preview environment)
-if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'preview') {
-    $app->setBasePath('/mytherra');
+// Set base path for subdirectory deployment
+if (isset($_ENV['APP_BASE_PATH']) && $_ENV['APP_BASE_PATH']) {
+    $router->setBasePath(rtrim($_ENV['APP_BASE_PATH'], '/'));
+} else {
+    // Auto-detect base path
+    $requestPath = $_SERVER['REQUEST_URI'] ?? '';
+    $requestPath = parse_url($requestPath, PHP_URL_PATH) ?? '';
+    
+    // Check key segments
+    $segments = ['/mytherra'];
+    foreach ($segments as $segment) {
+        if (strpos($requestPath, $segment) === 0) {
+            $router->setBasePath($segment);
+            break;
+        }
+    }
 }
 
-// Add middleware
-$app->addRoutingMiddleware();
-$app->addBodyParsingMiddleware();
+// Handle CORS preflight
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Allow-Headers: Content-Type, Accept, Origin, Authorization');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    http_response_code(200);
+    exit;
+}
 
-// Custom error handling
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
-$errorHandler = $errorMiddleware->getDefaultErrorHandler();
-$errorHandler->forceContentType('application/json');
+// Load routes
+(require __DIR__ . '/../src/routes/router.php')($router);
 
-// Set custom error renderer
-$errorHandler->setDefaultErrorRenderer('application/json', function ($exception, $displayErrorDetails) {
-    error_log("[ERROR] Uncaught exception: " . $exception->getMessage());
-    $responseData = [
-        'success' => false,
-        'message' => $displayErrorDetails ? $exception->getMessage() : 'An internal error occurred'
-    ];
-    return json_encode($responseData);
-});
-
-// CORS middleware
-$app->add(function ($request, $handler) {
-    $response = $handler->handle($request);
-    return $response
-        ->withHeader('Access-Control-Allow-Origin', '*')
-        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-        ->withStatus($request->getMethod() === 'OPTIONS' ? 200 : $response->getStatusCode());
-});
-
-// Import and configure routes
-require __DIR__ . '/../src/Routes/api.php';
-
-// Run the application
-$app->run();
-
-// Return app instance for testing
-return $app;
+// Run router
+$router->handle();

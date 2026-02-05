@@ -1,5 +1,8 @@
 RewriteEngine On
 
+# Pass Authorization header to PHP
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
 # Handle frontend assets and files (let them be served directly)
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule .* - [L]

@@ -437,3 +437,9 @@ Contributions are welcome! Please follow these steps:
 ## 📘 Example Lore Snippet
 
 A scholar named Elvarwyn uncovered remnants of a forgotten star-language in the ruins of Cryspire. Her discovery led to the rise of celestial magic, forever changing the world's understanding of the skies. Centuries later, star cults worship her as the First Seeker.
+
+## License
+
+This project is licensed under the MIT License - see the individual component README files for details.
+
+Part of the WebHatchery game collection.

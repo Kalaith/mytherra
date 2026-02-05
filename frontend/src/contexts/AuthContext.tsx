@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
 import { User } from '../entities/auth';
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: () => Promise<void>;
   register: () => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void; // Changed to synchronous as we just clear local state
   refreshUser: () => Promise<void>;
   updatePreferences: (preferences: any) => Promise<void>;
   isAdmin: () => boolean;
@@ -22,56 +22,96 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { 
-    isAuthenticated: auth0IsAuthenticated, 
-    isLoading: auth0IsLoading, 
-    user: auth0User, 
-    loginWithRedirect, 
-    logout: auth0Logout,
-    getAccessTokenSilently 
-  } = useAuth0();
-  
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(() => {
+    // Check auth-storage (Zustand/State storage)
+    try {
+      const storage = localStorage.getItem('auth-storage');
+      if (storage) {
+        const parsed = JSON.parse(storage);
+        if (parsed.state && parsed.state.token) {
+          return parsed.state.token;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse auth-storage', e);
+    }
+    // Fallback to simple keys
+    return localStorage.getItem('token') || localStorage.getItem('auth_token');
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth0IsLoading && auth0IsAuthenticated && auth0User) {
-      initializeUser();
-    } else if (!auth0IsLoading && !auth0IsAuthenticated) {
-      setUser(null);
+    // Check for token in URL (callback from auth portal)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+
+    if (urlToken) {
+      setToken(urlToken);
+      setToken(urlToken);
+
+      // Save to auth_storage to match expected format
+      const authState = {
+        state: {
+          token: urlToken,
+          isAuthenticated: true,
+          user: null // Will be populated after fetch
+        },
+        version: 0
+      };
+      localStorage.setItem('auth-storage', JSON.stringify(authState));
+
+      // Also keep simple key for compatibility if needed
+      localStorage.setItem('token', urlToken);
+
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    if (token || urlToken) {
+      initializeUser(urlToken || token);
+    } else {
       setIsLoading(false);
     }
-  }, [auth0IsLoading, auth0IsAuthenticated, auth0User]);
+  }, [token]);
 
   // Set up token provider for API calls
   useEffect(() => {
-    if (auth0IsAuthenticated) {
-      // Set the token provider for API calls
-      setTokenProvider(getAccessTokenSilently);
+    if (token) {
+      setTokenProvider(async () => token);
+    } else {
+      setTokenProvider(null);
     }
-  }, [auth0IsAuthenticated, getAccessTokenSilently]);
+  }, [token]);
 
-  const initializeUser = async () => {
+  const initializeUser = async (authToken: string | null) => {
+    if (!authToken) return;
+
     try {
       setIsLoading(true);
-      
-      // Get the local user profile from our backend
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/verify-user`, {
-        method: 'POST',
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/session`, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await getAccessTokenSilently()}`
-        },
-        body: JSON.stringify({
-          auth0_user: auth0User
-        })
+          'Authorization': `Bearer ${authToken}`
+        }
       });
 
       if (response.ok) {
-        const userData = await response.json();
-        setUser(userData.data);
+        const data = await response.json();
+        if (data.success && data.data.user) {
+          setUser(data.data.user);
+        } else {
+          // Fallback if structure is different
+          setUser(data.data || data);
+        }
       } else {
         console.error('Failed to get user profile');
+        // If 401, clear token
+        if (response.status === 401) {
+          // logout(); // DISABLED: Keep session active even if backend validation fails
+          console.warn('Backend rejected token (401), but keeping frontend session active.');
+        }
       }
     } catch (error) {
       console.error('Failed to initialize user:', error);
@@ -81,48 +121,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const login = async () => {
-    await loginWithRedirect();
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/login-url?return_url=${encodeURIComponent(window.location.href)}`);
+      const data = await response.json();
+      if (data.success && data.data.login_url) {
+        window.location.href = data.data.login_url;
+      }
+    } catch (error) {
+      console.error("Failed to get login URL", error);
+    }
   };
 
   const register = async () => {
-    await loginWithRedirect({
-      authorizationParams: {
-        screen_hint: 'signup'
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/register-url?return_url=${encodeURIComponent(window.location.href)}`);
+      const data = await response.json();
+      if (data.success && data.data.register_url) {
+        window.location.href = data.data.register_url;
       }
-    });
+    } catch (error) {
+      console.error("Failed to get register URL", error);
+    }
   };
 
-  const logout = async () => {
+  const logout = () => {
     setUser(null);
-    auth0Logout({ 
-      logoutParams: { 
-        returnTo: window.location.origin + (import.meta.env.VITE_BASE_PATH || '') 
-      } 
-    });
+    setToken(null);
+    localStorage.removeItem('auth-storage');
+    localStorage.removeItem('token');
+    localStorage.removeItem('auth_token');
+    // window.location.href = '/'; // DISABLED: Prevent redirect loop or exit
+    console.log('Logged out (redirect disabled)');
   };
 
   const refreshUser = async () => {
-    if (auth0IsAuthenticated) {
-      await initializeUser();
+    if (token) {
+      await initializeUser(token);
     }
   };
 
   const updatePreferences = async (preferences: any) => {
-    if (!user) return;
-    
+    if (!user || !token) return;
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/${user.id}/preferences`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/preferences`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${await getAccessTokenSilently()}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ preferences })
       });
 
       if (response.ok) {
         const updatedUser = await response.json();
-        setUser(updatedUser.data);
+        // Update user state with new preferences
+        // Assuming the response returns the updated field or we fetch user again
+        // For efficiency, we might just merge it locally if we know it succeeded
+        // For efficiency, we might just merge it locally if we know it succeeded
+        setUser(prev => prev ? { ...prev, game_preferences: preferences } : null);
       }
     } catch (error) {
       console.error('Failed to update preferences:', error);
@@ -141,8 +198,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: auth0IsAuthenticated && !!user,
-        isLoading: auth0IsLoading || isLoading,
+        token,
+        isAuthenticated: !!user && !!token,
+        isLoading,
         login,
         register,
         logout,
@@ -160,7 +218,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 // Token provider function for API calls
 let tokenProvider: (() => Promise<string>) | null = null;
 
-export const setTokenProvider = (provider: () => Promise<string>) => {
+export const setTokenProvider = (provider: (() => Promise<string>) | null) => {
   tokenProvider = provider;
 };
 
@@ -168,16 +226,38 @@ export const getAuthHeaders = async (): Promise<HeadersInit> => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
-  
+
   if (tokenProvider) {
     try {
       const token = await tokenProvider();
-      headers['Authorization'] = `Bearer ${token}`;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
     } catch (error) {
       console.error('Failed to get auth token:', error);
     }
+  } else {
+    // Fallback to localStorage if provider not set (e.g. during init)
+    let token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+
+    // Check auth-storage if simple keys fail
+    if (!token) {
+      try {
+        const storage = localStorage.getItem('auth-storage');
+        if (storage) {
+          const parsed = JSON.parse(storage);
+          if (parsed.state && parsed.state.token) {
+            token = parsed.state.token;
+          }
+        }
+      } catch (e) { /* ignore parse error */ }
+    }
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
   }
-  
+
   return headers;
 };
 

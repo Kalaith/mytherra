@@ -2,24 +2,27 @@
 
 namespace App\Controllers;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use App\Services\AuthPortalService;
+use App\Core\Response;
+use App\Core\Request;
 use App\Models\User;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class AuthController
 {
-    private AuthPortalService $authPortalService;
+    private string $authPortalBaseUrl;
+    private string $jwtSecret;
 
-    public function __construct(AuthPortalService $authPortalService)
+    public function __construct()
     {
-        $this->authPortalService = $authPortalService;
+        $this->authPortalBaseUrl = $_ENV['AUTH_PORTAL_BASE_URL'] ?? 'http://localhost:8000';
+        $this->jwtSecret = $_ENV['AUTH_PORTAL_JWT_SECRET'] ?? $_ENV['JWT_SECRET'] ?? '';
     }
 
     /**
      * Handle callback from auth portal with JWT token
      */
-    public function callback(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function callback(Request $request, Response $response): Response
     {
         $queryParams = $request->getQueryParams();
         $token = $queryParams['token'] ?? null;
@@ -32,10 +35,34 @@ class AuthController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
 
-        // Validate token and get user data
-        $authUser = $this->authPortalService->getUserFromToken($token);
-        
-        if (!$authUser) {
+        // Validate token
+        if (empty($this->jwtSecret)) {
+             $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Server configuration error'
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+
+        try {
+            $decoded = JWT::decode($token, new Key($this->jwtSecret, 'HS256'));
+            $decodedArray = (array) $decoded;
+            
+            // Format user data
+            $roles = $decodedArray['roles'] ?? ['user'];
+            $primaryRole = is_array($roles) ? ($roles[0] ?? 'user') : $roles;
+            
+            $authUser = [
+                'user_id' => $decodedArray['sub'] ?? $decodedArray['user_id'] ?? null,
+                'email' => $decodedArray['email'] ?? null,
+                'username' => $decodedArray['username'] ?? null,
+                'role' => $primaryRole,
+                'roles' => $roles,
+                'exp' => $decodedArray['exp'] ?? null,
+                'iat' => $decodedArray['iat'] ?? null
+            ];
+            
+        } catch (\Exception $e) {
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Invalid token'
@@ -45,8 +72,13 @@ class AuthController
 
         // Create or update local user
         try {
-            $localUser = $this->authPortalService->createOrUpdateLocalUser($authUser);
+            if (class_exists(User::class) && method_exists(User::class, 'createOrUpdateFromAuthData')) {
+                $localUser = User::createOrUpdateFromAuthData($authUser);
+            } else {
+                 throw new \Exception('User model not found');
+            }
             
+            // Assuming User model has these properties public or via getters
             $response->getBody()->write(json_encode([
                 'success' => true,
                 'message' => 'Authentication successful',
@@ -55,9 +87,9 @@ class AuthController
                     'user' => [
                         'id' => $localUser->id,
                         'auth_user_id' => $localUser->auth_user_id,
-                        'display_name' => $localUser->display_name,
-                        'divine_influence' => $localUser->divine_influence,
-                        'divine_favor' => $localUser->divine_favor,
+                        'display_name' => $localUser->display_name ?? $authUser['username'],
+                        'divine_influence' => $localUser->divine_influence ?? 0,
+                        'divine_favor' => $localUser->divine_favor ?? 0,
                         'role' => $authUser['role'] ?? 'user'
                     ]
                 ]
@@ -79,7 +111,7 @@ class AuthController
     /**
      * Get current authenticated user information
      */
-    public function getCurrentUser(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getCurrentUser(Request $request, Response $response): Response
     {
         $authUser = $request->getAttribute('auth_user');
         $localUser = $request->getAttribute('user');
@@ -103,10 +135,10 @@ class AuthController
                     'display_name' => $localUser->display_name,
                     'divine_influence' => $localUser->divine_influence,
                     'divine_favor' => $localUser->divine_favor,
-                    'betting_stats' => $localUser->betting_stats,
-                    'game_preferences' => $localUser->game_preferences,
+                    'betting_stats' => $localUser->betting_stats ?? [],
+                    'game_preferences' => $localUser->game_preferences ?? [],
                     'role' => $authUser['role'] ?? 'user',
-                    'is_active' => $localUser->is_active
+                    'is_active' => $localUser->is_active ?? true
                 ]
             ]
         ]));
@@ -117,12 +149,17 @@ class AuthController
     /**
      * Get login redirect URL
      */
-    public function getLoginUrl(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getLoginUrl(Request $request, Response $response): Response
     {
         $queryParams = $request->getQueryParams();
         $returnUrl = $queryParams['return_url'] ?? null;
 
-        $loginUrl = $this->authPortalService->getLoginRedirectUrl($returnUrl);
+        $params = [];
+        if ($returnUrl) {
+            $params['redirect'] = urlencode($returnUrl);
+        }
+        $queryString = !empty($params) ? '?' . http_build_query($params) : '';
+        $loginUrl = $this->authPortalBaseUrl . '/login' . $queryString;
 
         $response->getBody()->write(json_encode([
             'success' => true,
@@ -137,12 +174,17 @@ class AuthController
     /**
      * Get register redirect URL
      */
-    public function getRegisterUrl(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getRegisterUrl(Request $request, Response $response): Response
     {
         $queryParams = $request->getQueryParams();
         $returnUrl = $queryParams['return_url'] ?? null;
 
-        $registerUrl = $this->authPortalService->getRegisterRedirectUrl($returnUrl);
+        $params = [];
+        if ($returnUrl) {
+            $params['redirect'] = urlencode($returnUrl);
+        }
+        $queryString = !empty($params) ? '?' . http_build_query($params) : '';
+        $registerUrl = $this->authPortalBaseUrl . '/register' . $queryString;
 
         $response->getBody()->write(json_encode([
             'success' => true,
@@ -157,7 +199,7 @@ class AuthController
     /**
      * Update user game preferences
      */
-    public function updatePreferences(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function updatePreferences(Request $request, Response $response): Response
     {
         $localUser = $request->getAttribute('user');
         
@@ -169,7 +211,7 @@ class AuthController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
 
-        $body = json_decode($request->getBody()->getContents(), true);
+        $body = json_decode((string)$request->getBody(), true);
         $preferences = $body['preferences'] ?? [];
 
         if (!is_array($preferences)) {
@@ -205,9 +247,9 @@ class AuthController
     }
 
     /**
-     * Logout (invalidates token on frontend, no server-side action needed for JWT)
+     * Logout
      */
-    public function logout(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function logout(Request $request, Response $response): Response
     {
         $response->getBody()->write(json_encode([
             'success' => true,

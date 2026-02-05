@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use Psr\Http\Message\ResponseInterface as Response;
+use App\Core\Response;
 use App\Exceptions\ResourceNotFoundException;
 
 trait ApiResponseTrait
@@ -19,7 +19,7 @@ trait ApiResponseTrait
     }    /**
      * Handle API action with consistent error handling
      *
-     * @param Response $response The PSR-7 response object
+     * @param Response $response The Response object
      * @param callable $action The action to execute
      * @param string $errorContext Context for general error messages
      * @param string|null $notFoundMessage Custom message for ResourceNotFoundException

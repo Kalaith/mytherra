@@ -1,6 +1,6 @@
 import { User, AuthResponse, LoginUrlResponse, RegisterUrlResponse } from '../entities/auth';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1/mytherra/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
 class AuthService {
   private static instance: AuthService;
@@ -91,7 +91,7 @@ class AuthService {
    */
   async getCurrentUser(): Promise<User | null> {
     console.log('getCurrentUser called - current token:', this.token);
-    
+
     if (!this.token) {
       console.log('No token available, returning null');
       return null;
@@ -107,7 +107,7 @@ class AuthService {
       });
 
       console.log('Response status:', response.status);
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           // Token is invalid or expired - but don't logout, just return null
@@ -119,7 +119,7 @@ class AuthService {
 
       const data = await response.json();
       console.log('Response data:', data);
-      
+
       if (data.success && data.data?.user) {
         this.user = data.data.user;
         return this.user;
@@ -202,6 +202,7 @@ class AuthService {
     console.log('Is authenticated:', this.isAuthenticated());
     console.log('Current user:', this.user);
     // window.location.href = loginUrl; // DISABLED FOR DEBUGGING
+    console.log('Redirect to login prevented. URL would be:', loginUrl);
   }
 
   /**

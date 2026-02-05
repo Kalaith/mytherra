@@ -129,19 +129,15 @@ class ContainerConfig
                 );
             },
 
-            AuthPortalService::class => function($container) {
-                return new AuthPortalService();
-            },
-
             // ====================================
             // MIDDLEWARE
             // ====================================
             JwtAuthMiddleware::class => function($container) {
-                return new JwtAuthMiddleware($container->get(AuthPortalService::class));
+                return new JwtAuthMiddleware();
             },
 
             AdminAuthMiddleware::class => function($container) {
-                return new AdminAuthMiddleware($container->get(AuthPortalService::class));
+                return new AdminAuthMiddleware();
             },
 
             // ====================================
@@ -234,9 +230,7 @@ class ContainerConfig
             },
 
             AuthController::class => function($container) {
-                return new AuthController(
-                    $container->get(AuthPortalService::class)
-                );
+                return new AuthController();
             }
         ]);
 

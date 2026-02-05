@@ -2,41 +2,48 @@
 
 namespace App\Middleware;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use App\Services\AuthPortalService;
+use App\Core\Request;
+use App\Core\Response;
 
-class AdminAuthMiddleware implements MiddlewareInterface
+class AdminAuthMiddleware
 {
-    private AuthPortalService $authPortalService;
-
-    public function __construct(AuthPortalService $authPortalService)
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Request|Response
+     */
+    public function __invoke(Request $request, Response $response, array $args)
     {
-        $this->authPortalService = $authPortalService;
-    }
-
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        // This middleware should run after JwtAuthMiddleware
-        $authUser = $request->getAttribute('auth_user');
+        $user = $request->getAttribute('user');
         
-        if (!$authUser) {
-            return $this->forbiddenResponse('Authentication required');
+        if (!$user) {
+            return $this->forbiddenResponse($response, 'User not authenticated');
         }
 
         // Check if user has admin role
-        if (!$this->authPortalService->isAdmin($authUser)) {
-            return $this->forbiddenResponse('Admin access required');
+        // This depends on your User model structure. Assuming 'role' attribute or similar.
+        // Mytherra User model might have getRole() or public property.
+        // Let's assume standardized array access from JwtAuthMiddleware 'user' attribute usually is an array or object?
+        // JwtAuthMiddleware sets 'user' as result of createOrUpdateLocalUser (likely an array or User model).
+        
+        $role = null;
+        if (is_array($user)) {
+            $role = $user['role'] ?? 'user';
+        } elseif (is_object($user)) {
+             $role = $user->role ?? 'user';
         }
 
-        return $handler->handle($request);
+        if ($role !== 'admin') {
+            return $this->forbiddenResponse($response, 'Admin access required');
+        }
+
+        // Return request to continue
+        return $request;
     }
 
-    private function forbiddenResponse(string $message = 'Forbidden'): ResponseInterface
+    private function forbiddenResponse(Response $response, string $message): Response
     {
-        $response = new \Nyholm\Psr7\Response();
         $response->getBody()->write(json_encode([
             'success' => false,
             'message' => $message,

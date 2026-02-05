@@ -27,7 +27,6 @@
   "author": "Daniel Allan",
   "license": "MIT",
   "dependencies": {
-    "@auth0/auth0-react": "^2.2.4",
     "@tailwindcss/vite": "^4.1.7",
     "formik": "^2.4.6",
     "globals": "^16.1.0",
