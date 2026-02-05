@@ -6,6 +6,7 @@ use App\External\BettingRepository;
 use App\External\SettlementRepository;
 use App\External\LandmarkRepository;
 use App\External\HeroRepository;
+use App\External\RegionRepository;
 use App\Utils\Logger;
 
 class DivineBettingService
@@ -14,6 +15,7 @@ class DivineBettingService
     private $settlementRepository;
     private $landmarkRepository;
     private $heroRepository;
+    private $regionRepository;
     private $oddsCalculator;
 
     public function __construct(
@@ -21,12 +23,14 @@ class DivineBettingService
         SettlementRepository $settlementRepository,
         LandmarkRepository $landmarkRepository,
         HeroRepository $heroRepository,
+        RegionRepository $regionRepository,
         OddsCalculationService $oddsCalculator
     ) {
         $this->bettingRepository = $bettingRepository;
         $this->settlementRepository = $settlementRepository;
         $this->landmarkRepository = $landmarkRepository;
         $this->heroRepository = $heroRepository;
+        $this->regionRepository = $regionRepository;
         $this->oddsCalculator = $oddsCalculator;
     }
 
@@ -53,6 +57,53 @@ class DivineBettingService
                             'baseOdds' => $this->calculateDiscoveryOdds($landmark)
                         ];
                     }, $landmarks);
+                    break;
+
+                case 'hero_level_milestone':
+                    $heroes = $this->heroRepository->getAllHeroes(['is_alive' => true]);
+                    $targets = array_map(function($hero) {
+                        return [
+                            'id' => $hero['id'],
+                            'name' => $hero['name'],
+                            'current_level' => $hero['level'],
+                            'baseOdds' => $this->calculateHeroLevelOdds($hero)
+                        ];
+                    }, $heroes);
+                    break;
+
+                case 'hero_death':
+                    $heroes = $this->heroRepository->getAllHeroes(['is_alive' => true]);
+                    $targets = array_map(function($hero) {
+                        return [
+                            'id' => $hero['id'],
+                            'name' => $hero['name'],
+                            'baseOdds' => $this->calculateHeroDeathOdds($hero)
+                        ];
+                    }, $heroes);
+                    break;
+
+                case 'region_danger_change':
+                    $regions = $this->regionRepository->getAllRegions([]);
+                    $targets = array_map(function($region) {
+                        return [
+                            'id' => $region['id'],
+                            'name' => $region['name'],
+                            'current_danger' => $region['danger_level'] ?? 0,
+                            'baseOdds' => $this->calculateDangerChangeOdds($region)
+                        ];
+                    }, $regions);
+                    break;
+
+                case 'prosperity_threshold':
+                    $settlements = $this->settlementRepository->getAllSettlements([]);
+                    $targets = array_map(function($settlement) {
+                        return [
+                            'id' => $settlement['id'],
+                            'name' => $settlement['name'],
+                            'current_prosperity' => $settlement['prosperity'] ?? 0,
+                            'baseOdds' => $this->calculateProsperityOdds($settlement)
+                        ];
+                    }, $settlements);
                     break;
             }
 
@@ -102,6 +153,87 @@ class DivineBettingService
         $baseOdds -= $dangerModifier;
 
         return max(0.1, min(0.9, $baseOdds));
+    }
+
+    /**
+     * Calculate odds for hero reaching a level milestone
+     */
+    private function calculateHeroLevelOdds($hero): float
+    {
+        $baseOdds = 0.4;
+        
+        // Lower level heroes have better chances to level up
+        $levelModifier = max(0, 0.3 - ($hero['level'] / 100));
+        $baseOdds += $levelModifier;
+        
+        // Role affects level speed
+        if (in_array($hero['role'] ?? '', ['warrior', 'adventurer'])) {
+            $baseOdds += 0.1;
+        }
+        
+        return max(0.1, min(0.9, $baseOdds));
+    }
+
+    /**
+     * Calculate odds for hero death
+     */
+    private function calculateHeroDeathOdds($hero): float
+    {
+        $baseOdds = 0.15; // Low base chance
+        
+        // Age increases death chance
+        $ageModifier = ($hero['age'] ?? 25) / 200;
+        $baseOdds += $ageModifier;
+        
+        // Low level heroes are more vulnerable
+        if (($hero['level'] ?? 1) < 10) {
+            $baseOdds += 0.1;
+        }
+        
+        return max(0.05, min(0.6, $baseOdds));
+    }
+
+    /**
+     * Calculate odds for region danger level change
+     */
+    private function calculateDangerChangeOdds($region): float
+    {
+        $baseOdds = 0.35;
+        
+        // High chaos regions are more volatile
+        $chaosModifier = ($region['chaos'] ?? 0) / 200;
+        $baseOdds += $chaosModifier;
+        
+        // Regions at extreme danger levels have less room to change
+        $currentDanger = $region['danger_level'] ?? 5;
+        if ($currentDanger <= 2 || $currentDanger >= 9) {
+            $baseOdds *= 0.7;
+        }
+        
+        return max(0.1, min(0.7, $baseOdds));
+    }
+
+    /**
+     * Calculate odds for settlement reaching prosperity threshold
+     */
+    private function calculateProsperityOdds($settlement): float
+    {
+        $baseOdds = 0.45;
+        
+        // Current prosperity affects growth potential
+        $currentProsperity = $settlement['prosperity'] ?? 50;
+        if ($currentProsperity < 30) {
+            $baseOdds += 0.2; // Room to grow
+        } elseif ($currentProsperity > 80) {
+            $baseOdds -= 0.2; // Near cap
+        }
+        
+        // Population size affects growth
+        if (($settlement['population'] ?? 0) > 500) {
+            $baseOdds += 0.1;
+        }
+        
+        return max(0.15, min(0.85, $baseOdds));
     }
 
     private function selectBestOpportunities($targets)
@@ -175,6 +307,7 @@ class DivineBettingService
         return $this->settlementRepository->getSettlementById($targetId) ??
                $this->landmarkRepository->getLandmarkById($targetId) ??
                $this->heroRepository->getHeroById($targetId) ??
+               $this->regionRepository->getRegionById($targetId) ??
                ['name' => 'Unknown Target'];
     }
 }

@@ -5,6 +5,7 @@ import EventsPage from './pages/EventsPage';
 import WorldMapPage from './pages/WorldMapPage';
 import HeroesPage from './pages/HeroesPage';
 import BettingPage from './pages/BettingPage';
+import { Dashboard } from './pages/Dashboard';
 import { RegionProvider } from './contexts/RegionContext';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -16,13 +17,13 @@ const App: React.FC = () => {
     if (import.meta.env.DEV) {
       return '/';
     }
-    
+
     // Check if we have a base path from Vite config
     const basePath = import.meta.env.BASE_URL;
     if (basePath && basePath !== '/') {
       return basePath.replace(/\/$/, ''); // Remove trailing slash for basename
     }
-    
+
     return '/';
   };
 
@@ -34,6 +35,11 @@ const App: React.FC = () => {
             <Route path="/" element={
               <ProtectedRoute>
                 <EventsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
               </ProtectedRoute>
             } />
             <Route path="/world-map" element={

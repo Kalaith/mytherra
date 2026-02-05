@@ -15,6 +15,8 @@ use App\Controllers\AuthController;
 
 use App\Middleware\JwtAuthMiddleware;
 use App\Middleware\AdminAuthMiddleware;
+use App\Controllers\StatisticsController;
+use App\Controllers\ExportController;
 
 
 // API Routes
@@ -122,6 +124,35 @@ $app->group('/api', function (RouteCollectorProxy $group) {
         // Game Status Route
         // ==================================================
         $authGroup->get('/status', [StatusController::class, 'getGameStatus']);
+
+        // ==================================================
+        // Betting Routes
+        // ==================================================
+        $authGroup->get('/bets', [BettingController::class, 'getAllDivineBets']);
+        $authGroup->get('/bets/{id}', [BettingController::class, 'getDivineBetById']);
+        $authGroup->post('/bets', [BettingController::class, 'placeDivineBet']);
+        $authGroup->get('/bet-types', [BettingController::class, 'getBetTypes']);
+        $authGroup->get('/betting-odds', [BettingController::class, 'getBettingOdds']);
+        $authGroup->get('/speculation-events', [BettingController::class, 'getSpeculationEvents']);
+        
+        // Combo Betting Routes
+        $authGroup->post('/combo-bets', [BettingController::class, 'createComboBet']);
+        $authGroup->post('/combo-bets/preview', [BettingController::class, 'previewComboBet']);
+
+        // ==================================================
+        // Statistics Routes
+        // ==================================================
+        $authGroup->get('/statistics/summary', [StatisticsController::class, 'getSummary']);
+        $authGroup->get('/statistics/heroes', [StatisticsController::class, 'getHeroStats']);
+        $authGroup->get('/statistics/regions', [StatisticsController::class, 'getRegionStats']);
+        $authGroup->get('/statistics/financials', [StatisticsController::class, 'getFinancialStats']);
+
+        // ==================================================
+        // Export Routes
+        // ==================================================
+        $authGroup->get('/export/types', [ExportController::class, 'getExportTypes']);
+        $authGroup->get('/export/full', [ExportController::class, 'exportFull']);
+        $authGroup->get('/export/{type}', [ExportController::class, 'exportByType']);
         
     })->add(JwtAuthMiddleware::class);
 

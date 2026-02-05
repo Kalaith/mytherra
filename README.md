@@ -149,10 +149,9 @@ After cataclysm, the world enters a **new Era**:
 - [x] **Settlement evolution mechanics**
 - [x] **Game loop service with background workers**
 - [x] Betting and reward system (partial)
+- [x] **Custom JWT Authentication System**
+- [/] Frontend integration with new PHP APIs
 - [ ] Era-ending mechanics and reincarnation
-- [ ] Multi-Era legacy tracking  
-- [ ] New Era content expansion pipeline
-- [ ] Frontend integration with new PHP APIs
 
 
 ## Technology Stack
@@ -166,6 +165,7 @@ After cataclysm, the world enters a **new Era**:
 - **Architecture**: Actions pattern with Repository pattern
 - **Dependency Injection**: PHP-DI container
 - **API**: RESTful JSON API with PSR-7 HTTP messages
+- **Auth**: Custom JWT Middleware (Stateless)
 
 ### Frontend
 - **Framework**: React
@@ -318,6 +318,24 @@ The backend follows a modern PHP architecture with clear separation of concerns:
 
 7. **Utils (`Utils/`)**: Helper functions and utilities for various game systems.
 
+## Authentication System (New)
+
+The application now uses a custom **JWT (JSON Web Token)** authentication system, replacing the previous Auth0 integration.
+
+*   **Stateless**: No server-side session storage required.
+*   **Security**: Tokens are signed with `HS256` using a `JWT_SECRET`.
+*   **Middleware**: `JwtAuthMiddleware` protects sensitive endpoints.
+*   **Token Storage**: Frontend stores tokens in `localStorage` for persistence.
+*   **User Model**: Users are authenticated against the local MySQL `users` table.
+
+### Auth Flow
+1.  **Login/Register**: User sends credentials to `/auth/login` or `/auth/register`.
+2.  **Token Issuance**: Server validates credentials and returns a signed `JWT` (valid for 24h).
+3.  **Authenticated Requests**: Frontend attaches `Authorization: Bearer <token>` to headers.
+4.  **Validation**: Middleware decodes and verifies the token on protected routes.
+
+---
+
 ## How to Run
 
 1.  **Clone the Repository**
@@ -343,6 +361,7 @@ The backend follows a modern PHP architecture with clear separation of concerns:
     cd backend
     cp .env.example .env
     # Edit .env with your database credentials
+    # IMPORTANT: Set a secure 'JWT_SECRET' (min 32 chars)
     ```
 
 4.  **Initialize Database**

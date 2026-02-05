@@ -15,6 +15,11 @@ export interface GameStatus {
   divineFavor: number; // Added divineFavor
 }
 
+export const apiService = {
+  get: <T>(path: string) => fetchData<T>(path),
+  post: <T, R>(path: string, body: T) => postData<T, R>(path, body)
+};
+
 // Helper function to fetch data from the backend API
 async function fetchData<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}/${path}`, {

@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Core\Response;
 use App\Core\Request;
 use App\Actions\BettingActions;
+use App\Services\ComboBetService;
+use App\Models\DivineBet;
 use App\Traits\ApiResponseTrait;
 use App\Utils\Logger;
 
@@ -12,9 +14,14 @@ class BettingController
 {
     use ApiResponseTrait;
 
+    private ComboBetService $comboBetService;
+
     public function __construct(
-        private BettingActions $bettingActions
-    ) {}
+        private BettingActions $bettingActions,
+        ComboBetService $comboBetService
+    ) {
+        $this->comboBetService = $comboBetService;
+    }
 
     /**
      * Create a new divine bet
@@ -37,13 +44,8 @@ class BettingController
             }
         }
         
-        // Validate bet type
-        $validBetTypes = [
-            'settlement_growth', 'landmark_discovery', 'cultural_shift', 
-            'hero_settlement_bond', 'hero_location_visit', 'settlement_transformation', 
-            'corruption_spread'
-        ];
-        if (!in_array($body['betType'], $validBetTypes)) {
+        // Validate bet type using model constant
+        if (!DivineBet::validateBetType($body['betType'])) {
             return $this->jsonResponse($response, [
                 'success' => false,
                 'error' => [
@@ -145,5 +147,87 @@ class BettingController
             'processing expired bets',
             'Failed to process expired bets'
         );
+    }
+
+    /**
+     * Create a combo bet
+     * POST /api/combo-bets
+     */
+    public function createComboBet(Request $request, Response $response): Response
+    {
+        $body = json_decode($request->getBody(), true);
+        
+        if (!isset($body['betIds']) || !is_array($body['betIds'])) {
+            return $this->jsonResponse($response, [
+                'success' => false,
+                'error' => ['message' => 'betIds array is required']
+            ], 400);
+        }
+        
+        if (!isset($body['totalStake']) || !is_numeric($body['totalStake'])) {
+            return $this->jsonResponse($response, [
+                'success' => false,
+                'error' => ['message' => 'totalStake is required']
+            ], 400);
+        }
+        
+        try {
+            $comboBet = $this->comboBetService->createComboBet(
+                $body['betIds'],
+                (int) $body['totalStake']
+            );
+            
+            return $this->jsonResponse($response, [
+                'success' => true,
+                'data' => $comboBet
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->jsonResponse($response, [
+                'success' => false,
+                'error' => ['message' => $e->getMessage()]
+            ], 400);
+        }
+    }
+
+    /**
+     * Preview combo bet odds
+     * POST /api/combo-bets/preview
+     */
+    public function previewComboBet(Request $request, Response $response): Response
+    {
+        $body = json_decode($request->getBody(), true);
+        
+        if (!isset($body['betIds']) || !is_array($body['betIds'])) {
+            return $this->jsonResponse($response, [
+                'success' => false,
+                'error' => ['message' => 'betIds array is required']
+            ], 400);
+        }
+        
+        try {
+            $preview = $this->comboBetService->previewComboOdds($body['betIds']);
+            
+            return $this->jsonResponse($response, [
+                'success' => true,
+                'data' => $preview
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return $this->jsonResponse($response, [
+                'success' => false,
+                'error' => ['message' => $e->getMessage()]
+            ], 400);
+        }
+    }
+
+    /**
+     * Get available bet types
+     * GET /api/bet-types
+     */
+    public function getBetTypes(Request $request, Response $response): Response
+    {
+        return $this->jsonResponse($response, [
+            'success' => true,
+            'data' => DivineBet::BET_TYPE_CONFIGS
+        ]);
     }
 }

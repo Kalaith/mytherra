@@ -47,7 +47,13 @@ class DivineBet extends Model
         'hero_settlement_bond',
         'hero_location_visit',
         'settlement_transformation',
-        'corruption_spread'
+        'corruption_spread',
+        // New enhanced bet types
+        'hero_level_milestone',
+        'hero_death',
+        'region_danger_change',
+        'war_outcome',
+        'prosperity_threshold'
     ];
 
     // Confidence levels based on Node.js backend
@@ -102,6 +108,32 @@ class DivineBet extends Model
             'description' => 'A bet on whether corruption will spread to an area',
             'base_odds' => 3.5,
             'resolve_conditions' => 'Corruption level increases significantly in target area within timeframe'
+        ],
+        // New enhanced bet types
+        'hero_level_milestone' => [
+            'description' => 'A bet on a hero reaching a specific level',
+            'base_odds' => 2.2,
+            'resolve_conditions' => 'Hero reaches the specified level within timeframe'
+        ],
+        'hero_death' => [
+            'description' => 'A bet on whether a hero will die',
+            'base_odds' => 4.5,
+            'resolve_conditions' => 'Hero dies within the specified timeframe'
+        ],
+        'region_danger_change' => [
+            'description' => 'A bet on a region\'s danger level changing',
+            'base_odds' => 2.8,
+            'resolve_conditions' => 'Region danger level changes by at least 2 levels within timeframe'
+        ],
+        'war_outcome' => [
+            'description' => 'A bet on the outcome of a conflict between regions',
+            'base_odds' => 3.0,
+            'resolve_conditions' => 'Specified region wins or loses the conflict within timeframe'
+        ],
+        'prosperity_threshold' => [
+            'description' => 'A bet on a settlement reaching a prosperity threshold',
+            'base_odds' => 2.4,
+            'resolve_conditions' => 'Settlement prosperity reaches or exceeds target value within timeframe'
         ]
     ];
 

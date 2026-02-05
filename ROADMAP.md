@@ -5,6 +5,26 @@ This roadmap outlines the implementation plan for Mytherra's future improvements
 
 ---
 
+## Immediate Priorities (Current Sprint)
+*Focus: Connecting Frontend to Backend & Core Game Loop Mechanics*
+
+### 1. Complete Frontend Integration with PHP Backend ⭐ **URGENT**
+- Connect React frontend to new PHP API endpoints
+- Implement real-time updates for divine influence actions and world changes
+- Add frontend data visualization for settlement evolution and hero progression
+
+### 2. Enhanced Era-Ending & Reincarnation Mechanics
+- Implement automatic era transitions based on world state conditions
+- Add legacy system carrying achievements and bonuses across eras
+- Create reincarnation mechanics for heroes and persistent world elements
+
+### 3. Advanced Magic Discovery & Research Systems
+- Complete the magic node unlocking system with hidden knowledge paths
+- Add magical research collaboration between heroes and settlements
+- Implement world-changing magical discoveries that affect simulation behavior
+
+---
+
 ## Phase 1: Foundation & Core Systems (Months 1-3)
 *Priority: High | Complexity: Medium | Foundation for all other features*
 
@@ -62,6 +82,20 @@ This roadmap outlines the implementation plan for Mytherra's future improvements
 - **Frontend**: Mythology browser, legend impact UI
 - **Dependencies**: Cultural Evolution
 - **Impact**: High - narrative depth
+
+### 2.5 Enhanced Era-Ending & Reincarnation
+- **Implementation**: 3-4 weeks
+- **Backend**: Era transition logic, legacy data persistence
+- **Frontend**: Era summary screens, reincarnation selection
+- **Dependencies**: Cultural Evolution, Statistics
+- **Impact**: High - long-term engagement and replayability
+
+### 2.6 Advanced Magic & Research
+- **Implementation**: 4-5 weeks
+- **Backend**: Magic node system, research trees, discovery triggers
+- **Frontend**: Research UI, magic discovery visualization
+- **Dependencies**: Resource system
+- **Impact**: Very High - strategic depth and exploration
 
 ---
 
