@@ -125,6 +125,7 @@ class ContainerConfig
                     $container->get(SettlementRepository::class),
                     $container->get(LandmarkRepository::class),
                     $container->get(HeroRepository::class),
+                    $container->get(RegionRepository::class),
                     $container->get(OddsCalculationService::class)
                 );
             },
