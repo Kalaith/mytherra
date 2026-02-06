@@ -44,22 +44,18 @@ export interface FinancialStatistics {
 
 export const statisticsService = {
     getSummary: async (): Promise<GameSummary> => {
-        const response = await apiService.get<{ success: boolean; data: GameSummary }>('/statistics/summary');
-        return response.data;
+        return await apiService.get<GameSummary>('statistics/summary');
     },
 
     getHeroStats: async (): Promise<HeroStatistics> => {
-        const response = await apiService.get<{ success: boolean; data: HeroStatistics }>('/statistics/heroes');
-        return response.data;
+        return await apiService.get<HeroStatistics>('statistics/heroes');
     },
 
     getRegionStats: async (): Promise<RegionStatistics> => {
-        const response = await apiService.get<{ success: boolean; data: RegionStatistics }>('/statistics/regions');
-        return response.data;
+        return await apiService.get<RegionStatistics>('statistics/regions');
     },
 
     getFinancialStats: async (): Promise<FinancialStatistics> => {
-        const response = await apiService.get<{ success: boolean; data: FinancialStatistics }>('/statistics/financials');
-        return response.data;
+        return await apiService.get<FinancialStatistics>('statistics/financials');
     }
 };

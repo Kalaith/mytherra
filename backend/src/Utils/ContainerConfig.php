@@ -17,6 +17,7 @@ use App\Controllers\ResourceNodeController;
 use App\Controllers\BettingController;
 use App\Controllers\InfluenceController;
 use App\Controllers\AuthController;
+use App\Controllers\StatisticsController;
 
 // Actions
 use App\Actions\RegionActions;
@@ -50,6 +51,8 @@ use App\Services\DivineInfluenceService;
 use App\Services\OddsCalculationService;
 use App\Services\DivineBettingService;
 use App\Services\AuthPortalService;
+use App\Services\ComboBetService;
+use App\Services\StatisticsService;
 
 // Middleware
 use App\Middleware\JwtAuthMiddleware;
@@ -128,6 +131,12 @@ class ContainerConfig
                     $container->get(RegionRepository::class),
                     $container->get(OddsCalculationService::class)
                 );
+            },
+            ComboBetService::class => function($container) {
+                return new ComboBetService();
+            },
+            StatisticsService::class => function($container) {
+                return new StatisticsService();
             },
 
             // ====================================
@@ -221,12 +230,18 @@ class ContainerConfig
             },
             BettingController::class => function($container) {
                 return new BettingController(
-                    $container->get(BettingActions::class)
+                    $container->get(BettingActions::class),
+                    $container->get(ComboBetService::class)
                 );
             },
             InfluenceController::class => function($container) {
                 return new InfluenceController(
                     $container->get(InfluenceActions::class)
+                );
+            },
+            StatisticsController::class => function($container) {
+                return new StatisticsController(
+                    $container->get(StatisticsService::class)
                 );
             },
 

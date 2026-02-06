@@ -5,11 +5,13 @@ use App\Controllers\AuthController;
 use App\Controllers\BettingController;
 use App\Controllers\BuildingController;
 use App\Controllers\EventController;
+use App\Controllers\ExportController;
 use App\Controllers\HeroController;
 use App\Controllers\InfluenceController;
 use App\Controllers\LandmarkController;
 use App\Controllers\RegionController;
 use App\Controllers\SettlementController;
+use App\Controllers\StatisticsController;
 use App\Controllers\StatusController;
 use App\Middleware\JwtAuthMiddleware;
 use App\Middleware\AdminAuthMiddleware;
@@ -145,6 +147,16 @@ return function (Router $router): void {
     $router->get($api . '/bets/{id}', [BettingController::class, 'getDivineBetById'], [JwtAuthMiddleware::class]);
     $router->get($api . '/speculation-events', [BettingController::class, 'getSpeculationEvents'], [JwtAuthMiddleware::class]);
     $router->get($api . '/betting-odds', [BettingController::class, 'getBettingOdds'], [JwtAuthMiddleware::class]);
+    $router->get($api . '/bet-types', [BettingController::class, 'getBetTypes'], [JwtAuthMiddleware::class]);
+    
+    // Combo Betting Routes
+    $router->post($api . '/combo-bets', [BettingController::class, 'createComboBet'], [JwtAuthMiddleware::class]);
+    $router->post($api . '/combo-bets/preview', [BettingController::class, 'previewComboBet'], [JwtAuthMiddleware::class]);
+
+    // Export Routes
+    $router->get($api . '/export/types', [ExportController::class, 'getExportTypes'], [JwtAuthMiddleware::class]);
+    $router->get($api . '/export/full', [ExportController::class, 'exportFull'], [JwtAuthMiddleware::class]);
+    $router->get($api . '/export/{type}', [ExportController::class, 'exportByType'], [JwtAuthMiddleware::class]);
 
     // Influence Routes
     $router->post($api . '/influence/divine/calculate-cost', [InfluenceController::class, 'calculateDivineInfluenceCost'], [JwtAuthMiddleware::class]);
@@ -155,6 +167,12 @@ return function (Router $router): void {
 
     // Status
     $router->get($api . '/status', [StatusController::class, 'getGameStatus'], [JwtAuthMiddleware::class]);
+
+    // Statistics Routes
+    $router->get($api . '/statistics/summary', [StatisticsController::class, 'getSummary'], [JwtAuthMiddleware::class]);
+    $router->get($api . '/statistics/heroes', [StatisticsController::class, 'getHeroStats'], [JwtAuthMiddleware::class]);
+    $router->get($api . '/statistics/regions', [StatisticsController::class, 'getRegionStats'], [JwtAuthMiddleware::class]);
+    $router->get($api . '/statistics/financials', [StatisticsController::class, 'getFinancialStats'], [JwtAuthMiddleware::class]);
 
     // Admin Routes
     $router->post($api . '/admin/process-expired-bets', [BettingController::class, 'processExpiredBets'], [AdminAuthMiddleware::class, JwtAuthMiddleware::class]);

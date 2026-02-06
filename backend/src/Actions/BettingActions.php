@@ -165,7 +165,16 @@ class BettingActions
                 }
             }
             
-            return $oddsData;
+            $formattedOddsData = [];
+            foreach ($oddsData as $betType => $data) {
+                $formattedOddsData[] = [
+                    'eventId' => $betType, // Using betType as eventId for now since it's event-based odds
+                    'odds' => ['standard' => $data['payout']], // varying structure based on frontend expectation
+                    'lastUpdated' => date('c')
+                ];
+            }
+            
+            return $formattedOddsData;
         } catch (Exception $e) {
             Logger::error("Error fetching betting odds: " . $e->getMessage());
             throw $e;

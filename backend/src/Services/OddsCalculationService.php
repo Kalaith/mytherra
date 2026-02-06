@@ -50,7 +50,7 @@ class OddsCalculationService
         try {
             // Base odds from constants
             $baseOdds = $this->betTypeConfigs[$betType]['baseOdds'] ?? 3.0;
-            $confidenceModifier = $this->confidenceConfigs[$confidence]['oddsModifier'] ?? 1.0;
+            $confidenceModifier = $this->confidenceLevels[$confidence]['oddsModifier'] ?? 1.0;
             
             // Adjust based on timeframe - shorter timeframes increase odds
             $timeframeModifier = $this->calculateTimeframeModifier($timeframe);
@@ -65,7 +65,7 @@ class OddsCalculationService
             $finalOdds = max(round($calculatedOdds * 100) / 100, 1.1);
             
             // Calculate potential payout based on confidence stake multiplier
-            $stakeMultiplier = $this->confidenceConfigs[$confidence]['stakeMultiplier'] ?? 1.0;
+            $stakeMultiplier = $this->confidenceLevels[$confidence]['stakeMultiplier'] ?? 1.0;
             
             return [
                 'odds' => $finalOdds,
