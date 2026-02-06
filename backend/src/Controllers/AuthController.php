@@ -11,12 +11,13 @@ use Firebase\JWT\Key;
 class AuthController
 {
     private string $authPortalBaseUrl;
-    private string $jwtSecret;
+    private $authService;
 
     public function __construct()
     {
         $this->authPortalBaseUrl = $_ENV['AUTH_PORTAL_BASE_URL'] ?? 'http://localhost:8000';
-        $this->jwtSecret = $_ENV['AUTH_PORTAL_JWT_SECRET'] ?? $_ENV['JWT_SECRET'] ?? '';
+        // In a real DI container this would be injected, but for now we instantiate it
+        $this->authService = new \App\Services\AuthService();
     }
 
     /**
@@ -35,48 +36,12 @@ class AuthController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
 
-        // Validate token
-        if (empty($this->jwtSecret)) {
-             $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Server configuration error'
-            ]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
-
         try {
-            $decoded = JWT::decode($token, new Key($this->jwtSecret, 'HS256'));
-            $decodedArray = (array) $decoded;
-            
-            // Format user data
-            $roles = $decodedArray['roles'] ?? ['user'];
-            $primaryRole = is_array($roles) ? ($roles[0] ?? 'user') : $roles;
-            
-            $authUser = [
-                'user_id' => $decodedArray['sub'] ?? $decodedArray['user_id'] ?? null,
-                'email' => $decodedArray['email'] ?? null,
-                'username' => $decodedArray['username'] ?? null,
-                'role' => $primaryRole,
-                'roles' => $roles,
-                'exp' => $decodedArray['exp'] ?? null,
-                'iat' => $decodedArray['iat'] ?? null
-            ];
-            
-        } catch (\Exception $e) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Invalid token'
-            ]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
-        }
+            // Validate token
+            $authUser = $this->authService->validateToken($token);
 
-        // Create or update local user
-        try {
-            if (class_exists(User::class) && method_exists(User::class, 'createOrUpdateFromAuthData')) {
-                $localUser = User::createOrUpdateFromAuthData($authUser);
-            } else {
-                 throw new \Exception('User model not found');
-            }
+            // Create or update local user
+            $localUser = $this->authService->syncUser($authUser);
             
             // Assuming User model has these properties public or via getters
             $response->getBody()->write(json_encode([
@@ -100,11 +65,21 @@ class AuthController
         } catch (\Exception $e) {
             error_log('Auth callback error: ' . $e->getMessage());
             
+            $status = 500;
+            $message = 'Authentication failed';
+
+            if (strpos($e->getMessage(), 'Invalid token') !== false) {
+                $status = 401;
+                $message = 'Invalid token';
+            } elseif (strpos($e->getMessage(), 'Server configuration') !== false) {
+                $message = 'Server configuration error';
+            }
+
             $response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Failed to create user profile'
+                'message' => $message
             ]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
         }
     }
 

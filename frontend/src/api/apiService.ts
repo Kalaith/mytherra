@@ -22,51 +22,67 @@ export const apiService = {
 
 // Helper function to fetch data from the backend API
 async function fetchData<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}/${path}`, {
-    headers: await getAuthHeaders()
-  });
+  // Add timeout controller
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
-  if (!response.ok) {
-    // Handle authentication errors
-    if (response.status === 401) {
-      // Redirect to login - allow app to handle it
-      console.warn('Authentication required (401) - redirect disabled');
-      // throw new Error('Authentication required');
-      return {} as T; // Return empty object/null to prevent crash but avoid redirect trigger
-    }
+  try {
+    const response = await fetch(`${API_BASE_URL}/${path}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(await getAuthHeaders())
+      },
+      signal: controller.signal
+    });
+    clearTimeout(id);
 
-    // Attempt to parse error message from backend if available
-    let errorMessage = `Failed to fetch ${path}: ${response.statusText}`;
-    try {
-      const errorBody = await response.json();
-      if (errorBody && errorBody.message) {
-        errorMessage = `Failed to fetch ${path}: ${errorBody.message}`;
+    if (!response.ok) {
+      // Handle authentication errors
+      if (response.status === 401) {
+        console.warn('Authentication required (401)');
+        // Throw specific error for auth failure so app can redirect if needed
+        throw new Error('AUTHENTICATION_REQUIRED');
       }
-    } catch (e) {
-      // Ignore if error body is not JSON or not present
+
+      // Attempt to parse error message from backend if available
+      let errorMessage = `Failed to fetch ${path}: ${response.statusText}`;
+      try {
+        const errorBody = await response.json();
+        if (errorBody && errorBody.message) {
+          errorMessage = errorBody.message; // Use backend message directly
+        }
+      } catch (e) {
+        // Ignore if error body is not JSON or not present
+      }
+      throw new Error(errorMessage);
     }
-    throw new Error(errorMessage);
+
+    const text = await response.text();
+
+    // Handle cases where backend might return an empty object for a single resource not found
+    if (text === "{}") {
+      // For list endpoints (e.g., /regions), an empty array is expected for no data.
+      // For single item endpoints (e.g., /regions/id), an empty object means not found.
+      // We will return it as is, and components can decide if {} means null or an empty entity.
+      return JSON.parse(text) as T;
+    }
+
+    const parsed = JSON.parse(text);
+
+    // Check if response is wrapped in { success: boolean, data: T } format
+    if (parsed && typeof parsed === 'object' && 'success' in parsed && 'data' in parsed) {
+      return parsed.data as T;
+    }
+
+    // Otherwise return the parsed response directly
+    return parsed as T;
   }
-
-  const text = await response.text();
-
-  // Handle cases where backend might return an empty object for a single resource not found
-  if (text === "{}") {
-    // For list endpoints (e.g., /regions), an empty array is expected for no data.
-    // For single item endpoints (e.g., /regions/id), an empty object means not found.
-    // We will return it as is, and components can decide if {} means null or an empty entity.
-    return JSON.parse(text) as T;
+  catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`Request timeout for ${path}`);
+    }
+    throw error;
   }
-
-  const parsed = JSON.parse(text);
-
-  // Check if response is wrapped in { success: boolean, data: T } format
-  if (parsed && typeof parsed === 'object' && 'success' in parsed && 'data' in parsed) {
-    return parsed.data as T;
-  }
-
-  // Otherwise return the parsed response directly
-  return parsed as T;
 }
 
 // Helper function to post data to the backend API

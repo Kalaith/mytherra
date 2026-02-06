@@ -9,6 +9,7 @@ use App\Services\ComboBetService;
 use App\Models\DivineBet;
 use App\Traits\ApiResponseTrait;
 use App\Utils\Logger;
+use App\Utils\ValidationHelper;
 
 class BettingController
 {
@@ -32,36 +33,27 @@ class BettingController
         
         // Validate required fields
         $requiredFields = ['betType', 'targetId', 'description', 'timeframe', 'confidence', 'divineFavorStake'];
-        foreach ($requiredFields as $field) {
-            if (!isset($body[$field])) {
-                return $this->jsonResponse($response, [
-                    'success' => false,
-                    'error' => [
-                        'message' => "Missing required field: {$field}",
-                        'code' => 'VALIDATION_ERROR'
-                    ]
-                ], 400);
+        try {
+            ValidationHelper::validateRequiredFields($body, $requiredFields);
+            
+            // Validate bet type using model constant
+            if (!DivineBet::validateBetType($body['betType'])) {
+                throw new \InvalidArgumentException('Invalid bet type');
             }
-        }
-        
-        // Validate bet type using model constant
-        if (!DivineBet::validateBetType($body['betType'])) {
+            
+            // Validate confidence level
+            $validConfidenceLevels = ['long_shot', 'possible', 'likely', 'near_certain'];
+            ValidationHelper::validateEnum($body['confidence'], $validConfidenceLevels, 'confidence');
+
+            // Validate numeric values
+            ValidationHelper::validatePositiveInt($body['timeframe'], 'timeframe');
+            ValidationHelper::validatePositiveInt($body['divineFavorStake'], 'divineFavorStake');
+
+        } catch (\InvalidArgumentException $e) {
             return $this->jsonResponse($response, [
                 'success' => false,
                 'error' => [
-                    'message' => 'Invalid bet type',
-                    'code' => 'VALIDATION_ERROR'
-                ]
-            ], 400);
-        }
-        
-        // Validate confidence level
-        $validConfidenceLevels = ['long_shot', 'possible', 'likely', 'near_certain'];
-        if (!in_array($body['confidence'], $validConfidenceLevels)) {
-            return $this->jsonResponse($response, [
-                'success' => false,
-                'error' => [
-                    'message' => 'Invalid confidence level',
+                    'message' => $e->getMessage(),
                     'code' => 'VALIDATION_ERROR'
                 ]
             ], 400);
@@ -157,21 +149,15 @@ class BettingController
     {
         $body = json_decode($request->getBody(), true);
         
-        if (!isset($body['betIds']) || !is_array($body['betIds'])) {
-            return $this->jsonResponse($response, [
-                'success' => false,
-                'error' => ['message' => 'betIds array is required']
-            ], 400);
-        }
-        
-        if (!isset($body['totalStake']) || !is_numeric($body['totalStake'])) {
-            return $this->jsonResponse($response, [
-                'success' => false,
-                'error' => ['message' => 'totalStake is required']
-            ], 400);
-        }
-        
         try {
+            if (!isset($body['betIds']) || !is_array($body['betIds'])) {
+                throw new \InvalidArgumentException('betIds array is required');
+            }
+            
+            if (!isset($body['totalStake']) || !is_numeric($body['totalStake'])) {
+                throw new \InvalidArgumentException('totalStake is required');
+            }
+
             $comboBet = $this->comboBetService->createComboBet(
                 $body['betIds'],
                 (int) $body['totalStake']
@@ -197,14 +183,11 @@ class BettingController
     {
         $body = json_decode($request->getBody(), true);
         
-        if (!isset($body['betIds']) || !is_array($body['betIds'])) {
-            return $this->jsonResponse($response, [
-                'success' => false,
-                'error' => ['message' => 'betIds array is required']
-            ], 400);
-        }
-        
         try {
+            if (!isset($body['betIds']) || !is_array($body['betIds'])) {
+                throw new \InvalidArgumentException('betIds array is required');
+            }
+            
             $preview = $this->comboBetService->previewComboOdds($body['betIds']);
             
             return $this->jsonResponse($response, [

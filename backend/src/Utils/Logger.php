@@ -9,7 +9,7 @@ class Logger
      */
     public static function debug($message, array $context = [])
     {
-        error_log("[DEBUG] " . self::formatMessage($message, $context));
+        self::log('DEBUG', $message, $context);
     }
 
     /**
@@ -17,7 +17,15 @@ class Logger
      */
     public static function error($message, array $context = [])
     {
-        error_log("[ERROR] " . self::formatMessage($message, $context));
+        self::log('ERROR', $message, $context);
+    }
+
+    /**
+     * Log warning message
+     */
+    public static function warning($message, array $context = [])
+    {
+        self::log('WARNING', $message, $context);
     }
 
     /**
@@ -25,7 +33,21 @@ class Logger
      */
     public static function info($message, array $context = [])
     {
-        error_log("[INFO] " . self::formatMessage($message, $context));
+        self::log('INFO', $message, $context);
+    }
+
+    /**
+     * Format log message with context
+     */    private static function log(string $level, string $message, array $context = [])
+    {
+        $formattedMessage = self::formatMessage($message, $context);
+        $timestamp = date('Y-m-d H:i:s');
+        $logLine = "[{$timestamp}] [{$level}] {$formattedMessage}";
+        
+        // Log to system error log
+        error_log($logLine);
+        
+        // Optional: could write to specific file here if configured
     }
 
     /**

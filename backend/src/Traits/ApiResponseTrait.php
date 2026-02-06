@@ -37,12 +37,13 @@ trait ApiResponseTrait
                 'success' => true,
                 'data' => $result
             ], $successStatus);
-        } catch (ResourceNotFoundException $error) {
-            // Return 200 for resource not found - successful query with no results
+        } catch (\InvalidArgumentException $error) {
+            // Return 400 for validation errors
             return $this->jsonResponse($response, [
                 'success' => false,
-                'message' => $notFoundMessage ?? 'Resource not found'
-            ], 200);
+                'message' => $error->getMessage(),
+                'error_code' => 'VALIDATION_ERROR'
+            ], 400);
         } catch (\Exception $error) {
             // Return 500 only for actual system errors
             error_log("Error {$errorContext}: " . $error->getMessage());

@@ -21,7 +21,15 @@ class BettingEndpointTest extends TestCase
         // Import the app setup from index.php which handles all initialization
         require __DIR__ . '/../../public/index.php';
         $this->app = $app;
-    }    public function testGetAllDivineBets(): void
+    }
+
+    protected function tearDown(): void
+    {
+        // Clean up any test data if necessary
+        // Ideally we would rollback transaction here
+    }
+
+    public function testGetAllDivineBets(): void
     {
         // Create test request
         $request = (new ServerRequestFactory)
@@ -178,5 +186,66 @@ class BettingEndpointTest extends TestCase
         $this->assertArrayHasKey('currentOdds', $bet);
         $this->assertArrayHasKey('status', $bet);
         $this->assertArrayHasKey('placedYear', $bet);
+    }
+
+    public function testPlaceDivineBetValidationFailure(): void
+    {
+        // Missing required fields
+        $betData = [];
+
+        $request = (new ServerRequestFactory)
+            ->createServerRequest('POST', '/api/bets')
+            ->withHeader('Accept', 'application/json')
+            ->withHeader('Content-Type', 'application/json');
+        $request->getBody()->write(json_encode($betData));
+
+        $response = $this->app->handle($request);
+        $body = (string)$response->getBody();
+        $data = json_decode($body, true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertFalse($data['success']);
+        $this->assertEquals('VALIDATION_ERROR', $data['error']['code']);
+    }
+
+    public function testPlaceDivineBetInvalidType(): void
+    {
+        $betData = [
+            'betType' => 'invalid_type', // Invalid
+            'targetId' => 'settlement-001',
+            'description' => 'Test',
+            'timeframe' => 5,
+            'confidence' => 'possible',
+            'divineFavorStake' => 100
+        ];
+
+        $request = (new ServerRequestFactory)
+            ->createServerRequest('POST', '/api/bets')
+            ->withHeader('Accept', 'application/json')
+            ->withHeader('Content-Type', 'application/json');
+        $request->getBody()->write(json_encode($betData));
+
+        $response = $this->app->handle($request);
+        $body = (string)$response->getBody();
+        $data = json_decode($body, true);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertFalse($data['success']);
+    }
+
+    public function testGetNonExistentBet(): void
+    {
+        $request = (new ServerRequestFactory)
+            ->createServerRequest('GET', '/api/bets/non-existent-id')
+            ->withHeader('Accept', 'application/json');
+
+        $response = $this->app->handle($request);
+        $body = (string)$response->getBody();
+        $data = json_decode($body, true);
+
+        // Should return 200 with success=false per ApiResponseTrait logic for ResourceNotFoundException
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertFalse($data['success']);
+        $this->assertStringContainsString('not found', strtolower($data['message']));
     }
 }
