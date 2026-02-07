@@ -1,6 +1,6 @@
 <?php
 
-namespace App\External;
+namespace App\Repositories;
 
 use App\Models\GameState;
 use App\Models\Player;

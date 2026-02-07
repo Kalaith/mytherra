@@ -4,10 +4,10 @@
 namespace App\Actions;
 
 use Exception;
-use App\External\BettingRepository;
+use App\Repositories\BettingRepository;
 use App\Services\OddsCalculationService;
 use App\Services\DivineBettingService;
-use App\Exceptions\ResourceNotFoundException;
+use App\Core\Exceptions\ResourceNotFoundException;
 use App\Utils\Logger;
 
 class BettingActions

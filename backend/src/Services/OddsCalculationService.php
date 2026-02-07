@@ -4,8 +4,8 @@ namespace App\Services;
 
 use Exception;
 use App\Utils\Logger;
-use App\External\OddsRepository;
-use App\External\BettingConfigRepository;
+use App\Repositories\OddsRepository;
+use App\Repositories\BettingConfigRepository;
 use App\Models\BetConfig;
 
 class OddsCalculationService

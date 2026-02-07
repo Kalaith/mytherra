@@ -3,8 +3,8 @@
 namespace App\Actions;
 
 use App\Models\GameEvent;
-use App\External\EventRepository;
-use App\Exceptions\ResourceNotFoundException;
+use App\Repositories\EventRepository;
+use App\Core\Exceptions\ResourceNotFoundException;
 use App\Helpers\Logger;
 
 /**

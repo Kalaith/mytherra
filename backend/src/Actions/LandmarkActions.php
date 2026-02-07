@@ -3,8 +3,8 @@
 namespace App\Actions;
 
 use App\Models\Landmark;
-use App\External\LandmarkRepository;
-use App\Exceptions\ResourceNotFoundException;
+use App\Repositories\LandmarkRepository;
+use App\Core\Exceptions\ResourceNotFoundException;
 use App\Helpers\Logger;
 
 /**

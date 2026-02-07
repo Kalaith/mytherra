@@ -1,6 +1,6 @@
 <?php
 
-namespace App\External;
+namespace App\Repositories;
 
 use PDO;
 use Illuminate\Database\Capsule\Manager as Capsule;

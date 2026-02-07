@@ -32,25 +32,25 @@ use App\Actions\InfluenceActions;
 use App\Actions\ResourceNodeActions;
 
 // Repositories
-use App\External\RegionRepository;
-use App\External\HeroRepository;
-use App\External\EventRepository;
-use App\External\SettlementRepository;
-use App\External\BuildingRepository;
-use App\External\LandmarkRepository;
-use App\External\StatusRepository;
-use App\External\BettingRepository;
-use App\External\InfluenceRepository;
-use App\External\OddsRepository;
-use App\External\BettingConfigRepository;
-use App\External\ResourceNodeRepository;
+// Repositories
+use App\Repositories\RegionRepository;
+use App\Repositories\HeroRepository;
+use App\Repositories\EventRepository;
+use App\Repositories\SettlementRepository;
+use App\Repositories\BuildingRepository;
+use App\Repositories\LandmarkRepository;
+use App\Repositories\StatusRepository;
+use App\Repositories\BettingRepository;
+use App\Repositories\InfluenceRepository;
+use App\Repositories\OddsRepository;
+use App\Repositories\BettingConfigRepository;
+use App\Repositories\ResourceNodeRepository;
 
 // Services
 use App\Services\GameConfigService;
 use App\Services\DivineInfluenceService;
 use App\Services\OddsCalculationService;
 use App\Services\DivineBettingService;
-use App\Services\AuthPortalService;
 use App\Services\ComboBetService;
 use App\Services\StatisticsService;
 

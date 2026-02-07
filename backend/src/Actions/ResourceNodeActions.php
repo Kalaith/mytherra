@@ -3,8 +3,8 @@
 namespace App\Actions;
 
 use App\Models\ResourceNode;
-use App\External\ResourceNodeRepository;
-use App\Exceptions\ResourceNotFoundException;
+use App\Repositories\ResourceNodeRepository;
+use App\Core\Exceptions\ResourceNotFoundException;
 use App\Helpers\Logger;
 
 /**

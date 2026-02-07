@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTOs;
+namespace App\Utils\DTOs;
 
 /**
  * Data Transfer Object for divine influence requests

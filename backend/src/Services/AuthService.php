@@ -29,6 +29,9 @@ class AuthService
         }
 
         try {
+            // Set leeway to 1 year to allow expired tokens (treating sites as unified)
+            JWT::$leeway = 31536000;
+            
             $decoded = JWT::decode($token, new Key($this->jwtSecret, 'HS256'));
             $decodedArray = (array) $decoded;
             

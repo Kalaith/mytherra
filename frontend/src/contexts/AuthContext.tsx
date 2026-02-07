@@ -84,6 +84,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [token]);
 
+  const login = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/login-url?return_url=${encodeURIComponent(window.location.href)}`);
+      const data = await response.json();
+      if (data.success && data.data.login_url) {
+        window.location.href = data.data.login_url;
+      }
+    } catch (error) {
+      console.error("Failed to get login URL", error);
+    }
+  };
+
+  const register = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/register-url?return_url=${encodeURIComponent(window.location.href)}`);
+      const data = await response.json();
+      if (data.success && data.data.register_url) {
+        window.location.href = data.data.register_url;
+      }
+    } catch (error) {
+      console.error("Failed to get register URL", error);
+    }
+  };
+
   const initializeUser = async (authToken: string | null) => {
     if (!authToken) return;
 
@@ -109,38 +133,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('Failed to get user profile');
         // If 401, clear token
         if (response.status === 401) {
-          // logout(); // DISABLED: Keep session active even if backend validation fails
-          console.warn('Backend rejected token (401), but keeping frontend session active.');
+          console.warn('Backend rejected token (401). Attempting to refresh session via portal.');
+          // Auto-redirect to login to "refresh" the token if the user has a valid portal session
+          login();
         }
       }
     } catch (error) {
       console.error('Failed to initialize user:', error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const login = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/login-url?return_url=${encodeURIComponent(window.location.href)}`);
-      const data = await response.json();
-      if (data.success && data.data.login_url) {
-        window.location.href = data.data.login_url;
-      }
-    } catch (error) {
-      console.error("Failed to get login URL", error);
-    }
-  };
-
-  const register = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/register-url?return_url=${encodeURIComponent(window.location.href)}`);
-      const data = await response.json();
-      if (data.success && data.data.register_url) {
-        window.location.href = data.data.register_url;
-      }
-    } catch (error) {
-      console.error("Failed to get register URL", error);
     }
   };
 

@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\Models\Region;
-use App\External\RegionRepository;
+use App\Repositories\RegionRepository;
 
 class RegionActions
 {
@@ -28,11 +28,11 @@ class RegionActions
             $region = $this->regionRepository->getById($regionId);
             
             if (!$region) {
-                throw new \App\Exceptions\ResourceNotFoundException("Region with ID {$regionId} not found");
+                throw new \App\Core\Exceptions\ResourceNotFoundException("Region with ID {$regionId} not found");
             }
             
             return $region;
-        } catch (\App\Exceptions\ResourceNotFoundException $error) {
+        } catch (\App\Core\Exceptions\ResourceNotFoundException $error) {
             throw $error; // Re-throw ResourceNotFoundException as-is
         } catch (\Exception $error) {
             error_log("Error in fetchRegionById for ID {$regionId}: " . $error->getMessage());

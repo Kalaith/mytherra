@@ -4,9 +4,9 @@ namespace App\Actions;
 
 use App\Models\Settlement;
 use App\Models\Region;
-use App\External\SettlementRepository;
+use App\Repositories\SettlementRepository;
 use App\Utils\Logger;
-use App\Exceptions\ResourceNotFoundException;
+use App\Core\Exceptions\ResourceNotFoundException;
 
 /**
  * Handles settlement-related business logic

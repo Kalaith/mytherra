@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\External\BettingRepository;
-use App\External\SettlementRepository;
-use App\External\LandmarkRepository;
-use App\External\HeroRepository;
-use App\External\RegionRepository;
+use App\Repositories\BettingRepository;
+use App\Repositories\SettlementRepository;
+use App\Repositories\LandmarkRepository;
+use App\Repositories\HeroRepository;
+use App\Repositories\RegionRepository;
 use App\Utils\Logger;
 
 class DivineBettingService

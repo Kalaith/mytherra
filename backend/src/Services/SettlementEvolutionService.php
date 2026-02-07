@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\External\SettlementRepository;
-use App\External\RegionRepository;
-use App\External\LandmarkRepository;
-use App\External\BuildingRepository;
-use App\External\SettlementEvolutionRepository;
+use App\Repositories\SettlementRepository;
+use App\Repositories\RegionRepository;
+use App\Repositories\LandmarkRepository;
+use App\Repositories\BuildingRepository;
+use App\Repositories\SettlementEvolutionRepository;
 use App\Models\SettlementEvolutionConfig;
 use App\Utils\Logger;
 use Exception;

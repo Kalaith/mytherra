@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\External\HeroRepository;
-use App\External\SettlementRepository;
-use App\External\HeroSettlementInteractionRepository;
+use App\Repositories\HeroRepository;
+use App\Repositories\SettlementRepository;
+use App\Repositories\HeroSettlementInteractionRepository;
 use App\Models\Hero;
 use App\Utils\Logger;
 

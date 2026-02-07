@@ -3,8 +3,8 @@
 namespace App\Actions;
 
 use App\Models\Hero;
-use App\External\HeroRepository;
-use App\Exceptions\ResourceNotFoundException;
+use App\Repositories\HeroRepository;
+use App\Core\Exceptions\ResourceNotFoundException;
 use App\Helpers\Logger;
 
 /**

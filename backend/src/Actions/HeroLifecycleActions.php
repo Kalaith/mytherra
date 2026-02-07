@@ -3,10 +3,10 @@
 namespace App\Actions;
 
 use App\Models\Hero;
-use App\External\HeroRepository;
-use App\External\SettlementRepository;
+use App\Repositories\HeroRepository;
+use App\Repositories\SettlementRepository;
 use App\Services\HeroLifecycleService;
-use App\Exceptions\ResourceNotFoundException;
+use App\Core\Exceptions\ResourceNotFoundException;
 use App\Helpers\Logger;
 
 /**

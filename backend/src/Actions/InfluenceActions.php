@@ -6,7 +6,7 @@ use App\Models\Region;
 use App\Models\Hero;
 use App\Models\Player;
 use App\Services\DivineInfluenceService;
-use App\External\InfluenceRepository;
+use App\Repositories\InfluenceRepository;
 use App\Utils\Logger;
 use Exception;
 
@@ -25,7 +25,7 @@ class InfluenceActions
      * Calculate divine influence cost
      */    public function calculateDivineInfluenceCost(array $params): array
     {
-        $request = \App\DTOs\DivineInfluenceRequest::fromArray($params);
+        $request = \App\Utils\DTOs\DivineInfluenceRequest::fromArray($params);
         $errors = $request->validate();
         
         if (!empty($errors)) {
@@ -46,7 +46,7 @@ class InfluenceActions
      */
     public function applyDivineInfluence(array $params): array
     {
-        $request = \App\DTOs\DivineInfluenceRequest::fromArray($params);
+        $request = \App\Utils\DTOs\DivineInfluenceRequest::fromArray($params);
         $errors = $request->validate();
 
         if (!empty($errors)) {

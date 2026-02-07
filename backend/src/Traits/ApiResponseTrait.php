@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use App\Core\Response;
-use App\Exceptions\ResourceNotFoundException;
+use App\Core\Exceptions\ResourceNotFoundException;
 
 trait ApiResponseTrait
 {

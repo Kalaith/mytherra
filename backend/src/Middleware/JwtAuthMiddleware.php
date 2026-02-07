@@ -42,6 +42,9 @@ class JwtAuthMiddleware
              return $this->unauthorizedResponse($response, 'Server configuration error');
         }
 
+        // Set leeway to 1 year to allow expired tokens (referencing Web Hatchery session trust)
+        JWT::$leeway = 31536000;
+
         try {
             $decoded = JWT::decode($token, new Key($secret, 'HS256'));
             $decodedArray = (array) $decoded;
