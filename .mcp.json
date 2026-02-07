@@ -13,9 +13,9 @@
     "description": "A fantasy world simulation game with divine betting mechanics, built with PHP backend and React frontend",
     "structure": {
       "backend": {
-        "type": "PHP with Slim Framework",
+        "type": "PHP",
         "location": "backend/",
-        "description": "RESTful API backend using Slim framework, Eloquent ORM, and MySQL database",
+        "description": "RESTful API backend and MySQL database",
         "key_patterns": {
           "controllers": "src/Controllers/ - Handle HTTP requests/responses",
           "actions": "src/Actions/ - Business logic separated from controllers",

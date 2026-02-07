@@ -158,7 +158,6 @@ After cataclysm, the world enters a **new Era**:
 
 ### Backend
 - **Runtime**: PHP 8.1+
-- **Framework**: Slim Framework 4
 - **Language**: PHP
 - **Database**: MySQL with Eloquent ORM
 - **Testing**: PHPUnit

@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Services\ExportService;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Core\Response;
+use App\Core\Request;
 
 class ExportController
 {

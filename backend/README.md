@@ -138,7 +138,6 @@ class RegionActions
 
 ## Key Differences from Node.js Version
 
-1. **Framework**: Uses Slim Framework instead of Express.js
 2. **ORM**: Uses Eloquent ORM instead of Sequelize
 3. **Database**: Still uses MySQL with the same schema
 4. **Architecture**: Maintains the same layered architecture pattern

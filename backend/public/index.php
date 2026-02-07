@@ -48,7 +48,7 @@ $container = ContainerConfig::createContainer();
 // Initialize database service after environment variables are loaded
 $db = DatabaseService::getInstance();
 
-// Router (Custom, removing Slim App)
+// Router (Custom)
 $router = new Router($container);
 
 // Set base path for subdirectory deployment
