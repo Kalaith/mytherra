@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 
 const UserInfo: React.FC = () => {
   const { user, logout, isAdmin } = useAuth();
@@ -9,9 +9,9 @@ const UserInfo: React.FC = () => {
     return null;
   }
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     setShowDropdown(false);
-    await logout();
+    logout();
   };
 
   return (

@@ -6,8 +6,8 @@ export interface User {
   display_name: string;
   divine_influence: number;
   divine_favor: number;
-  betting_stats: any;
-  game_preferences: any;
+  betting_stats: Record<string, unknown>;
+  game_preferences: Record<string, unknown>;
   role: string;
   is_active: boolean;
 }

@@ -9,7 +9,15 @@ class AuthService {
 
   private constructor() {
     // Load token from localStorage on initialization
-    this.token = localStorage.getItem('token');
+    try {
+      const storage = localStorage.getItem('auth-storage');
+      if (storage) {
+        const parsed = JSON.parse(storage) as { state?: { token?: string } };
+        this.token = parsed.state?.token ?? null;
+      }
+    } catch {
+      this.token = null;
+    }
     console.log('AuthService initialized - token from localStorage:', this.token);
   }
 
@@ -81,7 +89,15 @@ class AuthService {
     // Store token and user data
     this.token = data.data.token;
     this.user = data.data.user;
-    localStorage.setItem('token', this.token);
+    const authState = {
+      state: {
+        token: this.token,
+        isAuthenticated: true,
+        user: this.user,
+      },
+      version: 0,
+    };
+    localStorage.setItem('auth-storage', JSON.stringify(authState));
 
     return this.user;
   }
@@ -136,7 +152,7 @@ class AuthService {
   /**
    * Update user preferences
    */
-  async updatePreferences(preferences: any): Promise<void> {
+  async updatePreferences(preferences: Record<string, unknown>): Promise<void> {
     if (!this.token) {
       throw new Error('Not authenticated');
     }
@@ -168,7 +184,7 @@ class AuthService {
     // Logout disabled - keeping token and user data
     // this.token = null;
     // this.user = null;
-    // localStorage.removeItem('token');
+    // localStorage.removeItem('auth-storage');
   }
 
   /**

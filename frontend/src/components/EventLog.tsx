@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { GameEvent } from '../entities/event';
 import { getGameEvents } from '../api/apiService';
-import { useRegions } from '../contexts/RegionContext';
+import { useRegions } from '../contexts/useRegionContext';
 
 interface EventLogProps {
   selectedRegionId?: string;

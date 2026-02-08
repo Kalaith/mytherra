@@ -1,35 +1,9 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Region } from '../entities/region';
-import { Settlement } from '../entities/settlement';
-import { Landmark } from '../entities/landmark';
+import React, { useEffect, useState, type ReactNode } from 'react';
 import { getRegions, getSettlements, getLandmarks } from '../api/apiService';
-
-// Define the shape of our context
-interface RegionContextType {
-  regions: Region[];
-  settlements: Settlement[];
-  landmarks: Landmark[];
-  isLoading: boolean;
-  error: string | null;
-  getRegionName: (regionId: string) => string;
-  getSettlementsByRegion: (regionId: string) => Settlement[];
-  getLandmarksByRegion: (regionId: string) => Landmark[];
-}
-
-// Create context with a default value
-const RegionContext = createContext<RegionContextType>({
-  regions: [],
-  settlements: [],
-  landmarks: [],
-  isLoading: false,
-  error: null,
-  getRegionName: () => '',
-  getSettlementsByRegion: () => [],
-  getLandmarksByRegion: () => []
-});
-
-// Custom hook to use the region context
-export const useRegions = () => useContext(RegionContext);
+import { RegionContext } from './regionContext';
+import type { Region } from '../entities/region';
+import type { Settlement } from '../entities/settlement';
+import type { Landmark } from '../entities/landmark';
 
 // Provider component
 interface RegionProviderProps {

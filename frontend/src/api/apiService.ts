@@ -6,13 +6,17 @@ import { Building } from '../entities/building';
 import { Landmark } from '../entities/landmark';
 import { ResourceNode } from '../entities/resourceNode';
 import { DivineBet, SpeculationEvent, BettingOdds } from '../entities/divineBet';
-import { getAuthHeaders } from '../contexts/AuthContext';
+import { getAuthHeaders } from '../contexts/authHeaders';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
 export interface GameStatus {
   currentYear: number;
   divineFavor: number; // Added divineFavor
+}
+
+export interface ApiErrorBody {
+  message?: string;
 }
 
 export const apiService = {
@@ -47,11 +51,11 @@ async function fetchData<T>(path: string): Promise<T> {
       // Attempt to parse error message from backend if available
       let errorMessage = `Failed to fetch ${path}: ${response.statusText}`;
       try {
-        const errorBody = await response.json();
-        if (errorBody && errorBody.message) {
-          errorMessage = errorBody.message; // Use backend message directly
+        const errorBody = (await response.json()) as ApiErrorBody;
+        if (errorBody.message) {
+          errorMessage = errorBody.message;
         }
-      } catch (e) {
+      } catch {
         // Ignore if error body is not JSON or not present
       }
       throw new Error(errorMessage);
@@ -104,11 +108,11 @@ async function postData<T, R>(path: string, body: T): Promise<R> {
 
     let errorMessage = `Failed to post to ${path}: ${response.statusText}`;
     try {
-      const errorBody = await response.json();
-      if (errorBody && errorBody.message) {
+      const errorBody = (await response.json()) as ApiErrorBody;
+      if (errorBody.message) {
         errorMessage = `Failed to post to ${path}: ${errorBody.message}`;
       }
-    } catch (e) {
+    } catch {
       // Ignore if error body is not JSON or not present
     }
     throw new Error(errorMessage);
@@ -143,9 +147,7 @@ export const getGameEventById = (id: string): Promise<GameEvent | Record<string,
 };
 
 export const getGameStatus = async (): Promise<GameStatus> => {
-  const response = await fetchData<{ success: boolean, data: GameStatus, timestamp: string }>('status');
-  // Extract the data property from the response
-  return response.data;
+  return fetchData<GameStatus>('status');
 };
 
 export interface InfluenceActionPayload {
@@ -154,7 +156,13 @@ export interface InfluenceActionPayload {
   entityType: 'region' | 'hero';
 }
 
-export const sendInfluenceAction = (payload: InfluenceActionPayload): Promise<any> => {
+export interface InfluenceActionResponse {
+  success?: boolean;
+  message?: string;
+  data?: unknown;
+}
+
+export const sendInfluenceAction = (payload: InfluenceActionPayload): Promise<InfluenceActionResponse> => {
   // Backend endpoint to be defined, e.g., /api/influence
   // For now, let's assume a generic endpoint that can differentiate based on entityType
   let path = '';
@@ -168,7 +176,7 @@ export const sendInfluenceAction = (payload: InfluenceActionPayload): Promise<an
   }
   // The actual data sent might be just the action, as entityId is in the path
   // Or the backend might prefer the full payload. Adjust as needed.
-  return postData<Omit<InfluenceActionPayload, 'entityId' | 'entityType'>, any>(path, { action: payload.action });
+  return postData<Omit<InfluenceActionPayload, 'entityId' | 'entityType'>, InfluenceActionResponse>(path, { action: payload.action });
 };
 
 // ===== Settlement API =====

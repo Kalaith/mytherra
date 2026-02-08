@@ -1,4 +1,5 @@
 import { Hero } from '../entities/hero';
+import type { Settlement } from '../entities/settlement';
 
 /**
  * Utility function to determine status color for various game entities
@@ -16,20 +17,20 @@ export const getStatusColor = (status: string): string => {
 /**
  * Utility function to get settlement counts by type
  */
-export const getSettlementSummary = (settlements: any[]) => {
-  const counts = {
-    city: settlements.filter(s => s.type === 'city').length,
-    town: settlements.filter(s => s.type === 'town').length,
-    village: settlements.filter(s => s.type === 'village').length,
-    hamlet: settlements.filter(s => s.type === 'hamlet').length
-  };
-  return counts;
+export const getSettlementSummary = (settlements: Settlement[]): Record<Settlement['type'], number> => {
+  return settlements.reduce(
+    (acc, settlement) => {
+      acc[settlement.type] += 1;
+      return acc;
+    },
+    { city: 0, town: 0, village: 0, hamlet: 0 }
+  );
 };
 
 /**
  * Utility function to calculate total population from settlements
  */
-export const getTotalPopulation = (settlements: any[]) => {
+export const getTotalPopulation = (settlements: Settlement[]): number => {
   return settlements.reduce((sum, settlement) => sum + settlement.population, 0);
 };
 

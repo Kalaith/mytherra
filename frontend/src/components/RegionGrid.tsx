@@ -1,6 +1,6 @@
 import React from 'react';
 import { Region } from '../entities/region';
-import { useRegions } from '../contexts/RegionContext';
+import { useRegions } from '../contexts/useRegionContext';
 import RegionCard from './RegionCard';
 
 interface RegionGridProps {

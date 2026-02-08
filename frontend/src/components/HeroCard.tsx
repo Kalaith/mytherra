@@ -1,6 +1,6 @@
 import React from 'react';
 import { Hero } from '../entities/hero';
-import { useRegions } from '../contexts/RegionContext';
+import { useRegions } from '../contexts/useRegionContext';
 import { getCardBorderStyle, getAlignmentLabel } from '../utils/statusUtils';
 import { getAlignmentColor } from '../utils/colorUtils';
 

@@ -7,7 +7,7 @@ import HeroesPage from './pages/HeroesPage';
 import BettingPage from './pages/BettingPage';
 import { Dashboard } from './pages/Dashboard';
 import { RegionProvider } from './contexts/RegionContext';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {

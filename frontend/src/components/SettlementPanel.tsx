@@ -1,6 +1,6 @@
 // F:\WebDevelopment\Mytherra\frontend\src\components\SettlementPanel.tsx
 import React, { useState } from 'react';
-import { useRegions } from '../contexts/RegionContext';
+import { useRegions } from '../contexts/useRegionContext';
 import { Settlement } from '../entities/settlement';
 import SettlementList from './SettlementList';
 import { Region } from '../entities/region';

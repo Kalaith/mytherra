@@ -1,6 +1,6 @@
 // F:\WebDevelopment\Mytherra\frontend\src\components\LandmarkPanel.tsx
 import React, { useState } from 'react';
-import { useRegions } from '../contexts/RegionContext';
+import { useRegions } from '../contexts/useRegionContext';
 import { Landmark } from '../entities/landmark';
 import LandmarkList from './LandmarkList';
 import { Region } from '../entities/region';

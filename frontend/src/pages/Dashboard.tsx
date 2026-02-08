@@ -19,6 +19,7 @@ import {
 } from '../api/StatisticsService';
 import PageLayout from '../components/PageLayout';
 import { getGameStatus, GameStatus } from '../api/apiService';
+import { getAuthHeaders } from '../contexts/authHeaders';
 
 ChartJS.register(
     CategoryScale,
@@ -42,13 +43,9 @@ export const Dashboard: React.FC = () => {
     const handleExport = async () => {
         setExporting(true);
         try {
-            const token = localStorage.getItem('token');
             const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
             const response = await fetch(`${apiBaseUrl}/export/full`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: await getAuthHeaders(),
             });
 
             const blob = await response.blob();

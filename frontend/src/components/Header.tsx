@@ -1,7 +1,7 @@
 import React from 'react';
 import { GameStatus } from '../api/apiService';
 import UserInfo from './UserInfo';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 
 interface HeaderProps {
   gameStatus: GameStatus | null;

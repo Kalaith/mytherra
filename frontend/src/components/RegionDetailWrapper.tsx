@@ -1,6 +1,6 @@
 // F:\WebDevelopment\Mytherra\frontend\src\components\RegionDetailWrapper.tsx
 import React, { useState, useEffect } from 'react';
-import { useRegions } from '../contexts/RegionContext';
+import { useRegions } from '../contexts/useRegionContext';
 import { Region } from '../entities/region';
 import { Hero } from '../entities/hero';
 import { getHeroes } from '../api/apiService';

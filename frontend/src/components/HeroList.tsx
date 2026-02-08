@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Hero } from '../entities/hero';
 import HeroCard from './HeroCard';
-import { useRegions } from '../contexts/RegionContext';
+import { useRegions } from '../contexts/useRegionContext';
 import Pagination from './Pagination';
 import HeroFilters from './HeroFilters';
 import { useHeroFilters } from '../hooks/useHeroFilters';

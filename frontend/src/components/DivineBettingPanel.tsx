@@ -10,6 +10,8 @@ interface DivineBettingPanelProps {
   onBetPlaced?: () => void;
 }
 
+type BettingTabId = 'events' | 'bets' | 'odds';
+
 const DivineBettingPanel: React.FC<DivineBettingPanelProps> = ({ 
   currentDivineFavor, 
   onBetPlaced 
@@ -19,7 +21,7 @@ const DivineBettingPanel: React.FC<DivineBettingPanelProps> = ({
   const [bettingOdds, setBettingOdds] = useState<BettingOdds[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<'events' | 'bets' | 'odds'>('events');
+  const [selectedTab, setSelectedTab] = useState<BettingTabId>('events');
   const [isPlacingBet, setIsPlacingBet] = useState(false);
 
   useEffect(() => {
@@ -82,14 +84,16 @@ const DivineBettingPanel: React.FC<DivineBettingPanelProps> = ({
 
       {/* Tab Navigation */}
       <div className="flex space-x-1 mb-4 border-b border-gray-600">
-        {[
-          { key: 'events', label: 'Speculation Events', count: speculationEvents.length },
-          { key: 'bets', label: 'My Bets', count: activeBets.filter(bet => bet.status === 'active').length },
-          { key: 'odds', label: 'Betting Odds', count: bettingOdds.length }
-        ].map(tab => (
+        {(
+          [
+            { key: 'events', label: 'Speculation Events', count: speculationEvents.length },
+            { key: 'bets', label: 'My Bets', count: activeBets.filter((bet) => bet.status === 'active').length },
+            { key: 'odds', label: 'Betting Odds', count: bettingOdds.length },
+          ] as const satisfies ReadonlyArray<{ key: BettingTabId; label: string; count: number }>
+        ).map((tab) => (
           <button
             key={tab.key}
-            onClick={() => setSelectedTab(tab.key as any)}
+            onClick={() => setSelectedTab(tab.key)}
             className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
               selectedTab === tab.key
                 ? 'bg-blue-600 text-white border-b-2 border-blue-400'
