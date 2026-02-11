@@ -1,6 +1,10 @@
-{
-  "dependencies": {
-    "dotenv": "^16.5.0",
-    "mongoose": "^8.15.0"
-  }
+﻿{
+    "dependencies":  {
+                         "dotenv":  "^16.5.0",
+                         "mongoose":  "^8.15.0"
+                     },
+    "scripts":  {
+                    "test":  "node --test --test-isolation=none test/smoke.test.mjs",
+                    "test:run":  "node --test --test-isolation=none test/smoke.test.mjs"
+                }
 }
