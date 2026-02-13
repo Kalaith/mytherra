@@ -1,6 +1,8 @@
+
 import React from "react";
 import { Hero } from "../entities/hero";
-import BaseInfluencePanel, { useInfluenceActions } from "./BaseInfluencePanel";
+import BaseInfluencePanel from "./BaseInfluencePanel";
+import { useInfluenceActions } from "../hooks/useInfluenceActions";
 
 interface HeroInfluencePanelProps {
   selectedHero: Hero | null;

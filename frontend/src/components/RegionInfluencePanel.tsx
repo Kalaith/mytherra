@@ -1,6 +1,8 @@
+
 import React from "react";
 import { Region } from "../entities/region";
-import BaseInfluencePanel, { useInfluenceActions } from "./BaseInfluencePanel";
+import BaseInfluencePanel from "./BaseInfluencePanel";
+import { useInfluenceActions } from "../hooks/useInfluenceActions";
 
 interface RegionInfluencePanelProps {
   selectedRegion: Region | null;

@@ -2,7 +2,9 @@ import React from "react";
 
 interface PaginationProps {
   currentPage: number;
-  totalPages: number;
+  totalPages?: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
   onPageChange: (page: number) => void;
   isLoading?: boolean;
   onRefresh?: () => void;
@@ -11,14 +13,22 @@ interface PaginationProps {
 
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
-  totalPages,
+  totalPages = currentPage + 1,
+  hasNextPage: hasNextPageProp,
+  hasPreviousPage: hasPreviousPageProp,
   onPageChange,
   isLoading = false,
   onRefresh,
   showRefresh = true,
 }) => {
-  const hasNextPage = currentPage < totalPages;
-  const hasPreviousPage = currentPage > 1;
+  const hasNextPage =
+    typeof hasNextPageProp === "boolean"
+      ? hasNextPageProp
+      : currentPage < totalPages;
+  const hasPreviousPage =
+    typeof hasPreviousPageProp === "boolean"
+      ? hasPreviousPageProp
+      : currentPage > 1;
 
   const handlePrevious = () => {
     if (hasPreviousPage && !isLoading) {
