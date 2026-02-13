@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Hero } from "../entities/hero";
 import BaseInfluencePanel from "./BaseInfluencePanel";

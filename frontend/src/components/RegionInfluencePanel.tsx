@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Region } from "../entities/region";
 import BaseInfluencePanel from "./BaseInfluencePanel";

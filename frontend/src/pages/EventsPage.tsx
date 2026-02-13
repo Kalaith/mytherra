@@ -1,4 +1,3 @@
-
 import React from "react";
 import BaseLayout from "../components/BaseLayout";
 import PageHeader from "../components/PageHeader";
@@ -116,4 +115,3 @@ const EventsPage: React.FC = () => {
 };
 
 export default EventsPage;
-
