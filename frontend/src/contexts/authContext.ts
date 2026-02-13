@@ -1,5 +1,5 @@
-import { createContext } from 'react';
-import type { User } from '../entities/auth';
+import { createContext } from "react";
+import type { User } from "../entities/auth";
 
 export type Preferences = Record<string, unknown>;
 
@@ -17,5 +17,6 @@ export interface AuthContextType {
   hasRole: (role: string) => boolean;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);

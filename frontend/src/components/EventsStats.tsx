@@ -1,5 +1,5 @@
-import React from 'react';
-import StatsCard from './StatsCard';
+import React from "react";
+import StatsCard from "./StatsCard";
 
 interface EventsStatsProps {
   heroEventsCount: number;
@@ -10,7 +10,7 @@ interface EventsStatsProps {
 const EventsStats: React.FC<EventsStatsProps> = ({
   heroEventsCount,
   worldEventsCount,
-  systemEventsCount
+  systemEventsCount,
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

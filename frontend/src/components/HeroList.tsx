@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Hero } from '../entities/hero';
-import HeroCard from './HeroCard';
-import { useRegions } from '../contexts/useRegionContext';
-import Pagination from './Pagination';
-import HeroFilters from './HeroFilters';
-import { useHeroFilters } from '../hooks/useHeroFilters';
+import React, { useState, useEffect } from "react";
+import { Hero } from "../entities/hero";
+import HeroCard from "./HeroCard";
+import { useRegions } from "../contexts/useRegionContext";
+import Pagination from "./Pagination";
+import HeroFilters from "./HeroFilters";
+import { useHeroFilters } from "../hooks/useHeroFilters";
 
 interface HeroListProps {
   heroes: Hero[];
@@ -14,7 +14,13 @@ interface HeroListProps {
   error?: string | null;
 }
 
-const HeroList: React.FC<HeroListProps> = ({ heroes, selectedHero, onSelectHero, isLoading: isLoadingHeroes, error: heroError }) => {
+const HeroList: React.FC<HeroListProps> = ({
+  heroes,
+  selectedHero,
+  onSelectHero,
+  isLoading: isLoadingHeroes,
+  error: heroError,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const heroesPerPage = 10;
 
@@ -29,7 +35,7 @@ const HeroList: React.FC<HeroListProps> = ({ heroes, selectedHero, onSelectHero,
     setShowOnlyLiving,
     sortBy,
     setSortBy,
-    filteredAndSortedHeroes
+    filteredAndSortedHeroes,
   } = useHeroFilters({ heroes });
 
   // Combined loading and error states
@@ -44,7 +50,10 @@ const HeroList: React.FC<HeroListProps> = ({ heroes, selectedHero, onSelectHero,
   // Get current page of heroes
   const indexOfLastHero = currentPage * heroesPerPage;
   const indexOfFirstHero = indexOfLastHero - heroesPerPage;
-  const currentHeroes = filteredAndSortedHeroes.slice(indexOfFirstHero, indexOfLastHero);
+  const currentHeroes = filteredAndSortedHeroes.slice(
+    indexOfFirstHero,
+    indexOfLastHero,
+  );
   const totalPages = Math.ceil(filteredAndSortedHeroes.length / heroesPerPage);
 
   // Change page
@@ -55,7 +64,11 @@ const HeroList: React.FC<HeroListProps> = ({ heroes, selectedHero, onSelectHero,
   }
 
   if (error) {
-    return <div className="text-center p-4 text-red-500">Error loading heroes: {error}</div>;
+    return (
+      <div className="text-center p-4 text-red-500">
+        Error loading heroes: {error}
+      </div>
+    );
   }
 
   if (heroes.length === 0) {
@@ -64,17 +77,21 @@ const HeroList: React.FC<HeroListProps> = ({ heroes, selectedHero, onSelectHero,
 
   return (
     <div className="p-4 bg-gray-800 text-white rounded-lg shadow-xl mt-6">
-      <h2 className="text-2xl font-bold mb-2 text-center">Emergent Heroes (Click to select)</h2>
+      <h2 className="text-2xl font-bold mb-2 text-center">
+        Emergent Heroes (Click to select)
+      </h2>
 
       {/* Hero count stats */}
       <div className="flex justify-center mb-4 gap-4 text-sm">
         <div className="flex items-center">
           <span className="w-3 h-3 rounded-full bg-green-600 mr-2"></span>
-          <span>{heroes.filter(h => h.isAlive !== false).length} Living</span>
+          <span>{heroes.filter((h) => h.isAlive !== false).length} Living</span>
         </div>
         <div className="flex items-center">
           <span className="w-3 h-3 rounded-full bg-red-600 mr-2"></span>
-          <span>{heroes.filter(h => h.isAlive === false).length} Deceased</span>
+          <span>
+            {heroes.filter((h) => h.isAlive === false).length} Deceased
+          </span>
         </div>
         <div className="flex items-center">
           <span className="w-3 h-3 rounded-full bg-gray-400 mr-2"></span>
@@ -93,7 +110,9 @@ const HeroList: React.FC<HeroListProps> = ({ heroes, selectedHero, onSelectHero,
 
       {/* Display message if no heroes match search */}
       {currentHeroes.length === 0 && (
-        <div className="text-center p-4">No heroes match your search criteria.</div>
+        <div className="text-center p-4">
+          No heroes match your search criteria.
+        </div>
       )}
 
       {/* Heroes Grid */}
@@ -125,7 +144,9 @@ const HeroList: React.FC<HeroListProps> = ({ heroes, selectedHero, onSelectHero,
       <div className="mt-3 text-center text-sm text-gray-400">
         {filteredAndSortedHeroes.length > 0 ? (
           <>
-            Showing {indexOfFirstHero + 1}-{Math.min(indexOfLastHero, filteredAndSortedHeroes.length)} of {filteredAndSortedHeroes.length} heroes
+            Showing {indexOfFirstHero + 1}-
+            {Math.min(indexOfLastHero, filteredAndSortedHeroes.length)} of{" "}
+            {filteredAndSortedHeroes.length} heroes
             {searchTerm && ` (filtered from ${heroes.length})`}
             {showOnlyLiving && ` (showing only living heroes)`}
           </>
@@ -136,7 +157,7 @@ const HeroList: React.FC<HeroListProps> = ({ heroes, selectedHero, onSelectHero,
               <button
                 className="ml-2 text-blue-400 hover:underline"
                 onClick={() => {
-                  setSearchTerm('');
+                  setSearchTerm("");
                   setShowOnlyLiving(false);
                 }}
               >

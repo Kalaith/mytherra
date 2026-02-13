@@ -1,11 +1,13 @@
-import React from 'react';
-import { Region } from '../../entities/region';
+import React from "react";
+import { Region } from "../../entities/region";
 
 interface RegionInfluenceCostsProps {
   region: Region;
 }
 
-const RegionInfluenceCosts: React.FC<RegionInfluenceCostsProps> = ({ region }) => {
+const RegionInfluenceCosts: React.FC<RegionInfluenceCostsProps> = ({
+  region,
+}) => {
   if (!region.influenceActionCosts) return null;
 
   return (
@@ -15,19 +17,25 @@ const RegionInfluenceCosts: React.FC<RegionInfluenceCostsProps> = ({ region }) =
         {region.influenceActionCosts.blessRegion && (
           <div className="flex justify-between">
             <span>Bless Region:</span>
-            <span className="text-yellow-400">{region.influenceActionCosts.blessRegion}</span>
+            <span className="text-yellow-400">
+              {region.influenceActionCosts.blessRegion}
+            </span>
           </div>
         )}
         {region.influenceActionCosts.corruptRegion && (
           <div className="flex justify-between">
             <span>Corrupt Region:</span>
-            <span className="text-yellow-400">{region.influenceActionCosts.corruptRegion}</span>
+            <span className="text-yellow-400">
+              {region.influenceActionCosts.corruptRegion}
+            </span>
           </div>
         )}
         {region.influenceActionCosts.guideResearch && (
           <div className="flex justify-between">
             <span>Guide Research:</span>
-            <span className="text-yellow-400">{region.influenceActionCosts.guideResearch}</span>
+            <span className="text-yellow-400">
+              {region.influenceActionCosts.guideResearch}
+            </span>
           </div>
         )}
       </div>

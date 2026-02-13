@@ -1,12 +1,15 @@
-import React from 'react';
-import { Region } from '../../entities/region';
+import React from "react";
+import { Region } from "../../entities/region";
 
 interface RegionHeaderProps {
   region: Region;
   getStatusColor: (status: string) => string;
 }
 
-const RegionHeader: React.FC<RegionHeaderProps> = ({ region, getStatusColor }) => {
+const RegionHeader: React.FC<RegionHeaderProps> = ({
+  region,
+  getStatusColor,
+}) => {
   return (
     <div className="flex justify-between items-start mb-4">
       <div>

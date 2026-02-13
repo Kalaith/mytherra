@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Hero } from '../entities/hero';
-import { getHeroes } from '../api/apiService';
+import { useState, useEffect, useCallback } from "react";
+import { Hero } from "../entities/hero";
+import { getHeroes } from "../api/apiService";
 
 interface UseHeroesOptions {
   autoRefresh?: boolean;
@@ -17,10 +17,7 @@ interface UseHeroesReturn {
 }
 
 export const useHeroes = (options: UseHeroesOptions = {}): UseHeroesReturn => {
-  const {
-    autoRefresh = false,
-    refreshInterval = 30000
-  } = options;
+  const { autoRefresh = false, refreshInterval = 30000 } = options;
 
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -37,7 +34,7 @@ export const useHeroes = (options: UseHeroesOptions = {}): UseHeroesReturn => {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unknown error occurred while fetching heroes.');
+        setError("An unknown error occurred while fetching heroes.");
       }
       console.error("Failed to load heroes:", err);
     } finally {
@@ -45,9 +42,12 @@ export const useHeroes = (options: UseHeroesOptions = {}): UseHeroesReturn => {
     }
   }, []);
 
-  const selectHero = useCallback((hero: Hero | null) => {
-    setSelectedHero(selectedHero?.id === hero?.id ? null : hero);
-  }, [selectedHero]);
+  const selectHero = useCallback(
+    (hero: Hero | null) => {
+      setSelectedHero(selectedHero?.id === hero?.id ? null : hero);
+    },
+    [selectedHero],
+  );
 
   const refetch = useCallback(() => {
     return fetchHeroes();
@@ -75,6 +75,6 @@ export const useHeroes = (options: UseHeroesOptions = {}): UseHeroesReturn => {
     error,
     selectedHero,
     selectHero,
-    refetch
+    refetch,
   };
 };

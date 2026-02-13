@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   sendInfluenceAction,
   type InfluenceActionPayload,
   type InfluenceActionResponse,
-} from '../api/apiService';
+} from "../api/apiService";
 
 export interface InfluenceAction {
   action: string;
   entityId: string;
   entityName: string;
-  entityType: 'region' | 'hero';
+  entityType: "region" | "hero";
 }
 
 export interface UseInfluenceActionsReturn {
@@ -19,39 +19,47 @@ export interface UseInfluenceActionsReturn {
     action: string,
     entityId: string,
     entityName: string,
-    entityType: 'region' | 'hero'
+    entityType: "region" | "hero",
   ) => Promise<void>;
-  getButtonClass: (baseClass: string, cost?: number, actionKey?: string) => string;
+  getButtonClass: (
+    baseClass: string,
+    cost?: number,
+    actionKey?: string,
+  ) => string;
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null;
+  return typeof value === "object" && value !== null;
 };
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  if (isRecord(error) && typeof error.message === 'string') return error.message;
-  return 'Network error';
+  if (typeof error === "string") return error;
+  if (isRecord(error) && typeof error.message === "string")
+    return error.message;
+  return "Network error";
 };
 
 const getResponseMessage = (response: InfluenceActionResponse): string => {
-  if (typeof response.message === 'string' && response.message.length > 0) return response.message;
-  return 'Action completed successfully!';
+  if (typeof response.message === "string" && response.message.length > 0)
+    return response.message;
+  return "Action completed successfully!";
 };
 
 export const useInfluenceActions = (
   currentDivineFavor: number,
-  onActionSuccess: () => void
+  onActionSuccess: () => void,
 ): UseInfluenceActionsReturn => {
-  const [isLoadingAction, setIsLoadingAction] = useState<Record<string, boolean>>({});
+  const [isLoadingAction, setIsLoadingAction] = useState<
+    Record<string, boolean>
+  >({});
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 
   const handleInfluenceAction = async (
     action: string,
     entityId: string,
     _entityName: string,
-    entityType: 'region' | 'hero'
+    entityType: "region" | "hero",
   ) => {
     const actionKey = `${action}-${entityId}`;
 
@@ -75,12 +83,16 @@ export const useInfluenceActions = (
     }
   };
 
-  const getButtonClass = (baseClass: string, cost?: number, actionKey?: string) => {
+  const getButtonClass = (
+    baseClass: string,
+    cost?: number,
+    actionKey?: string,
+  ) => {
     let finalClass = baseClass;
     if (cost !== undefined && currentDivineFavor < cost) {
-      finalClass += ' opacity-50 cursor-not-allowed';
+      finalClass += " opacity-50 cursor-not-allowed";
     } else if (actionKey && isLoadingAction[actionKey]) {
-      finalClass += ' opacity-75 cursor-wait';
+      finalClass += " opacity-75 cursor-wait";
     }
     return finalClass;
   };
@@ -92,4 +104,3 @@ export const useInfluenceActions = (
     getButtonClass,
   };
 };
-

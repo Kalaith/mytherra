@@ -1,22 +1,25 @@
 // F:\WebDevelopment\Mytherra\frontend\src\components\EventLog.tsx
-import React, { useEffect, useState } from 'react';
-import { GameEvent } from '../entities/event';
-import { getGameEvents } from '../api/apiService';
-import { useRegions } from '../contexts/useRegionContext';
+import React, { useEffect, useState } from "react";
+import { GameEvent } from "../entities/event";
+import { getGameEvents } from "../api/apiService";
+import { useRegions } from "../contexts/useRegionContext";
 
 interface EventLogProps {
   selectedRegionId?: string;
   selectedHeroId?: string;
 }
 
-const EventLog: React.FC<EventLogProps> = ({ selectedRegionId, selectedHeroId }) => {
+const EventLog: React.FC<EventLogProps> = ({
+  selectedRegionId,
+  selectedHeroId,
+}) => {
   const [events, setEvents] = useState<GameEvent[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 10;
-  const { getRegionName } = useRegions();  // Handle region selection changes
-  
+  const { getRegionName } = useRegions(); // Handle region selection changes
+
   useEffect(() => {
     // Reset to first page when region or hero selection changes
     setCurrentPage(1);
@@ -27,8 +30,13 @@ const EventLog: React.FC<EventLogProps> = ({ selectedRegionId, selectedHeroId })
       try {
         setIsLoading(true);
         // Backend returns direct array instead of paginated object
-        const data = await getGameEvents(page, eventsPerPage, selectedRegionId, selectedHeroId);
-        
+        const data = await getGameEvents(
+          page,
+          eventsPerPage,
+          selectedRegionId,
+          selectedHeroId,
+        );
+
         // Handle the array response directly
         if (Array.isArray(data)) {
           setEvents(data);
@@ -37,13 +45,13 @@ const EventLog: React.FC<EventLogProps> = ({ selectedRegionId, selectedHeroId })
           console.warn("Unexpected response format from events API:", data);
           setEvents([]);
         }
-        
+
         setError(null);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError('An unknown error occurred');
+          setError("An unknown error occurred");
         }
         console.error("Failed to load events:", err);
       }
@@ -58,14 +66,21 @@ const EventLog: React.FC<EventLogProps> = ({ selectedRegionId, selectedHeroId })
   }
 
   if (error) {
-    return <div className="text-center p-4 text-red-500">Error loading events: {error}</div>;
+    return (
+      <div className="text-center p-4 text-red-500">
+        Error loading events: {error}
+      </div>
+    );
   }
   if (!events || events.length === 0) {
     return <div className="text-center p-4">No events to display.</div>;
   }
-  
+
   // Function to perform additional client-side filtering (belt and suspenders approach)
-  const isEventRelatedToRegion = (event: GameEvent, regionId: string): boolean => {
+  const isEventRelatedToRegion = (
+    event: GameEvent,
+    regionId: string,
+  ): boolean => {
     // Check if the event has this region in its relatedRegionIds
     const isRegionRelated = event.relatedRegionIds?.includes(regionId);
     if (isRegionRelated) return true;
@@ -74,42 +89,47 @@ const EventLog: React.FC<EventLogProps> = ({ selectedRegionId, selectedHeroId })
     // This is a fallback since the server should be handling hero relationships properly
     return false;
   };
-  
+
   // Function to check if an event is related to a hero
   const isEventRelatedToHero = (event: GameEvent, heroId: string): boolean => {
     // Check if the event has this hero in its relatedHeroIds
-    return Array.isArray(event.relatedHeroIds) && event.relatedHeroIds.includes(heroId);
+    return (
+      Array.isArray(event.relatedHeroIds) &&
+      event.relatedHeroIds.includes(heroId)
+    );
   };
 
   // Apply additional filtering on the client side if a region or hero is selected
-  const filteredEvents = events.filter(event => {
+  const filteredEvents = events.filter((event) => {
     if (selectedHeroId && !isEventRelatedToHero(event, selectedHeroId)) {
       return false;
     }
-    
+
     if (selectedRegionId && !isEventRelatedToRegion(event, selectedRegionId)) {
       return false;
     }
-    
+
     return true;
   });
   return (
-    <div className="p-4 bg-gray-700 text-white rounded-lg shadow-xl mt-6">      <div className="flex flex-col items-center mb-4">
+    <div className="p-4 bg-gray-700 text-white rounded-lg shadow-xl mt-6">
+      {" "}
+      <div className="flex flex-col items-center mb-4">
         <h2 className="text-2xl font-bold text-center">
-          {selectedHeroId 
-            ? `Hero Events` 
-            : selectedRegionId 
-              ? `${getRegionName(selectedRegionId)} Events` 
-              : 'World Event Log'}
+          {selectedHeroId
+            ? `Hero Events`
+            : selectedRegionId
+              ? `${getRegionName(selectedRegionId)} Events`
+              : "World Event Log"}
         </h2>
         {selectedHeroId && (
           <>
             <div className="mt-1 text-sm text-gray-400">
               Showing events related to this hero
             </div>
-            <button 
+            <button
               onClick={() => {
-                window.history.pushState({}, '', window.location.pathname);
+                window.history.pushState({}, "", window.location.pathname);
                 window.location.reload();
               }}
               className="mt-2 text-sm text-blue-300 hover:text-blue-100"
@@ -121,13 +141,14 @@ const EventLog: React.FC<EventLogProps> = ({ selectedRegionId, selectedHeroId })
         {selectedRegionId && !selectedHeroId && (
           <>
             <div className="mt-1 text-sm text-gray-400">
-              Showing events in this region and those involving heroes from this region
+              Showing events in this region and those involving heroes from this
+              region
             </div>
-            <button 
+            <button
               onClick={() => {
                 // Use window.history to navigate without a full page reload,
                 // which would preserve React state across components
-                window.history.pushState({}, '', window.location.pathname);
+                window.history.pushState({}, "", window.location.pathname);
                 // Force a refresh of the events without the region filter
                 window.location.reload();
               }}
@@ -143,27 +164,41 @@ const EventLog: React.FC<EventLogProps> = ({ selectedRegionId, selectedHeroId })
           // Replace region IDs with region names in description (global, safe)
           let processedDescription = event.description;
           if (event.relatedRegionIds && event.relatedRegionIds.length > 0) {
-            event.relatedRegionIds.forEach(regionId => {
+            event.relatedRegionIds.forEach((regionId) => {
               const regionName = getRegionName(regionId);
               // Use word boundary to avoid partial replacements
-              processedDescription = processedDescription.replace(new RegExp(`\\b${regionId}\\b`, 'g'), regionName);
+              processedDescription = processedDescription.replace(
+                new RegExp(`\\b${regionId}\\b`, "g"),
+                regionName,
+              );
             });
           }
           // Treat any event with relatedHeroIds as a hero action
-          const isHeroAction = Array.isArray(event.relatedHeroIds) && event.relatedHeroIds.length > 0;
+          const isHeroAction =
+            Array.isArray(event.relatedHeroIds) &&
+            event.relatedHeroIds.length > 0;
           const baseLiClasses = "p-3 bg-gray-600 rounded-md shadow";
-          const heroActionLiClasses = isHeroAction ? "border-l-4 border-yellow-400" : "";
+          const heroActionLiClasses = isHeroAction
+            ? "border-l-4 border-yellow-400"
+            : "";
           return (
-            <li key={event.id} className={[baseLiClasses, heroActionLiClasses].filter(Boolean).join(' ')}>
+            <li
+              key={event.id}
+              className={[baseLiClasses, heroActionLiClasses]
+                .filter(Boolean)
+                .join(" ")}
+            >
               <p className="font-semibold text-lg">
-                {event.year ? `Year ${event.year}: ` : ''}{processedDescription}
+                {event.year ? `Year ${event.year}: ` : ""}
+                {processedDescription}
               </p>
             </li>
           );
         })}
-      </ul>        {/* Simple pagination without total pages info */}
+      </ul>{" "}
+      {/* Simple pagination without total pages info */}
       <div className="mt-4 flex justify-center items-center space-x-2">
-        <button 
+        <button
           onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
           disabled={currentPage <= 1 || events.length === 0}
           className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded disabled:opacity-50"
@@ -171,7 +206,7 @@ const EventLog: React.FC<EventLogProps> = ({ selectedRegionId, selectedHeroId })
           Previous
         </button>
         <span className="text-gray-300">Page {currentPage}</span>
-        <button 
+        <button
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={events.length < eventsPerPage}
           className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded disabled:opacity-50"

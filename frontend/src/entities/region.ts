@@ -10,7 +10,7 @@ export interface Region {
   prosperity: number; // Scale of 0-100
   chaos: number; // Scale of 0-100
   magicAffinity: number; // Scale of 0-100
-  status: 'peaceful' | 'corrupt' | 'abandoned' | 'warring';
+  status: "peaceful" | "corrupt" | "abandoned" | "warring";
   eventIds: string[]; // IDs of events that have occurred in this region
   influenceActionCosts?: {
     blessRegion?: number;
@@ -20,7 +20,7 @@ export interface Region {
   // Enhanced region features
   populationTotal?: number; // Calculated from settlements
   regionalTraits?: string[]; // ['mountainous', 'coastal', 'forested', 'desert', 'magical_nexus']
-  climateType?: 'temperate' | 'arctic' | 'tropical' | 'arid' | 'magical';
+  climateType?: "temperate" | "arctic" | "tropical" | "arid" | "magical";
   tradeRoutes?: string[]; // IDs of connected regions
   culturalInfluence?: string; // 'scholarly', 'martial', 'mystical', 'mercantile', 'pastoral'
   divineResonance?: number; // How responsive the region is to divine influence (0-100)

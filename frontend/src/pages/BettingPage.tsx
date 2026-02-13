@@ -1,7 +1,7 @@
-import React from 'react';
-import DivineBettingPanel from '../components/DivineBettingPanel';
-import PageLayout from '../components/PageLayout';
-import { useGameStatus } from '../hooks/useGameStatus';
+import React from "react";
+import DivineBettingPanel from "../components/DivineBettingPanel";
+import PageLayout from "../components/PageLayout";
+import { useGameStatus } from "../hooks/useGameStatus";
 
 const BettingPage: React.FC = () => {
   const { gameStatus, isLoading, error } = useGameStatus();

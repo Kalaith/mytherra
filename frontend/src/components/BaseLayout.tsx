@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react';
-import type { GameStatus } from '../api/apiService';
-import Header from './Header';
-import NavigationBar from './NavigationBar';
+import React, { ReactNode } from "react";
+import type { GameStatus } from "../api/apiService";
+import Header from "./Header";
+import NavigationBar from "./NavigationBar";
 
 interface BaseLayoutProps {
   gameStatus: GameStatus | null;
@@ -18,7 +18,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   error,
   loadingMessage = "Loading...",
   errorPrefix = "Error loading data",
-  children
+  children,
 }) => {
   if (isLoading) {
     return (
@@ -31,7 +31,9 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   if (error) {
     return (
       <div className="min-h-screen bg-gray-900 text-gray-100">
-        <div className="text-center p-8 text-red-500">{errorPrefix}: {error}</div>
+        <div className="text-center p-8 text-red-500">
+          {errorPrefix}: {error}
+        </div>
       </div>
     );
   }
@@ -40,9 +42,7 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
     <div className="min-h-screen bg-gray-900 text-gray-100">
       <Header gameStatus={gameStatus} />
       <NavigationBar />
-      <div className="container mx-auto p-4">
-        {children}
-      </div>
+      <div className="container mx-auto p-4">{children}</div>
     </div>
   );
 };

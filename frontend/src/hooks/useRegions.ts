@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Region } from '../entities/region';
-import { getRegions } from '../api/apiService';
+import { useState, useEffect, useCallback } from "react";
+import { Region } from "../entities/region";
+import { getRegions } from "../api/apiService";
 
 interface UseRegionsOptions {
   autoRefresh?: boolean;
@@ -16,11 +16,10 @@ interface UseRegionsReturn {
   refetch: () => Promise<void>;
 }
 
-export const useRegions = (options: UseRegionsOptions = {}): UseRegionsReturn => {
-  const {
-    autoRefresh = false,
-    refreshInterval = 30000
-  } = options;
+export const useRegions = (
+  options: UseRegionsOptions = {},
+): UseRegionsReturn => {
+  const { autoRefresh = false, refreshInterval = 30000 } = options;
 
   const [regions, setRegions] = useState<Region[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -37,7 +36,7 @@ export const useRegions = (options: UseRegionsOptions = {}): UseRegionsReturn =>
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unknown error occurred while fetching regions.');
+        setError("An unknown error occurred while fetching regions.");
       }
       console.error("Failed to load regions:", err);
     } finally {
@@ -45,9 +44,12 @@ export const useRegions = (options: UseRegionsOptions = {}): UseRegionsReturn =>
     }
   }, []);
 
-  const selectRegion = useCallback((region: Region | null) => {
-    setSelectedRegion(selectedRegion?.id === region?.id ? null : region);
-  }, [selectedRegion]);
+  const selectRegion = useCallback(
+    (region: Region | null) => {
+      setSelectedRegion(selectedRegion?.id === region?.id ? null : region);
+    },
+    [selectedRegion],
+  );
 
   const refetch = useCallback(() => {
     return fetchRegions();
@@ -75,6 +77,6 @@ export const useRegions = (options: UseRegionsOptions = {}): UseRegionsReturn =>
     error,
     selectedRegion,
     selectRegion,
-    refetch
+    refetch,
   };
 };

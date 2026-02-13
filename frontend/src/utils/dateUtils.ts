@@ -10,7 +10,7 @@
  */
 export const formatDate = (
   dateValue: string | Date | number,
-  options?: Intl.DateTimeFormatOptions
+  options?: Intl.DateTimeFormatOptions,
 ): string => {
   const date = new Date(dateValue);
   return date.toLocaleString(undefined, options);

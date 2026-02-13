@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Region } from '../entities/region';
-import { Settlement } from '../entities/settlement';
-import { Landmark } from '../entities/landmark';
-import { Hero } from '../entities/hero';
-import RegionTabNav, { RegionTabType } from './RegionTabs/RegionTabNav';
-import RegionHeader from './RegionTabs/RegionHeader';
-import RegionOverviewTab from './RegionTabs/RegionOverviewTab';
-import RegionSettlementsTab from './RegionTabs/RegionSettlementsTab';
-import RegionLandmarksTab from './RegionTabs/RegionLandmarksTab';
-import RegionHeroesList from './RegionTabs/RegionHeroesList';
+import React, { useState } from "react";
+import { Region } from "../entities/region";
+import { Settlement } from "../entities/settlement";
+import { Landmark } from "../entities/landmark";
+import { Hero } from "../entities/hero";
+import RegionTabNav, { RegionTabType } from "./RegionTabs/RegionTabNav";
+import RegionHeader from "./RegionTabs/RegionHeader";
+import RegionOverviewTab from "./RegionTabs/RegionOverviewTab";
+import RegionSettlementsTab from "./RegionTabs/RegionSettlementsTab";
+import RegionLandmarksTab from "./RegionTabs/RegionLandmarksTab";
+import RegionHeroesList from "./RegionTabs/RegionHeroesList";
 
 interface RegionDetailPanelProps {
   region: Region;
@@ -29,47 +29,52 @@ const RegionDetailPanel: React.FC<RegionDetailPanelProps> = ({
   loading = false,
   onSelectSettlement,
   onSelectLandmark,
-  onSelectHero
+  onSelectHero,
 }) => {
-  const [activeTab, setActiveTab] = useState<RegionTabType>('overview');
-  
+  const [activeTab, setActiveTab] = useState<RegionTabType>("overview");
+
   // Helper functions for regional data
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'peaceful': return 'text-green-400';
-      case 'corrupt': return 'text-yellow-400';
-      case 'warring': return 'text-red-400';
-      case 'abandoned': return 'text-gray-400';
-      default: return 'text-gray-300';
+      case "peaceful":
+        return "text-green-400";
+      case "corrupt":
+        return "text-yellow-400";
+      case "warring":
+        return "text-red-400";
+      case "abandoned":
+        return "text-gray-400";
+      default:
+        return "text-gray-300";
     }
   };
 
   const getSettlementSummary = () => {
     const counts = {
-      city: settlements.filter(s => s.type === 'city').length,
-      town: settlements.filter(s => s.type === 'town').length,
-      village: settlements.filter(s => s.type === 'village').length,
-      hamlet: settlements.filter(s => s.type === 'hamlet').length
+      city: settlements.filter((s) => s.type === "city").length,
+      town: settlements.filter((s) => s.type === "town").length,
+      village: settlements.filter((s) => s.type === "village").length,
+      hamlet: settlements.filter((s) => s.type === "hamlet").length,
     };
     return counts;
   };
 
   const getTotalPopulation = () => {
-    return settlements.reduce((sum, settlement) => sum + settlement.population, 0);
+    return settlements.reduce(
+      (sum, settlement) => sum + settlement.population,
+      0,
+    );
   };
 
   const settlementCounts = getSettlementSummary();
   const totalPopulation = getTotalPopulation();
-  const livingHeroesCount = heroes.filter(h => h.isAlive !== false).length;
+  const livingHeroesCount = heroes.filter((h) => h.isAlive !== false).length;
 
   return (
     <div className="p-4 bg-gray-800 text-white rounded-lg shadow-xl">
       {/* Region Header */}
-      <RegionHeader 
-        region={region} 
-        getStatusColor={getStatusColor} 
-      />
-      
+      <RegionHeader region={region} getStatusColor={getStatusColor} />
+
       {/* Tab Navigation */}
       <RegionTabNav
         activeTab={activeTab}
@@ -81,8 +86,8 @@ const RegionDetailPanel: React.FC<RegionDetailPanelProps> = ({
       />
 
       {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <RegionOverviewTab 
+      {activeTab === "overview" && (
+        <RegionOverviewTab
           region={region}
           settlementsCount={settlements.length}
           landmarksCount={landmarks.length}
@@ -92,8 +97,8 @@ const RegionDetailPanel: React.FC<RegionDetailPanelProps> = ({
           livingHeroesCount={livingHeroesCount}
         />
       )}
-      
-      {activeTab === 'settlements' && (
+
+      {activeTab === "settlements" && (
         <RegionSettlementsTab
           settlements={settlements}
           onSelectSettlement={onSelectSettlement}
@@ -102,14 +107,14 @@ const RegionDetailPanel: React.FC<RegionDetailPanelProps> = ({
         />
       )}
 
-      {activeTab === 'landmarks' && (
+      {activeTab === "landmarks" && (
         <RegionLandmarksTab
           landmarks={landmarks}
           onSelectLandmark={onSelectLandmark}
         />
       )}
-      
-      {activeTab === 'heroes' && (
+
+      {activeTab === "heroes" && (
         <RegionHeroesList
           heroes={heroes}
           loading={loading}

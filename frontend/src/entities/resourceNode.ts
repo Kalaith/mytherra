@@ -7,10 +7,16 @@ export interface ResourceNode {
   id: string;
   regionId: string;
   settlementId?: string;
-  type: 'mine' | 'quarry' | 'forest' | 'farmland' | 'fishing' | 'magical_spring';
+  type:
+    | "mine"
+    | "quarry"
+    | "forest"
+    | "farmland"
+    | "fishing"
+    | "magical_spring";
   name: string;
   outputValue: number; // 0-100 productivity
-  status: 'active' | 'depleted' | 'contested' | 'corrupted';
+  status: "active" | "depleted" | "contested" | "corrupted";
   createdAt?: Date;
   updatedAt?: Date;
 }

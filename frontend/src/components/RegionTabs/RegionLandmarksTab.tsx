@@ -1,6 +1,6 @@
-import React from 'react';
-import { Landmark } from '../../entities/landmark';
-import LandmarkList from './LandmarkList';
+import React from "react";
+import { Landmark } from "../../entities/landmark";
+import LandmarkList from "./LandmarkList";
 
 interface RegionLandmarksTabProps {
   landmarks: Landmark[];
@@ -9,7 +9,7 @@ interface RegionLandmarksTabProps {
 
 const RegionLandmarksTab: React.FC<RegionLandmarksTabProps> = ({
   landmarks,
-  onSelectLandmark
+  onSelectLandmark,
 }) => {
   return (
     <div>

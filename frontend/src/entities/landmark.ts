@@ -7,9 +7,25 @@ export interface Landmark {
   id: string;
   regionId: string;
   name: string;
-  type: 'temple' | 'ruin' | 'forest' | 'mountain' | 'river' | 'monument' | 'dungeon' | 'tower' | 'battlefield' | 'grove';
+  type:
+    | "temple"
+    | "ruin"
+    | "forest"
+    | "mountain"
+    | "river"
+    | "monument"
+    | "dungeon"
+    | "tower"
+    | "battlefield"
+    | "grove";
   description: string;
-  status: 'pristine' | 'weathered' | 'corrupted' | 'blessed' | 'haunted' | 'active';
+  status:
+    | "pristine"
+    | "weathered"
+    | "corrupted"
+    | "blessed"
+    | "haunted"
+    | "active";
   magicLevel: number; // 0-100
   dangerLevel: number; // 0-100
   discoveredYear?: number;

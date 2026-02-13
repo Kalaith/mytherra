@@ -1,17 +1,21 @@
-import React from 'react';
-import BaseLayout from '../components/BaseLayout';
-import PageHeader from '../components/PageHeader';
-import EventsStats from '../components/EventsStats';
-import EventSection from '../components/EventSection';
-import EmptyState from '../components/EmptyState';
-import Pagination from '../components/Pagination';
-import { useGameStatus } from '../hooks/useGameStatus';
-import { useEvents } from '../hooks/useEvents';
+import React from "react";
+import BaseLayout from "../components/BaseLayout";
+import PageHeader from "../components/PageHeader";
+import EventsStats from "../components/EventsStats";
+import EventSection from "../components/EventSection";
+import EmptyState from "../components/EmptyState";
+import Pagination from "../components/Pagination";
+import { useGameStatus } from "../hooks/useGameStatus";
+import { useEvents } from "../hooks/useEvents";
 
 const EventsPage: React.FC = () => {
-  const { gameStatus, isLoading: isLoadingGameStatus, error: gameStatusError } = useGameStatus({
+  const {
+    gameStatus,
+    isLoading: isLoadingGameStatus,
+    error: gameStatusError,
+  } = useGameStatus({
     autoRefresh: true,
-    refreshInterval: 10000
+    refreshInterval: 10000,
   });
 
   const {
@@ -22,11 +26,11 @@ const EventsPage: React.FC = () => {
     eventsPerPage,
     loadEventsPage,
     refetch,
-    categorizedEvents
+    categorizedEvents,
   } = useEvents({
     autoRefresh: true,
     refreshInterval: 30000,
-    eventsPerPage: 20
+    eventsPerPage: 20,
   });
 
   const isLoading = isLoadingGameStatus || isLoadingEvents;
@@ -91,7 +95,7 @@ const EventsPage: React.FC = () => {
           icon="📖"
           actionButton={{
             label: "Refresh Events",
-            onClick: refetch
+            onClick: refetch,
           }}
         />
       )}

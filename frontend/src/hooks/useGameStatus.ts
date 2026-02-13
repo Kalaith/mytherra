@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { getGameStatus } from '../api/apiService';
-import type { GameStatus } from '../api/apiService';
+import { useState, useEffect } from "react";
+import { getGameStatus } from "../api/apiService";
+import type { GameStatus } from "../api/apiService";
 
 interface UseGameStatusOptions {
   autoRefresh?: boolean;
@@ -14,9 +14,11 @@ interface UseGameStatusReturn {
   refetch: () => Promise<void>;
 }
 
-export const useGameStatus = (options: UseGameStatusOptions = {}): UseGameStatusReturn => {
+export const useGameStatus = (
+  options: UseGameStatusOptions = {},
+): UseGameStatusReturn => {
   const { autoRefresh = false, refreshInterval = 10000 } = options;
-  
+
   const [gameStatus, setGameStatus] = useState<GameStatus | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export const useGameStatus = (options: UseGameStatusOptions = {}): UseGameStatus
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unknown error occurred while fetching game status.');
+        setError("An unknown error occurred while fetching game status.");
       }
       console.error("Failed to load game status:", err);
     }
@@ -72,6 +74,6 @@ export const useGameStatus = (options: UseGameStatusOptions = {}): UseGameStatus
     gameStatus,
     isLoading,
     error,
-    refetch
+    refetch,
   };
 };

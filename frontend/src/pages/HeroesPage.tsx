@@ -1,24 +1,29 @@
-import React from 'react';
-import HeroList from '../components/HeroList';
-import PageLayout from '../components/PageLayout';
-import PageHeader from '../components/PageHeader';
-import EmptyState from '../components/EmptyState';
-import HeroInfluencePanel from '../components/HeroInfluencePanel';
-import { useGameStatus } from '../hooks/useGameStatus';
-import { useHeroes } from '../hooks/useHeroes';
+import React from "react";
+import HeroList from "../components/HeroList";
+import PageLayout from "../components/PageLayout";
+import PageHeader from "../components/PageHeader";
+import EmptyState from "../components/EmptyState";
+import HeroInfluencePanel from "../components/HeroInfluencePanel";
+import { useGameStatus } from "../hooks/useGameStatus";
+import { useHeroes } from "../hooks/useHeroes";
 
 const HeroesPage: React.FC = () => {
-  const { gameStatus, isLoading: isLoadingGameStatus, error: gameStatusError, refetch: refetchGameStatus } = useGameStatus();
-  const { 
-    heroes, 
-    isLoading: isLoadingHeroes, 
-    error: heroesError, 
-    selectedHero, 
-    selectHero, 
-    refetch: refetchHeroes 
+  const {
+    gameStatus,
+    isLoading: isLoadingGameStatus,
+    error: gameStatusError,
+    refetch: refetchGameStatus,
+  } = useGameStatus();
+  const {
+    heroes,
+    isLoading: isLoadingHeroes,
+    error: heroesError,
+    selectedHero,
+    selectHero,
+    refetch: refetchHeroes,
   } = useHeroes({
     autoRefresh: true,
-    refreshInterval: 30000
+    refreshInterval: 30000,
   });
 
   const handleActionSuccess = () => {
@@ -30,12 +35,13 @@ const HeroesPage: React.FC = () => {
   const error = gameStatusError || heroesError;
 
   const topContent = (
-    <HeroInfluencePanel 
-      selectedHero={selectedHero} 
+    <HeroInfluencePanel
+      selectedHero={selectedHero}
       currentDivineFavor={gameStatus?.divineFavor || 0}
       onActionSuccess={handleActionSuccess}
     />
-  );  return (
+  );
+  return (
     <PageLayout
       gameStatus={gameStatus}
       isLoading={isLoading}
@@ -51,7 +57,7 @@ const HeroesPage: React.FC = () => {
         subtitle={`${heroes.length} heroes shape the world's destiny`}
         icon="⚔️"
       />
-      
+
       {heroes.length === 0 ? (
         <EmptyState
           title="No Heroes Yet"
@@ -59,11 +65,11 @@ const HeroesPage: React.FC = () => {
           icon="🏛️"
           actionButton={{
             label: "Refresh Heroes",
-            onClick: refetchHeroes
+            onClick: refetchHeroes,
           }}
         />
       ) : (
-        <HeroList 
+        <HeroList
           heroes={heroes}
           selectedHero={selectedHero}
           onSelectHero={selectHero}

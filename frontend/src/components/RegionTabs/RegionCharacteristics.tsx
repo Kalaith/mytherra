@@ -1,13 +1,18 @@
-import React from 'react';
-import { Region } from '../../entities/region';
+import React from "react";
+import { Region } from "../../entities/region";
 
 interface RegionCharacteristicsProps {
   region: Region;
   totalPopulation: number;
 }
 
-const RegionCharacteristics: React.FC<RegionCharacteristicsProps> = ({ region, totalPopulation }) => {
-  if (!(region.regionalTraits || region.climateType || region.culturalInfluence)) {
+const RegionCharacteristics: React.FC<RegionCharacteristicsProps> = ({
+  region,
+  totalPopulation,
+}) => {
+  if (
+    !(region.regionalTraits || region.climateType || region.culturalInfluence)
+  ) {
     return null;
   }
 
@@ -36,7 +41,9 @@ const RegionCharacteristics: React.FC<RegionCharacteristicsProps> = ({ region, t
         {totalPopulation > 0 && (
           <div>
             <span className="text-gray-400">Total Population:</span>
-            <span className="ml-2 text-blue-400">{totalPopulation.toLocaleString()}</span>
+            <span className="ml-2 text-blue-400">
+              {totalPopulation.toLocaleString()}
+            </span>
           </div>
         )}
       </div>
@@ -58,8 +65,11 @@ const RegionalTraits: React.FC<RegionalTraitsProps> = ({ traits }) => {
     <div className="mt-2">
       <div className="text-gray-400 text-sm mb-1">Regional Traits:</div>
       <div className="flex flex-wrap gap-1">
-        {traits.map(trait => (
-          <span key={trait} className="px-2 py-1 bg-green-600 text-xs rounded-full">
+        {traits.map((trait) => (
+          <span
+            key={trait}
+            className="px-2 py-1 bg-green-600 text-xs rounded-full"
+          >
             {trait}
           </span>
         ))}
@@ -79,8 +89,11 @@ const RegionTags: React.FC<RegionTagsProps> = ({ tags }) => {
     <div className="mt-2">
       <div className="text-gray-400 text-sm mb-1">Tags:</div>
       <div className="flex flex-wrap gap-1">
-        {tags.map(tag => (
-          <span key={tag} className="px-2 py-1 bg-gray-600 text-xs rounded-full">
+        {tags.map((tag) => (
+          <span
+            key={tag}
+            className="px-2 py-1 bg-gray-600 text-xs rounded-full"
+          >
             {tag}
           </span>
         ))}

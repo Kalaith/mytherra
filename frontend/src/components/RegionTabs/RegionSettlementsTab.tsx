@@ -1,7 +1,7 @@
-import React from 'react';
-import { Settlement } from '../../entities/settlement';
-import SettlementSummary from './SettlementSummary';
-import SettlementList from './SettlementList';
+import React from "react";
+import { Settlement } from "../../entities/settlement";
+import SettlementSummary from "./SettlementSummary";
+import SettlementList from "./SettlementList";
 
 interface RegionSettlementsTabProps {
   settlements: Settlement[];
@@ -19,20 +19,20 @@ const RegionSettlementsTab: React.FC<RegionSettlementsTabProps> = ({
   settlements,
   onSelectSettlement,
   settlementCounts,
-  totalPopulation
+  totalPopulation,
 }) => {
   return (
     <div>
       {/* Settlement Summary */}
-      <SettlementSummary 
-        settlementCounts={settlementCounts} 
-        totalPopulation={totalPopulation} 
+      <SettlementSummary
+        settlementCounts={settlementCounts}
+        totalPopulation={totalPopulation}
       />
 
       {/* Settlements List */}
-      <SettlementList 
-        settlements={settlements} 
-        onSelectSettlement={onSelectSettlement} 
+      <SettlementList
+        settlements={settlements}
+        onSelectSettlement={onSelectSettlement}
       />
     </div>
   );

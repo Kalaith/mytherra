@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface PaginationProps {
   currentPage: number;
@@ -15,7 +15,7 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange,
   isLoading = false,
   onRefresh,
-  showRefresh = true
+  showRefresh = true,
 }) => {
   const hasNextPage = currentPage < totalPages;
   const hasPreviousPage = currentPage > 1;
@@ -44,10 +44,11 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           key={index + 1}
           onClick={() => onPageChange(index + 1)}
-          className={`px-3 py-1 rounded ${currentPage === index + 1
-              ? 'bg-blue-500'
-              : 'bg-gray-700 hover:bg-gray-600'
-            }`}
+          className={`px-3 py-1 rounded ${
+            currentPage === index + 1
+              ? "bg-blue-500"
+              : "bg-gray-700 hover:bg-gray-600"
+          }`}
         >
           {index + 1}
         </button>
@@ -58,8 +59,9 @@ const Pagination: React.FC<PaginationProps> = ({
       <>
         <button
           onClick={() => onPageChange(1)}
-          className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-blue-500' : 'bg-gray-700 hover:bg-gray-600'
-            }`}
+          className={`px-3 py-1 rounded ${
+            currentPage === 1 ? "bg-blue-500" : "bg-gray-700 hover:bg-gray-600"
+          }`}
         >
           1
         </button>
@@ -67,16 +69,23 @@ const Pagination: React.FC<PaginationProps> = ({
         {currentPage > 3 && <span className="px-3 py-1">...</span>}
 
         {Array.from({ length: 5 }, (_, i) => {
-          const pageNum = Math.max(2, Math.min(currentPage - 2 + i, totalPages - 1));
+          const pageNum = Math.max(
+            2,
+            Math.min(currentPage - 2 + i, totalPages - 1),
+          );
           if (pageNum <= 1 || pageNum >= totalPages) return null;
-          if (pageNum < currentPage - 2 || pageNum > currentPage + 2) return null;
+          if (pageNum < currentPage - 2 || pageNum > currentPage + 2)
+            return null;
 
           return (
             <button
               key={pageNum}
               onClick={() => onPageChange(pageNum)}
-              className={`px-3 py-1 rounded ${currentPage === pageNum ? 'bg-blue-500' : 'bg-gray-700 hover:bg-gray-600'
-                }`}
+              className={`px-3 py-1 rounded ${
+                currentPage === pageNum
+                  ? "bg-blue-500"
+                  : "bg-gray-700 hover:bg-gray-600"
+              }`}
             >
               {pageNum}
             </button>
@@ -87,8 +96,11 @@ const Pagination: React.FC<PaginationProps> = ({
 
         <button
           onClick={() => onPageChange(totalPages)}
-          className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-blue-500' : 'bg-gray-700 hover:bg-gray-600'
-            }`}
+          className={`px-3 py-1 rounded ${
+            currentPage === totalPages
+              ? "bg-blue-500"
+              : "bg-gray-700 hover:bg-gray-600"
+          }`}
         >
           {totalPages}
         </button>
@@ -108,9 +120,7 @@ const Pagination: React.FC<PaginationProps> = ({
           Previous
         </button>
 
-        <div className="flex space-x-1">
-          {renderPageNumbers()}
-        </div>
+        <div className="flex space-x-1">{renderPageNumbers()}</div>
 
         <button
           onClick={handleNext}
@@ -129,7 +139,7 @@ const Pagination: React.FC<PaginationProps> = ({
             disabled={isLoading}
             className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Loading...' : 'Refresh'}
+            {isLoading ? "Loading..." : "Refresh"}
           </button>
         </div>
       )}

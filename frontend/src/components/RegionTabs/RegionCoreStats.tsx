@@ -1,5 +1,5 @@
-import React from 'react';
-import { Region } from '../../entities/region';
+import React from "react";
+import { Region } from "../../entities/region";
 
 interface RegionCoreStatsProps {
   region: Region;
@@ -13,11 +13,7 @@ const RegionCoreStats: React.FC<RegionCoreStatsProps> = ({ region }) => {
         value={`${region.prosperity}%`}
         color="text-green-400"
       />
-      <StatCard
-        label="Chaos"
-        value={`${region.chaos}%`}
-        color="text-red-400"
-      />
+      <StatCard label="Chaos" value={`${region.chaos}%`} color="text-red-400" />
       <StatCard
         label="Magic Affinity"
         value={`${region.magicAffinity}%`}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { useAuth } from '../contexts/useAuth';
+import React from "react";
+import { useAuth } from "../contexts/useAuth";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireAdmin = false,
-  fallback
+  fallback,
 }) => {
   const { isAuthenticated, isLoading, user, isAdmin, login } = useAuth();
 
@@ -35,9 +35,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-900">
         <div className="bg-gray-800 p-8 rounded-lg shadow-lg text-center max-w-md">
-          <h2 className="text-2xl font-bold text-white mb-4">Authentication Required</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">
+            Authentication Required
+          </h2>
           <p className="text-gray-300 mb-6">
-            You need to be logged in to access Mytherra. Please log in with your WebHatchery account.
+            You need to be logged in to access Mytherra. Please log in with your
+            WebHatchery account.
           </p>
           <button
             onClick={() => login()}
@@ -63,9 +66,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           <p className="text-gray-300 mb-6">
             You need administrator privileges to access this area.
           </p>
-          <p className="text-sm text-gray-400">
-            Current role: {user.role}
-          </p>
+          <p className="text-sm text-gray-400">Current role: {user.role}</p>
         </div>
       </div>
     );

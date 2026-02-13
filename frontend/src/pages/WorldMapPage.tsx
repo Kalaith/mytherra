@@ -1,17 +1,22 @@
-import React from 'react';
-import RegionGrid from '../components/RegionGrid';
-import RegionDetailWrapper from '../components/RegionDetailWrapper';
-import PageLayout from '../components/PageLayout';
-import PageHeader from '../components/PageHeader';
-import EmptyState from '../components/EmptyState';
-import RegionInfluencePanel from '../components/RegionInfluencePanel';
-import { useGameStatus } from '../hooks/useGameStatus';
-import { useRegions } from '../hooks/useRegions';
+import React from "react";
+import RegionGrid from "../components/RegionGrid";
+import RegionDetailWrapper from "../components/RegionDetailWrapper";
+import PageLayout from "../components/PageLayout";
+import PageHeader from "../components/PageHeader";
+import EmptyState from "../components/EmptyState";
+import RegionInfluencePanel from "../components/RegionInfluencePanel";
+import { useGameStatus } from "../hooks/useGameStatus";
+import { useRegions } from "../hooks/useRegions";
 
 const WorldMapPage: React.FC = () => {
-  const { gameStatus, isLoading: isLoadingGameStatus, error: gameStatusError, refetch: refetchGameStatus } = useGameStatus({
+  const {
+    gameStatus,
+    isLoading: isLoadingGameStatus,
+    error: gameStatusError,
+    refetch: refetchGameStatus,
+  } = useGameStatus({
     autoRefresh: true,
-    refreshInterval: 10000
+    refreshInterval: 10000,
   });
 
   const {
@@ -20,10 +25,10 @@ const WorldMapPage: React.FC = () => {
     error: regionsError,
     selectedRegion,
     selectRegion,
-    refetch: refetchRegions
+    refetch: refetchRegions,
   } = useRegions({
     autoRefresh: true,
-    refreshInterval: 30000
+    refreshInterval: 30000,
   });
 
   const handleActionSuccess = () => {
@@ -34,8 +39,8 @@ const WorldMapPage: React.FC = () => {
   const isLoading = isLoadingGameStatus || isLoadingRegions;
   const error = gameStatusError || regionsError;
   const topContent = (
-    <RegionInfluencePanel 
-      selectedRegion={selectedRegion} 
+    <RegionInfluencePanel
+      selectedRegion={selectedRegion}
       currentDivineFavor={gameStatus?.divineFavor || 0}
       onActionSuccess={handleActionSuccess}
     />
@@ -45,7 +50,7 @@ const WorldMapPage: React.FC = () => {
     <PageLayout
       gameStatus={gameStatus}
       isLoading={isLoading}
-      error={error}      
+      error={error}
       loadingMessage="Loading world map..."
       errorPrefix="Error loading world map"
       showEventLog={true}
@@ -57,7 +62,7 @@ const WorldMapPage: React.FC = () => {
         subtitle={`${regions.length} regions await your divine attention`}
         icon="🗺️"
       />
-      
+
       {regions.length === 0 ? (
         <EmptyState
           title="World Loading"
@@ -65,21 +70,19 @@ const WorldMapPage: React.FC = () => {
           icon="🌍"
           actionButton={{
             label: "Refresh World",
-            onClick: refetchRegions
+            onClick: refetchRegions,
           }}
         />
       ) : (
         <>
-          <RegionGrid 
+          <RegionGrid
             regions={regions}
             selectedRegion={selectedRegion}
             onSelectRegion={selectRegion}
           />
-          
+
           {/* Show region details below the grid when a region is selected */}
-          {selectedRegion && (
-            <RegionDetailWrapper region={selectedRegion} />
-          )}
+          {selectedRegion && <RegionDetailWrapper region={selectedRegion} />}
         </>
       )}
     </PageLayout>

@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react';
-import type { GameStatus } from '../api/apiService';
-import BaseLayout from './BaseLayout';
-import EventLog from './EventLog';
+import React, { ReactNode } from "react";
+import type { GameStatus } from "../api/apiService";
+import BaseLayout from "./BaseLayout";
+import EventLog from "./EventLog";
 
 interface PageLayoutProps {
   gameStatus: GameStatus | null;
@@ -28,7 +28,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
   selectedHeroId,
   sidebarContent,
   topContent,
-  children
+  children,
 }) => {
   return (
     <BaseLayout
@@ -39,29 +39,27 @@ const PageLayout: React.FC<PageLayoutProps> = ({
       errorPrefix={errorPrefix}
     >
       {/* Top content section (optional) */}
-      {topContent && (
-        <div className="mb-6">
-          {topContent}
-        </div>
-      )}
+      {topContent && <div className="mb-6">{topContent}</div>}
 
       {/* Main content area */}
       {showEventLog || sidebarContent ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Primary Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {children}
-          </div>          {/* Side Panel */}
+          <div className="lg:col-span-2 space-y-6">{children}</div>{" "}
+          {/* Side Panel */}
           <div className="lg:col-span-1 space-y-6">
-            {showEventLog && <EventLog selectedRegionId={selectedRegionId} selectedHeroId={selectedHeroId} />}
+            {showEventLog && (
+              <EventLog
+                selectedRegionId={selectedRegionId}
+                selectedHeroId={selectedHeroId}
+              />
+            )}
             {sidebarContent}
           </div>
         </div>
       ) : (
         // Full width layout when no sidebar
-        <div className="space-y-6">
-          {children}
-        </div>
+        <div className="space-y-6">{children}</div>
       )}
     </BaseLayout>
   );
