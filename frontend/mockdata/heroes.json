@@ -13,7 +13,10 @@
     "regionId": "region-003",
     "role": "warrior",
     "description": "A stoic warrior from Cryspire, rumored to have wrestled a mountain troll and won.",
-    "feats": ["Defended the village of Oakhaven from a goblin raid.", "Forged the Sunstone Hammer."]
+    "feats": [
+      "Defended the village of Oakhaven from a goblin raid.",
+      "Forged the Sunstone Hammer."
+    ]
   },
   {
     "id": "hero-003",
