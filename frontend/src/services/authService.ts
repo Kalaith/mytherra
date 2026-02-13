@@ -1,6 +1,6 @@
 import { User, AuthResponse, LoginUrlResponse, RegisterUrlResponse } from '../entities/auth';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
 class AuthService {
   private static instance: AuthService;
@@ -37,7 +37,7 @@ class AuthService {
       params.append('return_url', returnUrl);
     }
 
-    const response = await fetch(`${API_BASE_URL}/auth/login-url?${params.toString()}`);
+    const response = await fetch(`${apiBaseUrl}/auth/login-url?${params.toString()}`);
     if (!response.ok) {
       throw new Error('Failed to get login URL');
     }
@@ -59,7 +59,7 @@ class AuthService {
       params.append('return_url', returnUrl);
     }
 
-    const response = await fetch(`${API_BASE_URL}/auth/register-url?${params.toString()}`);
+    const response = await fetch(`${apiBaseUrl}/auth/register-url?${params.toString()}`);
     if (!response.ok) {
       throw new Error('Failed to get register URL');
     }
@@ -76,7 +76,7 @@ class AuthService {
    * Handle callback from auth portal with token
    */
   async handleAuthCallback(token: string): Promise<User> {
-    const response = await fetch(`${API_BASE_URL}/auth/callback?token=${encodeURIComponent(token)}`);
+    const response = await fetch(`${apiBaseUrl}/auth/callback?token=${encodeURIComponent(token)}`);
     if (!response.ok) {
       throw new Error('Failed to process authentication callback');
     }
@@ -115,7 +115,7 @@ class AuthService {
 
     try {
       console.log('Making request to /auth/me with token');
-      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      const response = await fetch(`${apiBaseUrl}/auth/me`, {
         headers: {
           'Authorization': `Bearer ${this.token}`,
           'Content-Type': 'application/json'
@@ -157,7 +157,7 @@ class AuthService {
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch(`${API_BASE_URL}/auth/preferences`, {
+    const response = await fetch(`${apiBaseUrl}/auth/preferences`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${this.token}`,

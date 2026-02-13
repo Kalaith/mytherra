@@ -5,7 +5,6 @@ import type { Region } from '../entities/region';
 import type { Settlement } from '../entities/settlement';
 import type { Landmark } from '../entities/landmark';
 
-// Provider component
 interface RegionProviderProps {
   children: ReactNode;
 }
@@ -17,16 +16,15 @@ export const RegionProvider: React.FC<RegionProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch regions, settlements, and landmarks on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [regionsData, settlementsData, landmarksData] = await Promise.all([
           getRegions(),
           getSettlements(),
-          getLandmarks()
+          getLandmarks(),
         ]);
-        
+
         setRegions(regionsData);
         setSettlements(settlementsData);
         setLandmarks(landmarksData);
@@ -46,34 +44,34 @@ export const RegionProvider: React.FC<RegionProviderProps> = ({ children }) => {
     fetchData();
   }, []);
 
-  // Helper function to get region name from regionId
   const getRegionName = (regionId: string): string => {
-    const region = regions.find(r => r.id === regionId);
+    const region = regions.find((r) => r.id === regionId);
     return region ? region.name : regionId;
   };
 
-  // Helper function to get settlements by region
   const getSettlementsByRegion = (regionId: string): Settlement[] => {
-    return settlements.filter(s => s.regionId === regionId);
+    return settlements.filter((s) => s.regionId === regionId);
   };
 
-  // Helper function to get landmarks by region
   const getLandmarksByRegion = (regionId: string): Landmark[] => {
-    return landmarks.filter(l => l.regionId === regionId);
+    return landmarks.filter((l) => l.regionId === regionId);
   };
 
   return (
-    <RegionContext.Provider value={{ 
-      regions, 
-      settlements, 
-      landmarks, 
-      isLoading, 
-      error, 
-      getRegionName,
-      getSettlementsByRegion,
-      getLandmarksByRegion
-    }}>
+    <RegionContext.Provider
+      value={{
+        regions,
+        settlements,
+        landmarks,
+        isLoading,
+        error,
+        getRegionName,
+        getSettlementsByRegion,
+        getLandmarksByRegion,
+      }}
+    >
       {children}
     </RegionContext.Provider>
   );
 };
+

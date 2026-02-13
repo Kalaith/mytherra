@@ -8,7 +8,7 @@ import { ResourceNode } from '../entities/resourceNode';
 import { DivineBet, SpeculationEvent, BettingOdds } from '../entities/divineBet';
 import { getAuthHeaders } from '../contexts/authHeaders';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
 export interface GameStatus {
   currentYear: number;
@@ -31,7 +31,7 @@ async function fetchData<T>(path: string): Promise<T> {
   const id = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
   try {
-    const response = await fetch(`${API_BASE_URL}/${path}`, {
+    const response = await fetch(`${apiBaseUrl}/${path}`, {
       headers: {
         'Content-Type': 'application/json',
         ...(await getAuthHeaders())
@@ -91,7 +91,7 @@ async function fetchData<T>(path: string): Promise<T> {
 
 // Helper function to post data to the backend API
 async function postData<T, R>(path: string, body: T): Promise<R> {
-  const response = await fetch(`${API_BASE_URL}/${path}`, {
+  const response = await fetch(`${apiBaseUrl}/${path}`, {
     method: 'POST',
     headers: await getAuthHeaders(),
     body: JSON.stringify(body),

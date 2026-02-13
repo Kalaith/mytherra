@@ -6,7 +6,7 @@ import WorldMapPage from './pages/WorldMapPage';
 import HeroesPage from './pages/HeroesPage';
 import BettingPage from './pages/BettingPage';
 import { Dashboard } from './pages/Dashboard';
-import { RegionProvider } from './contexts/RegionContext';
+import { RegionProvider } from './contexts/RegionProvider';
 import { AuthProvider } from './contexts/AuthProvider';
 import ProtectedRoute from './components/ProtectedRoute';
 
