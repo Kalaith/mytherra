@@ -1,11 +1,11 @@
-import React from "react";
-import HeroList from "../components/HeroList";
-import PageLayout from "../components/PageLayout";
-import PageHeader from "../components/PageHeader";
-import EmptyState from "../components/EmptyState";
-import HeroInfluencePanel from "../components/HeroInfluencePanel";
-import { useGameStatus } from "../hooks/useGameStatus";
-import { useHeroes } from "../hooks/useHeroes";
+import React from 'react';
+import HeroList from '../components/HeroList';
+import PageLayout from '../components/PageLayout';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
+import HeroInfluencePanel from '../components/HeroInfluencePanel';
+import { useGameStatus } from '../hooks/useGameStatus';
+import { useHeroes } from '../hooks/useHeroes';
 
 const HeroesPage: React.FC = () => {
   const {
@@ -64,16 +64,12 @@ const HeroesPage: React.FC = () => {
           message="The world awaits the rise of its first heroes. They will emerge as the need arises."
           icon="🏛️"
           actionButton={{
-            label: "Refresh Heroes",
+            label: 'Refresh Heroes',
             onClick: refetchHeroes,
           }}
         />
       ) : (
-        <HeroList
-          heroes={heroes}
-          selectedHero={selectedHero}
-          onSelectHero={selectHero}
-        />
+        <HeroList heroes={heroes} selectedHero={selectedHero} onSelectHero={selectHero} />
       )}
     </PageLayout>
   );

@@ -1,5 +1,5 @@
-import React from "react";
-import { SortOption } from "../hooks/useHeroFilters";
+import React from 'react';
+import { SortOption } from '../hooks/useHeroFilters';
 
 interface HeroFiltersProps {
   searchTerm: string;
@@ -26,7 +26,7 @@ const HeroFilters: React.FC<HeroFiltersProps> = ({
         placeholder="Search heroes by name, role, or description..."
         className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={e => setSearchTerm(e.target.value)}
       />
 
       {/* Filter and Sort Controls Row */}
@@ -37,13 +37,11 @@ const HeroFilters: React.FC<HeroFiltersProps> = ({
             <input
               type="checkbox"
               checked={showOnlyLiving}
-              onChange={() => setShowOnlyLiving((prev) => !prev)}
+              onChange={() => setShowOnlyLiving(prev => !prev)}
               className="sr-only peer"
             />
             <div className="relative w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            <span className="ml-3 text-sm font-medium text-gray-300">
-              Show only living heroes
-            </span>
+            <span className="ml-3 text-sm font-medium text-gray-300">Show only living heroes</span>
           </label>
         </div>
 
@@ -52,7 +50,7 @@ const HeroFilters: React.FC<HeroFiltersProps> = ({
           <span className="text-sm text-gray-300">Sort by:</span>
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            onChange={e => setSortBy(e.target.value as SortOption)}
             className="bg-gray-700 text-white border border-gray-600 rounded p-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="power">Level</option>

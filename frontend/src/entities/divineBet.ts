@@ -7,21 +7,21 @@ export interface DivineBet {
   id: string;
   playerId: string;
   betType:
-    | "settlement_growth"
-    | "landmark_discovery"
-    | "cultural_shift"
-    | "hero_settlement_bond"
-    | "hero_location_visit"
-    | "settlement_transformation"
-    | "corruption_spread";
+    | 'settlement_growth'
+    | 'landmark_discovery'
+    | 'cultural_shift'
+    | 'hero_settlement_bond'
+    | 'hero_location_visit'
+    | 'settlement_transformation'
+    | 'corruption_spread';
   targetId: string; // ID of settlement, landmark, hero, or region
   description: string;
   timeframe: number; // Years within which bet must resolve
-  confidence: "long_shot" | "possible" | "likely" | "near_certain";
+  confidence: 'long_shot' | 'possible' | 'likely' | 'near_certain';
   divineFavorStake: number;
   potentialPayout: number;
   currentOdds: number;
-  status: "active" | "won" | "lost" | "expired";
+  status: 'active' | 'won' | 'lost' | 'expired';
   placedYear: number;
   resolvedYear?: number;
   resolutionNotes?: string;
@@ -40,7 +40,7 @@ export interface SpeculationEvent {
   settlementId?: string;
   landmarkId?: string;
   heroId?: string;
-  eventType: "prediction" | "influence_opportunity" | "observation_point";
+  eventType: 'prediction' | 'influence_opportunity' | 'observation_point';
   timeframe: {
     minimum: number; // Earliest possible resolution (years)
     maximum: number; // Latest possible resolution (years)
@@ -69,8 +69,8 @@ export interface InfluenceOption {
   id: string;
   description: string;
   cost: number; // Divine favor cost
-  effectStrength: "subtle" | "minor" | "moderate";
-  influenceType: "environmental" | "inspirational" | "coincidental";
+  effectStrength: 'subtle' | 'minor' | 'moderate';
+  influenceType: 'environmental' | 'inspirational' | 'coincidental';
 }
 
 /**

@@ -7,14 +7,14 @@ export interface Hero {
   id: string;
   name: string;
   regionId: string; // The region this hero is currently associated with
-  role: "scholar" | "warrior" | "prophet" | "agent of change" | "undecided";
+  role: 'scholar' | 'warrior' | 'prophet' | 'agent of change' | 'undecided';
   description: string;
   feats: string[]; // Notable accomplishments
   level?: number; // Added level
   age?: number; // Added age, as it's often displayed with heroes
   isAlive?: boolean; // Added isAlive status
   deathReason?: string; // Added death reason
-  status?: "living" | "deceased" | "undead" | "ascended"; // Status for special conditions beyond alive/dead
+  status?: 'living' | 'deceased' | 'undead' | 'ascended'; // Status for special conditions beyond alive/dead
   personalityTraits?: string[]; // Personality traits like curious, vengeful, ambitious
   alignment?: {
     good: number; // 0-100 scale for good vs evil

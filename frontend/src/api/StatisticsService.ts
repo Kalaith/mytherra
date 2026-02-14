@@ -1,4 +1,4 @@
-import { apiService } from "./apiService";
+import { apiService } from './apiService';
 
 export interface GameSummary {
   currentEra: number;
@@ -44,18 +44,18 @@ export interface FinancialStatistics {
 
 export const statisticsService = {
   getSummary: async (): Promise<GameSummary> => {
-    return await apiService.get<GameSummary>("statistics/summary");
+    return await apiService.get<GameSummary>('statistics/summary');
   },
 
   getHeroStats: async (): Promise<HeroStatistics> => {
-    return await apiService.get<HeroStatistics>("statistics/heroes");
+    return await apiService.get<HeroStatistics>('statistics/heroes');
   },
 
   getRegionStats: async (): Promise<RegionStatistics> => {
-    return await apiService.get<RegionStatistics>("statistics/regions");
+    return await apiService.get<RegionStatistics>('statistics/regions');
   },
 
   getFinancialStats: async (): Promise<FinancialStatistics> => {
-    return await apiService.get<FinancialStatistics>("statistics/financials");
+    return await apiService.get<FinancialStatistics>('statistics/financials');
   },
 };

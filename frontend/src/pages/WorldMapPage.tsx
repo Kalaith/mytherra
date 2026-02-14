@@ -1,12 +1,12 @@
-import React from "react";
-import RegionGrid from "../components/RegionGrid";
-import RegionDetailWrapper from "../components/RegionDetailWrapper";
-import PageLayout from "../components/PageLayout";
-import PageHeader from "../components/PageHeader";
-import EmptyState from "../components/EmptyState";
-import RegionInfluencePanel from "../components/RegionInfluencePanel";
-import { useGameStatus } from "../hooks/useGameStatus";
-import { useRegions } from "../hooks/useRegions";
+import React from 'react';
+import RegionGrid from '../components/RegionGrid';
+import RegionDetailWrapper from '../components/RegionDetailWrapper';
+import PageLayout from '../components/PageLayout';
+import PageHeader from '../components/PageHeader';
+import EmptyState from '../components/EmptyState';
+import RegionInfluencePanel from '../components/RegionInfluencePanel';
+import { useGameStatus } from '../hooks/useGameStatus';
+import { useRegions } from '../hooks/useRegions';
 
 const WorldMapPage: React.FC = () => {
   const {
@@ -69,7 +69,7 @@ const WorldMapPage: React.FC = () => {
           message="The world is being shaped by divine hands. Regions will appear as creation unfolds."
           icon="🌍"
           actionButton={{
-            label: "Refresh World",
+            label: 'Refresh World',
             onClick: refetchRegions,
           }}
         />

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface EmptyStateProps {
   title: string;
@@ -16,7 +16,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   message,
   icon,
   actionButton,
-  className = "",
+  className = '',
 }) => {
   return (
     <div className={`text-center p-8 bg-gray-800 rounded-lg ${className}`}>

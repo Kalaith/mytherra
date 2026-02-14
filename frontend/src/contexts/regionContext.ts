@@ -1,7 +1,7 @@
-import { createContext } from "react";
-import type { Region } from "../entities/region";
-import type { Settlement } from "../entities/settlement";
-import type { Landmark } from "../entities/landmark";
+import { createContext } from 'react';
+import type { Region } from '../entities/region';
+import type { Settlement } from '../entities/settlement';
+import type { Landmark } from '../entities/landmark';
 
 export interface RegionContextType {
   regions: Region[];
@@ -20,7 +20,7 @@ export const RegionContext = createContext<RegionContextType>({
   landmarks: [],
   isLoading: false,
   error: null,
-  getRegionName: () => "",
+  getRegionName: () => '',
   getSettlementsByRegion: () => [],
   getLandmarksByRegion: () => [],
 });

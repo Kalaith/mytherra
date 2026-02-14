@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
-import type { GameStatus } from "../api/apiService";
-import BaseLayout from "./BaseLayout";
-import EventLog from "./EventLog";
+import React, { ReactNode } from 'react';
+import type { GameStatus } from '../api/apiService';
+import BaseLayout from './BaseLayout';
+import EventLog from './EventLog';
 
 interface PageLayoutProps {
   gameStatus: GameStatus | null;
@@ -45,14 +45,10 @@ const PageLayout: React.FC<PageLayoutProps> = ({
       {showEventLog || sidebarContent ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Primary Content */}
-          <div className="lg:col-span-2 space-y-6">{children}</div>{" "}
-          {/* Side Panel */}
+          <div className="lg:col-span-2 space-y-6">{children}</div> {/* Side Panel */}
           <div className="lg:col-span-1 space-y-6">
             {showEventLog && (
-              <EventLog
-                selectedRegionId={selectedRegionId}
-                selectedHeroId={selectedHeroId}
-              />
+              <EventLog selectedRegionId={selectedRegionId} selectedHeroId={selectedHeroId} />
             )}
             {sidebarContent}
           </div>

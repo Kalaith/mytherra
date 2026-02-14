@@ -8,7 +8,7 @@
 export const renderProgressBar = (
   label: string,
   value: number,
-  barColorClass: string,
+  barColorClass: string
 ): React.ReactElement => {
   return (
     <div className="mb-1">

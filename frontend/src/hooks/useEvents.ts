@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { GameEvent } from "../entities/event";
-import { getGameEvents } from "../api/apiService";
+import { useState, useEffect, useCallback } from 'react';
+import { GameEvent } from '../entities/event';
+import { getGameEvents } from '../api/apiService';
 
 interface UseEventsOptions {
   autoRefresh?: boolean;
@@ -24,11 +24,7 @@ interface UseEventsReturn {
 }
 
 export const useEvents = (options: UseEventsOptions = {}): UseEventsReturn => {
-  const {
-    autoRefresh = false,
-    refreshInterval = 30000,
-    eventsPerPage = 20,
-  } = options;
+  const { autoRefresh = false, refreshInterval = 30000, eventsPerPage = 20 } = options;
 
   const [events, setEvents] = useState<GameEvent[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -38,22 +34,19 @@ export const useEvents = (options: UseEventsOptions = {}): UseEventsReturn => {
   const categorizeEvents = useCallback((events: GameEvent[]) => {
     // Hero Events: All events that have related heroes
     const heroEvents = events.filter(
-      (event) =>
-        Array.isArray(event.relatedHeroIds) && event.relatedHeroIds.length > 0,
+      event => Array.isArray(event.relatedHeroIds) && event.relatedHeroIds.length > 0
     );
 
     // World Events: All events that have related regions
     const worldEvents = events.filter(
-      (event) =>
-        Array.isArray(event.relatedRegionIds) &&
-        event.relatedRegionIds.length > 0,
+      event => Array.isArray(event.relatedRegionIds) && event.relatedRegionIds.length > 0
     );
 
     // System Events: Events that have no heroes or regions
     const systemEvents = events.filter(
-      (event) =>
+      event =>
         (!event.relatedHeroIds || event.relatedHeroIds.length === 0) &&
-        (!event.relatedRegionIds || event.relatedRegionIds.length === 0),
+        (!event.relatedRegionIds || event.relatedRegionIds.length === 0)
     );
 
     return { heroEvents, worldEvents, systemEvents };
@@ -69,7 +62,7 @@ export const useEvents = (options: UseEventsOptions = {}): UseEventsReturn => {
           setEvents(data);
           setCurrentPage(page);
         } else {
-          console.warn("Unexpected response format from events API:", data);
+          console.warn('Unexpected response format from events API:', data);
           setEvents([]);
         }
 
@@ -78,14 +71,14 @@ export const useEvents = (options: UseEventsOptions = {}): UseEventsReturn => {
         if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError("An unknown error occurred");
+          setError('An unknown error occurred');
         }
-        console.error("Failed to load events:", err);
+        console.error('Failed to load events:', err);
       } finally {
         setIsLoading(false);
       }
     },
-    [eventsPerPage],
+    [eventsPerPage]
   );
 
   const refetch = useCallback(() => {

@@ -1,9 +1,9 @@
-import React from "react";
-import { Region } from "../../entities/region";
-import RegionCoreStats from "./RegionCoreStats";
-import RegionCharacteristics from "./RegionCharacteristics";
-import RegionOverviewStats from "./RegionOverviewStats";
-import RegionInfluenceCosts from "./RegionInfluenceCosts";
+import React from 'react';
+import { Region } from '../../entities/region';
+import RegionCoreStats from './RegionCoreStats';
+import RegionCharacteristics from './RegionCharacteristics';
+import RegionOverviewStats from './RegionOverviewStats';
+import RegionInfluenceCosts from './RegionInfluenceCosts';
 
 interface RegionOverviewTabProps {
   region: Region;
@@ -30,10 +30,7 @@ const RegionOverviewTab: React.FC<RegionOverviewTabProps> = ({
       <RegionCoreStats region={region} />
 
       {/* Enhanced Information */}
-      <RegionCharacteristics
-        region={region}
-        totalPopulation={totalPopulation}
-      />
+      <RegionCharacteristics region={region} totalPopulation={totalPopulation} />
 
       {/* Quick Overview Stats */}
       <RegionOverviewStats

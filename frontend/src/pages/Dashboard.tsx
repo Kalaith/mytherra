@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,59 +8,49 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-} from "chart.js";
-import { Bar, Pie } from "react-chartjs-2";
+} from 'chart.js';
+import { Bar, Pie } from 'react-chartjs-2';
 import {
   statisticsService,
   GameSummary,
   HeroStatistics,
   RegionStatistics,
   FinancialStatistics,
-} from "../api/StatisticsService";
-import PageLayout from "../components/PageLayout";
-import { getGameStatus, GameStatus } from "../api/apiService";
-import { getAuthHeaders } from "../contexts/authHeaders";
+} from '../api/StatisticsService';
+import PageLayout from '../components/PageLayout';
+import { getGameStatus, GameStatus } from '../api/apiService';
+import { getAuthHeaders } from '../contexts/authHeaders';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 export const Dashboard: React.FC = () => {
   const [gameStatus, setGameStatus] = useState<GameStatus | null>(null);
   const [summary, setSummary] = useState<GameSummary | null>(null);
   const [heroStats, setHeroStats] = useState<HeroStatistics | null>(null);
   const [regionStats, setRegionStats] = useState<RegionStatistics | null>(null);
-  const [financialStats, setFinancialStats] =
-    useState<FinancialStatistics | null>(null);
+  const [financialStats, setFinancialStats] = useState<FinancialStatistics | null>(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
 
   const handleExport = async () => {
     setExporting(true);
     try {
-      const apiBaseUrl =
-        import.meta.env.VITE_API_BASE_URL || "http://localhost:5002/api";
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
       const response = await fetch(`${apiBaseUrl}/export/full`, {
         headers: await getAuthHeaders(),
       });
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = "mytherra-world-snapshot.json";
+      a.download = 'mytherra-world-snapshot.json';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error("Export failed:", error);
+      console.error('Export failed:', error);
     } finally {
       setExporting(false);
     }
@@ -69,14 +59,13 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statusData, summaryData, heroData, regionData, financialData] =
-          await Promise.all([
-            getGameStatus(),
-            statisticsService.getSummary(),
-            statisticsService.getHeroStats(),
-            statisticsService.getRegionStats(),
-            statisticsService.getFinancialStats(),
-          ]);
+        const [statusData, summaryData, heroData, regionData, financialData] = await Promise.all([
+          getGameStatus(),
+          statisticsService.getSummary(),
+          statisticsService.getHeroStats(),
+          statisticsService.getRegionStats(),
+          statisticsService.getFinancialStats(),
+        ]);
 
         setGameStatus(statusData);
         setSummary(summaryData);
@@ -84,7 +73,7 @@ export const Dashboard: React.FC = () => {
         setRegionStats(regionData);
         setFinancialStats(financialData);
       } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
+        console.error('Failed to fetch dashboard data:', error);
       } finally {
         setLoading(false);
       }
@@ -95,11 +84,7 @@ export const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <PageLayout
-        gameStatus={null}
-        isLoading={true}
-        loadingMessage="Loading statistics..."
-      >
+      <PageLayout gameStatus={null} isLoading={true} loadingMessage="Loading statistics...">
         <div />
       </PageLayout>
     );
@@ -110,21 +95,21 @@ export const Dashboard: React.FC = () => {
         labels: Object.keys(heroStats.roleDistribution),
         datasets: [
           {
-            label: "Heroes by Role",
+            label: 'Heroes by Role',
             data: Object.values(heroStats.roleDistribution),
             backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(54, 162, 235, 0.5)",
-              "rgba(255, 206, 86, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-              "rgba(153, 102, 255, 0.5)",
+              'rgba(255, 99, 132, 0.5)',
+              'rgba(54, 162, 235, 0.5)',
+              'rgba(255, 206, 86, 0.5)',
+              'rgba(75, 192, 192, 0.5)',
+              'rgba(153, 102, 255, 0.5)',
             ],
             borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
             ],
             borderWidth: 1,
           },
@@ -137,12 +122,12 @@ export const Dashboard: React.FC = () => {
         labels: Object.keys(regionStats.statusDistribution),
         datasets: [
           {
-            label: "Regions by Status",
+            label: 'Regions by Status',
             data: Object.values(regionStats.statusDistribution),
             backgroundColor: [
-              "rgba(75, 192, 192, 0.5)",
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(255, 206, 86, 0.5)",
+              'rgba(75, 192, 192, 0.5)',
+              'rgba(255, 99, 132, 0.5)',
+              'rgba(255, 206, 86, 0.5)',
             ],
             borderWidth: 1,
           },
@@ -181,9 +166,7 @@ export const Dashboard: React.FC = () => {
         </div>
         <div className="bg-[#1a1b26] p-4 rounded-lg border border-[#2f334d]">
           <div className="text-gray-400 text-sm">Total Heroes</div>
-          <div className="text-2xl font-bold text-green-400">
-            {summary?.totalHeroes}
-          </div>
+          <div className="text-2xl font-bold text-green-400">{summary?.totalHeroes}</div>
         </div>
         <div className="bg-[#1a1b26] p-4 rounded-lg border border-[#2f334d]">
           <div className="text-gray-400 text-sm">Total Population</div>
@@ -193,31 +176,23 @@ export const Dashboard: React.FC = () => {
         </div>
         <div className="bg-[#1a1b26] p-4 rounded-lg border border-[#2f334d]">
           <div className="text-gray-400 text-sm">Active Bets</div>
-          <div className="text-2xl font-bold text-purple-400">
-            {summary?.activeBets}
-          </div>
+          <div className="text-2xl font-bold text-purple-400">{summary?.activeBets}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Hero Stats */}
         <div className="bg-[#1a1b26] p-6 rounded-lg border border-[#2f334d]">
-          <h3 className="text-xl font-bold text-white mb-4">
-            Hero Distribution
-          </h3>
+          <h3 className="text-xl font-bold text-white mb-4">Hero Distribution</h3>
           {heroRoleChartData && <Pie data={heroRoleChartData} />}
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div className="text-center p-2 bg-[#16161e] rounded">
               <div className="text-sm text-gray-400">Avg Level</div>
-              <div className="text-lg font-bold text-blue-300">
-                {heroStats?.averageLevel}
-              </div>
+              <div className="text-lg font-bold text-blue-300">{heroStats?.averageLevel}</div>
             </div>
             <div className="text-center p-2 bg-[#16161e] rounded">
               <div className="text-sm text-gray-400">Living Heroes</div>
-              <div className="text-lg font-bold text-green-300">
-                {summary?.livingHeroes}
-              </div>
+              <div className="text-lg font-bold text-green-300">{summary?.livingHeroes}</div>
             </div>
           </div>
         </div>
@@ -237,9 +212,7 @@ export const Dashboard: React.FC = () => {
           <div className="mt-4 space-y-2">
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-400">Avg Prosperity</span>
-              <span className="text-yellow-300">
-                {regionStats?.averageProsperity}%
-              </span>
+              <span className="text-yellow-300">{regionStats?.averageProsperity}%</span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-400">Avg Chaos</span>
@@ -247,9 +220,7 @@ export const Dashboard: React.FC = () => {
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-400">Avg Magic Affinity</span>
-              <span className="text-purple-300">
-                {regionStats?.averageMagicAffinity}%
-              </span>
+              <span className="text-purple-300">{regionStats?.averageMagicAffinity}%</span>
             </div>
           </div>
         </div>
@@ -267,21 +238,15 @@ export const Dashboard: React.FC = () => {
           </div>
           <div>
             <div className="text-gray-400 text-sm">Bets Won</div>
-            <div className="text-xl font-bold text-green-500">
-              {financialStats?.betsWon}
-            </div>
+            <div className="text-xl font-bold text-green-500">{financialStats?.betsWon}</div>
           </div>
           <div>
             <div className="text-gray-400 text-sm">Bets Lost</div>
-            <div className="text-xl font-bold text-red-500">
-              {financialStats?.betsLost}
-            </div>
+            <div className="text-xl font-bold text-red-500">{financialStats?.betsLost}</div>
           </div>
           <div>
             <div className="text-gray-400 text-sm">Payout Ratio</div>
-            <div className="text-xl font-bold text-blue-500">
-              {financialStats?.payoutRatio}x
-            </div>
+            <div className="text-xl font-bold text-blue-500">{financialStats?.payoutRatio}x</div>
           </div>
         </div>
       </div>

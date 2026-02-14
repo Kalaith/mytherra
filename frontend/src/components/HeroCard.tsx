@@ -1,8 +1,8 @@
-import React from "react";
-import { Hero } from "../entities/hero";
-import { useRegions } from "../contexts/useRegionContext";
-import { getCardBorderStyle, getAlignmentLabel } from "../utils/statusUtils";
-import { getAlignmentColor } from "../utils/colorUtils";
+import React from 'react';
+import { Hero } from '../entities/hero';
+import { useRegions } from '../contexts/useRegionContext';
+import { getCardBorderStyle, getAlignmentLabel } from '../utils/statusUtils';
+import { getAlignmentColor } from '../utils/colorUtils';
 
 interface HeroCardProps {
   hero: Hero;
@@ -10,11 +10,7 @@ interface HeroCardProps {
   onSelectHero: (hero: Hero | null) => void;
 }
 
-const HeroCard: React.FC<HeroCardProps> = ({
-  hero,
-  isSelected,
-  onSelectHero,
-}) => {
+const HeroCard: React.FC<HeroCardProps> = ({ hero, isSelected, onSelectHero }) => {
   // Use the region context to get region data
   const { getRegionName } = useRegions();
   // Helper functions have been moved to utility files
@@ -23,7 +19,7 @@ const HeroCard: React.FC<HeroCardProps> = ({
     <div
       key={hero.id}
       className={`p-4 bg-gray-700 rounded-md shadow-md hover:shadow-lg transition-all duration-200 ease-in-out cursor-pointer
-                 ${isSelected ? "ring-4 ring-yellow-400 scale-105" : "hover:ring-2 hover:ring-blue-400"}
+                 ${isSelected ? 'ring-4 ring-yellow-400 scale-105' : 'hover:ring-2 hover:ring-blue-400'}
                  ${getCardBorderStyle(hero.status, hero.isAlive)}`}
       onClick={() => onSelectHero(isSelected ? null : hero)}
       title={`Click to select ${hero.name}`}
@@ -39,40 +35,36 @@ const HeroCard: React.FC<HeroCardProps> = ({
           </span>
         )}
         {/* Special status badges for specific conditions */}
-        {hero.status === "deceased" && (
+        {hero.status === 'deceased' && (
           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-800 text-red-100">
             Deceased
           </span>
         )}
-        {hero.status === "undead" && (
+        {hero.status === 'undead' && (
           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-800 text-purple-100">
             Undead
           </span>
         )}
-        {hero.status === "ascended" && (
+        {hero.status === 'ascended' && (
           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-600 text-yellow-100">
             Ascended
           </span>
         )}
-      </div>{" "}
+      </div>{' '}
       <p className="text-sm capitalize text-blue-300">Role: {hero.role}</p>
       {hero.level !== undefined && (
         <p className="text-sm text-yellow-400">Level: {hero.level}</p>
-      )}{" "}
-      {hero.age !== undefined && (
-        <p className="text-sm text-gray-300">Age: {hero.age}</p>
-      )}
+      )}{' '}
+      {hero.age !== undefined && <p className="text-sm text-gray-300">Age: {hero.age}</p>}
       {/* Death reason (if applicable) */}
       {hero.isAlive === false && hero.deathReason && (
-        <p className="text-xs text-red-400 mt-1">
-          Cause of death: {hero.deathReason}
-        </p>
+        <p className="text-xs text-red-400 mt-1">Cause of death: {hero.deathReason}</p>
       )}
       {/* Special status descriptions */}
-      {hero.status === "undead" && (
+      {hero.status === 'undead' && (
         <p className="text-xs text-purple-400 mt-1">Reanimated after death</p>
-      )}{" "}
-      {hero.status === "ascended" && (
+      )}{' '}
+      {hero.status === 'ascended' && (
         <p className="text-xs text-yellow-400 mt-1">Transcended mortal form</p>
       )}
       <p className="text-sm text-gray-300 mt-1">
@@ -81,15 +73,11 @@ const HeroCard: React.FC<HeroCardProps> = ({
       {/* Alignment display (when available) */}
       {hero.alignment && (
         <div className="mt-2 mb-1">
-          <p
-            className={`text-sm font-medium ${getAlignmentColor(hero.alignment)}`}
-          >
+          <p className={`text-sm font-medium ${getAlignmentColor(hero.alignment)}`}>
             Alignment: {getAlignmentLabel(hero.alignment)}
           </p>
           {isSelected && hero.alignment.lastChange && (
-            <p className="text-xs text-gray-400 italic">
-              {hero.alignment.lastChange}
-            </p>
+            <p className="text-xs text-gray-400 italic">{hero.alignment.lastChange}</p>
           )}
 
           {/* Only show alignment bars when selected */}

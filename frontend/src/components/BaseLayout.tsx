@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
-import type { GameStatus } from "../api/apiService";
-import Header from "./Header";
-import NavigationBar from "./NavigationBar";
+import React, { ReactNode } from 'react';
+import type { GameStatus } from '../api/apiService';
+import Header from './Header';
+import NavigationBar from './NavigationBar';
 
 interface BaseLayoutProps {
   gameStatus: GameStatus | null;
@@ -16,8 +16,8 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({
   gameStatus,
   isLoading,
   error,
-  loadingMessage = "Loading...",
-  errorPrefix = "Error loading data",
+  loadingMessage = 'Loading...',
+  errorPrefix = 'Error loading data',
   children,
 }) => {
   if (isLoading) {

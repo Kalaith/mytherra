@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface SettlementSummaryProps {
   settlementCounts: {
@@ -45,9 +45,7 @@ const SettlementSummary: React.FC<SettlementSummaryProps> = ({
       </div>
       <div className="text-center p-2 bg-gray-600 rounded">
         <div className="text-sm text-gray-400">Total Population</div>
-        <div className="text-xl font-bold text-blue-400">
-          {totalPopulation.toLocaleString()}
-        </div>
+        <div className="text-xl font-bold text-blue-400">{totalPopulation.toLocaleString()}</div>
       </div>
     </div>
   );

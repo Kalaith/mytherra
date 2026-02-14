@@ -1,5 +1,5 @@
-import React from "react";
-import StatsCard from "./StatsCard";
+import React from 'react';
+import StatsCard from './StatsCard';
 
 interface EventsStatsProps {
   heroEventsCount: number;

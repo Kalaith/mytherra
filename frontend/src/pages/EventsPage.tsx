@@ -1,12 +1,12 @@
-import React from "react";
-import BaseLayout from "../components/BaseLayout";
-import PageHeader from "../components/PageHeader";
-import EventsStats from "../components/EventsStats";
-import EventSection from "../components/EventSection";
-import EmptyState from "../components/EmptyState";
-import Pagination from "../components/Pagination";
-import { useGameStatus } from "../hooks/useGameStatus";
-import { useEvents } from "../hooks/useEvents";
+import React from 'react';
+import BaseLayout from '../components/BaseLayout';
+import PageHeader from '../components/PageHeader';
+import EventsStats from '../components/EventsStats';
+import EventSection from '../components/EventSection';
+import EmptyState from '../components/EmptyState';
+import Pagination from '../components/Pagination';
+import { useGameStatus } from '../hooks/useGameStatus';
+import { useEvents } from '../hooks/useEvents';
 
 const EventsPage: React.FC = () => {
   const {
@@ -94,7 +94,7 @@ const EventsPage: React.FC = () => {
           message="No events have been recorded yet. The world awaits its first heroes and legends."
           icon="📖"
           actionButton={{
-            label: "Refresh Events",
+            label: 'Refresh Events',
             onClick: refetch,
           }}
         />

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Hero } from "../entities/hero";
-import HeroCard from "./HeroCard";
-import { useRegions } from "../contexts/useRegionContext";
-import Pagination from "./Pagination";
-import HeroFilters from "./HeroFilters";
-import { useHeroFilters } from "../hooks/useHeroFilters";
+import React, { useState, useEffect } from 'react';
+import { Hero } from '../entities/hero';
+import HeroCard from './HeroCard';
+import { useRegions } from '../contexts/useRegionContext';
+import Pagination from './Pagination';
+import HeroFilters from './HeroFilters';
+import { useHeroFilters } from '../hooks/useHeroFilters';
 
 interface HeroListProps {
   heroes: Hero[];
@@ -50,10 +50,7 @@ const HeroList: React.FC<HeroListProps> = ({
   // Get current page of heroes
   const indexOfLastHero = currentPage * heroesPerPage;
   const indexOfFirstHero = indexOfLastHero - heroesPerPage;
-  const currentHeroes = filteredAndSortedHeroes.slice(
-    indexOfFirstHero,
-    indexOfLastHero,
-  );
+  const currentHeroes = filteredAndSortedHeroes.slice(indexOfFirstHero, indexOfLastHero);
   const totalPages = Math.ceil(filteredAndSortedHeroes.length / heroesPerPage);
 
   // Change page
@@ -64,11 +61,7 @@ const HeroList: React.FC<HeroListProps> = ({
   }
 
   if (error) {
-    return (
-      <div className="text-center p-4 text-red-500">
-        Error loading heroes: {error}
-      </div>
-    );
+    return <div className="text-center p-4 text-red-500">Error loading heroes: {error}</div>;
   }
 
   if (heroes.length === 0) {
@@ -77,21 +70,17 @@ const HeroList: React.FC<HeroListProps> = ({
 
   return (
     <div className="p-4 bg-gray-800 text-white rounded-lg shadow-xl mt-6">
-      <h2 className="text-2xl font-bold mb-2 text-center">
-        Emergent Heroes (Click to select)
-      </h2>
+      <h2 className="text-2xl font-bold mb-2 text-center">Emergent Heroes (Click to select)</h2>
 
       {/* Hero count stats */}
       <div className="flex justify-center mb-4 gap-4 text-sm">
         <div className="flex items-center">
           <span className="w-3 h-3 rounded-full bg-green-600 mr-2"></span>
-          <span>{heroes.filter((h) => h.isAlive !== false).length} Living</span>
+          <span>{heroes.filter(h => h.isAlive !== false).length} Living</span>
         </div>
         <div className="flex items-center">
           <span className="w-3 h-3 rounded-full bg-red-600 mr-2"></span>
-          <span>
-            {heroes.filter((h) => h.isAlive === false).length} Deceased
-          </span>
+          <span>{heroes.filter(h => h.isAlive === false).length} Deceased</span>
         </div>
         <div className="flex items-center">
           <span className="w-3 h-3 rounded-full bg-gray-400 mr-2"></span>
@@ -110,14 +99,12 @@ const HeroList: React.FC<HeroListProps> = ({
 
       {/* Display message if no heroes match search */}
       {currentHeroes.length === 0 && (
-        <div className="text-center p-4">
-          No heroes match your search criteria.
-        </div>
+        <div className="text-center p-4">No heroes match your search criteria.</div>
       )}
 
       {/* Heroes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {currentHeroes.map((hero) => {
+        {currentHeroes.map(hero => {
           const isSelected = selectedHero?.id === hero.id;
           return (
             <HeroCard
@@ -145,7 +132,7 @@ const HeroList: React.FC<HeroListProps> = ({
         {filteredAndSortedHeroes.length > 0 ? (
           <>
             Showing {indexOfFirstHero + 1}-
-            {Math.min(indexOfLastHero, filteredAndSortedHeroes.length)} of{" "}
+            {Math.min(indexOfLastHero, filteredAndSortedHeroes.length)} of{' '}
             {filteredAndSortedHeroes.length} heroes
             {searchTerm && ` (filtered from ${heroes.length})`}
             {showOnlyLiving && ` (showing only living heroes)`}
@@ -157,7 +144,7 @@ const HeroList: React.FC<HeroListProps> = ({
               <button
                 className="ml-2 text-blue-400 hover:underline"
                 onClick={() => {
-                  setSearchTerm("");
+                  setSearchTerm('');
                   setShowOnlyLiving(false);
                 }}
               >

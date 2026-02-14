@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface PaginationProps {
   currentPage: number;
@@ -22,13 +22,9 @@ const Pagination: React.FC<PaginationProps> = ({
   showRefresh = true,
 }) => {
   const hasNextPage =
-    typeof hasNextPageProp === "boolean"
-      ? hasNextPageProp
-      : currentPage < totalPages;
+    typeof hasNextPageProp === 'boolean' ? hasNextPageProp : currentPage < totalPages;
   const hasPreviousPage =
-    typeof hasPreviousPageProp === "boolean"
-      ? hasPreviousPageProp
-      : currentPage > 1;
+    typeof hasPreviousPageProp === 'boolean' ? hasPreviousPageProp : currentPage > 1;
 
   const handlePrevious = () => {
     if (hasPreviousPage && !isLoading) {
@@ -55,9 +51,7 @@ const Pagination: React.FC<PaginationProps> = ({
           key={index + 1}
           onClick={() => onPageChange(index + 1)}
           className={`px-3 py-1 rounded ${
-            currentPage === index + 1
-              ? "bg-blue-500"
-              : "bg-gray-700 hover:bg-gray-600"
+            currentPage === index + 1 ? 'bg-blue-500' : 'bg-gray-700 hover:bg-gray-600'
           }`}
         >
           {index + 1}
@@ -70,7 +64,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(1)}
           className={`px-3 py-1 rounded ${
-            currentPage === 1 ? "bg-blue-500" : "bg-gray-700 hover:bg-gray-600"
+            currentPage === 1 ? 'bg-blue-500' : 'bg-gray-700 hover:bg-gray-600'
           }`}
         >
           1
@@ -79,22 +73,16 @@ const Pagination: React.FC<PaginationProps> = ({
         {currentPage > 3 && <span className="px-3 py-1">...</span>}
 
         {Array.from({ length: 5 }, (_, i) => {
-          const pageNum = Math.max(
-            2,
-            Math.min(currentPage - 2 + i, totalPages - 1),
-          );
+          const pageNum = Math.max(2, Math.min(currentPage - 2 + i, totalPages - 1));
           if (pageNum <= 1 || pageNum >= totalPages) return null;
-          if (pageNum < currentPage - 2 || pageNum > currentPage + 2)
-            return null;
+          if (pageNum < currentPage - 2 || pageNum > currentPage + 2) return null;
 
           return (
             <button
               key={pageNum}
               onClick={() => onPageChange(pageNum)}
               className={`px-3 py-1 rounded ${
-                currentPage === pageNum
-                  ? "bg-blue-500"
-                  : "bg-gray-700 hover:bg-gray-600"
+                currentPage === pageNum ? 'bg-blue-500' : 'bg-gray-700 hover:bg-gray-600'
               }`}
             >
               {pageNum}
@@ -107,9 +95,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <button
           onClick={() => onPageChange(totalPages)}
           className={`px-3 py-1 rounded ${
-            currentPage === totalPages
-              ? "bg-blue-500"
-              : "bg-gray-700 hover:bg-gray-600"
+            currentPage === totalPages ? 'bg-blue-500' : 'bg-gray-700 hover:bg-gray-600'
           }`}
         >
           {totalPages}
@@ -149,7 +135,7 @@ const Pagination: React.FC<PaginationProps> = ({
             disabled={isLoading}
             className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? "Loading..." : "Refresh"}
+            {isLoading ? 'Loading...' : 'Refresh'}
           </button>
         </div>
       )}

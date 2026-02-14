@@ -1,5 +1,5 @@
-import React, { type ReactNode } from "react";
-import { useInfluenceActions } from "../hooks/useInfluenceActions";
+import React, { type ReactNode } from 'react';
+import { useInfluenceActions } from '../hooks/useInfluenceActions';
 
 interface BaseInfluencePanelProps {
   currentDivineFavor: number;
@@ -11,13 +11,10 @@ interface BaseInfluencePanelProps {
 const BaseInfluencePanel: React.FC<BaseInfluencePanelProps> = ({
   currentDivineFavor,
   onActionSuccess,
-  title = "Divine Influence",
+  title = 'Divine Influence',
   children,
 }) => {
-  const { actionMessage } = useInfluenceActions(
-    currentDivineFavor,
-    onActionSuccess,
-  );
+  const { actionMessage } = useInfluenceActions(currentDivineFavor, onActionSuccess);
 
   return (
     <div className="p-4 bg-gray-800 text-white rounded-lg shadow-xl mt-6">
@@ -25,7 +22,7 @@ const BaseInfluencePanel: React.FC<BaseInfluencePanelProps> = ({
       {actionMessage && (
         <p
           className={`text-center mb-3 p-2 rounded ${
-            actionMessage.startsWith("Failed") ? "bg-red-700" : "bg-green-700"
+            actionMessage.startsWith('Failed') ? 'bg-red-700' : 'bg-green-700'
           }`}
         >
           {actionMessage}

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface PageHeaderProps {
   title: string;
@@ -13,7 +13,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   subtitle,
   description,
   icon,
-  className = "",
+  className = '',
 }) => {
   return (
     <div className={`mb-8 text-center ${className}`}>

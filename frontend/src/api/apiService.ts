@@ -1,19 +1,14 @@
-import { Region } from "../entities/region";
-import { Hero } from "../entities/hero";
-import { GameEvent } from "../entities/event";
-import { Settlement } from "../entities/settlement";
-import { Building } from "../entities/building";
-import { Landmark } from "../entities/landmark";
-import { ResourceNode } from "../entities/resourceNode";
-import {
-  DivineBet,
-  SpeculationEvent,
-  BettingOdds,
-} from "../entities/divineBet";
-import { getAuthHeaders } from "../contexts/authHeaders";
+import { Region } from '../entities/region';
+import { Hero } from '../entities/hero';
+import { GameEvent } from '../entities/event';
+import { Settlement } from '../entities/settlement';
+import { Building } from '../entities/building';
+import { Landmark } from '../entities/landmark';
+import { ResourceNode } from '../entities/resourceNode';
+import { DivineBet, SpeculationEvent, BettingOdds } from '../entities/divineBet';
+import { getAuthHeaders } from '../contexts/authHeaders';
 
-const apiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5002/api";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
 export interface GameStatus {
   currentYear: number;
@@ -38,7 +33,7 @@ async function fetchData<T>(path: string): Promise<T> {
   try {
     const response = await fetch(`${apiBaseUrl}/${path}`, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...(await getAuthHeaders()),
       },
       signal: controller.signal,
@@ -48,9 +43,9 @@ async function fetchData<T>(path: string): Promise<T> {
     if (!response.ok) {
       // Handle authentication errors
       if (response.status === 401) {
-        console.warn("Authentication required (401)");
+        console.warn('Authentication required (401)');
         // Throw specific error for auth failure so app can redirect if needed
-        throw new Error("AUTHENTICATION_REQUIRED");
+        throw new Error('AUTHENTICATION_REQUIRED');
       }
 
       // Attempt to parse error message from backend if available
@@ -69,7 +64,7 @@ async function fetchData<T>(path: string): Promise<T> {
     const text = await response.text();
 
     // Handle cases where backend might return an empty object for a single resource not found
-    if (text === "{}") {
+    if (text === '{}') {
       // For list endpoints (e.g., /regions), an empty array is expected for no data.
       // For single item endpoints (e.g., /regions/id), an empty object means not found.
       // We will return it as is, and components can decide if {} means null or an empty entity.
@@ -79,19 +74,14 @@ async function fetchData<T>(path: string): Promise<T> {
     const parsed = JSON.parse(text);
 
     // Check if response is wrapped in { success: boolean, data: T } format
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      "success" in parsed &&
-      "data" in parsed
-    ) {
+    if (parsed && typeof parsed === 'object' && 'success' in parsed && 'data' in parsed) {
       return parsed.data as T;
     }
 
     // Otherwise return the parsed response directly
     return parsed as T;
   } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
+    if (error instanceof Error && error.name === 'AbortError') {
       throw new Error(`Request timeout for ${path}`);
     }
     throw error;
@@ -101,7 +91,7 @@ async function fetchData<T>(path: string): Promise<T> {
 // Helper function to post data to the backend API
 async function postData<T, R>(path: string, body: T): Promise<R> {
   const response = await fetch(`${apiBaseUrl}/${path}`, {
-    method: "POST",
+    method: 'POST',
     headers: await getAuthHeaders(),
     body: JSON.stringify(body),
   });
@@ -110,7 +100,7 @@ async function postData<T, R>(path: string, body: T): Promise<R> {
     // Handle authentication errors
     if (response.status === 401) {
       // Redirect to login - allow app to handle it
-      console.warn("Authentication required (401) - redirect disabled");
+      console.warn('Authentication required (401) - redirect disabled');
       // throw new Error('Authentication required');
       return {} as R;
     }
@@ -130,22 +120,18 @@ async function postData<T, R>(path: string, body: T): Promise<R> {
 }
 
 export const getRegions = (): Promise<Region[]> => {
-  return fetchData<Region[]>("regions");
+  return fetchData<Region[]>('regions');
 };
 
-export const getRegionById = (
-  id: string,
-): Promise<Region | Record<string, unknown>> => {
+export const getRegionById = (id: string): Promise<Region | Record<string, unknown>> => {
   return fetchData<Region | Record<string, unknown>>(`regions/${id}`);
 };
 
 export const getHeroes = (): Promise<Hero[]> => {
-  return fetchData<Hero[]>("heroes");
+  return fetchData<Hero[]>('heroes');
 };
 
-export const getHeroById = (
-  id: string,
-): Promise<Hero | Record<string, unknown>> => {
+export const getHeroById = (id: string): Promise<Hero | Record<string, unknown>> => {
   return fetchData<Hero | Record<string, unknown>>(`heroes/${id}`);
 };
 
@@ -153,29 +139,25 @@ export const getGameEvents = (
   page: number = 1,
   limit: number = 10,
   regionId?: string,
-  heroId?: string,
+  heroId?: string
 ): Promise<GameEvent[]> => {
-  const regionFilter = regionId ? `&regionId=${regionId}` : "";
-  const heroFilter = heroId ? `&heroId=${heroId}` : "";
-  return fetchData<GameEvent[]>(
-    `events?page=${page}&limit=${limit}${regionFilter}${heroFilter}`,
-  );
+  const regionFilter = regionId ? `&regionId=${regionId}` : '';
+  const heroFilter = heroId ? `&heroId=${heroId}` : '';
+  return fetchData<GameEvent[]>(`events?page=${page}&limit=${limit}${regionFilter}${heroFilter}`);
 };
 
-export const getGameEventById = (
-  id: string,
-): Promise<GameEvent | Record<string, unknown>> => {
+export const getGameEventById = (id: string): Promise<GameEvent | Record<string, unknown>> => {
   return fetchData<GameEvent | Record<string, unknown>>(`events/${id}`);
 };
 
 export const getGameStatus = async (): Promise<GameStatus> => {
-  return fetchData<GameStatus>("status");
+  return fetchData<GameStatus>('status');
 };
 
 export interface InfluenceActionPayload {
   action: string;
   entityId: string;
-  entityType: "region" | "hero";
+  entityType: 'region' | 'hero';
 }
 
 export interface InfluenceActionResponse {
@@ -185,73 +167,63 @@ export interface InfluenceActionResponse {
 }
 
 export const sendInfluenceAction = (
-  payload: InfluenceActionPayload,
+  payload: InfluenceActionPayload
 ): Promise<InfluenceActionResponse> => {
   // Backend endpoint to be defined, e.g., /api/influence
   // For now, let's assume a generic endpoint that can differentiate based on entityType
-  let path = "";
-  if (payload.entityType === "region") {
+  let path = '';
+  if (payload.entityType === 'region') {
     path = `influence/region/${payload.entityId}`;
-  } else if (payload.entityType === "hero") {
+  } else if (payload.entityType === 'hero') {
     path = `influence/hero/${payload.entityId}`;
   } else {
     // Should not happen with current types, but good for robustness
-    return Promise.reject(
-      new Error("Invalid entity type for influence action"),
-    );
+    return Promise.reject(new Error('Invalid entity type for influence action'));
   }
   // The actual data sent might be just the action, as entityId is in the path
   // Or the backend might prefer the full payload. Adjust as needed.
-  return postData<
-    Omit<InfluenceActionPayload, "entityId" | "entityType">,
-    InfluenceActionResponse
-  >(path, { action: payload.action });
+  return postData<Omit<InfluenceActionPayload, 'entityId' | 'entityType'>, InfluenceActionResponse>(
+    path,
+    { action: payload.action }
+  );
 };
 
 // ===== Settlement API =====
 export const getSettlements = (): Promise<Settlement[]> => {
-  return fetchData<Settlement[]>("settlements");
+  return fetchData<Settlement[]>('settlements');
 };
 
-export const getSettlementById = (
-  id: string,
-): Promise<Settlement | Record<string, unknown>> => {
+export const getSettlementById = (id: string): Promise<Settlement | Record<string, unknown>> => {
   return fetchData<Settlement | Record<string, unknown>>(`settlements/${id}`);
 };
 
 // ===== Building API =====
 export const getBuildings = (): Promise<Building[]> => {
-  return fetchData<Building[]>("buildings");
+  return fetchData<Building[]>('buildings');
 };
 
-export const getBuildingById = (
-  id: string,
-): Promise<Building | Record<string, unknown>> => {
+export const getBuildingById = (id: string): Promise<Building | Record<string, unknown>> => {
   return fetchData<Building | Record<string, unknown>>(`buildings/${id}`);
 };
 
 // ===== Landmark API =====
 export const getLandmarks = (): Promise<Landmark[]> => {
-  return fetchData<Landmark[]>("landmarks");
+  return fetchData<Landmark[]>('landmarks');
 };
 
-export const getLandmarkById = (
-  id: string,
-): Promise<Landmark | Record<string, unknown>> => {
+export const getLandmarkById = (id: string): Promise<Landmark | Record<string, unknown>> => {
   return fetchData<Landmark | Record<string, unknown>>(`landmarks/${id}`);
 };
 
 // ===== Resource Node API =====
 export const getResourceNodes = (): Promise<ResourceNode[]> => {
-  return fetchData<ResourceNode[]>("resource-nodes");
+  return fetchData<ResourceNode[]>('resource-nodes');
 };
 
 export const getResourceNodeById = (
-  id: string,
+  id: string
 ): Promise<ResourceNode | Record<string, unknown>> => {
-  return fetchData<ResourceNode | Record<string, unknown>>(
-    `resource-nodes/${id}`,
-  );
+  return fetchData<ResourceNode | Record<string, unknown>>(`resource-nodes/${id}`);
 };
 
 // ===== Divine Betting API =====
@@ -264,26 +236,22 @@ export interface CreateDivineBetPayload {
   divineFavorStake: number;
 }
 
-export const placeDivineBet = (
-  payload: CreateDivineBetPayload,
-): Promise<DivineBet> => {
-  return postData<CreateDivineBetPayload, DivineBet>("bets", payload);
+export const placeDivineBet = (payload: CreateDivineBetPayload): Promise<DivineBet> => {
+  return postData<CreateDivineBetPayload, DivineBet>('bets', payload);
 };
 
 export const getDivineBets = (): Promise<DivineBet[]> => {
-  return fetchData<DivineBet[]>("bets");
+  return fetchData<DivineBet[]>('bets');
 };
 
-export const getDivineBetById = (
-  id: string,
-): Promise<DivineBet | Record<string, unknown>> => {
+export const getDivineBetById = (id: string): Promise<DivineBet | Record<string, unknown>> => {
   return fetchData<DivineBet | Record<string, unknown>>(`bets/${id}`);
 };
 
 export const getSpeculationEvents = (): Promise<SpeculationEvent[]> => {
-  return fetchData<SpeculationEvent[]>("speculation-events");
+  return fetchData<SpeculationEvent[]>('speculation-events');
 };
 
 export const getBettingOdds = (): Promise<BettingOdds[]> => {
-  return fetchData<BettingOdds[]>("betting-odds");
+  return fetchData<BettingOdds[]>('betting-odds');
 };

@@ -1,6 +1,6 @@
-import React from "react";
-import { Hero } from "../../entities/hero";
-import RegionHeroesList from "./RegionHeroesList";
+import React from 'react';
+import { Hero } from '../../entities/hero';
+import RegionHeroesList from './RegionHeroesList';
 
 interface RegionHeroesTabProps {
   heroes: Hero[];
@@ -8,18 +8,10 @@ interface RegionHeroesTabProps {
   onSelectHero?: (hero: Hero) => void;
 }
 
-const RegionHeroesTab: React.FC<RegionHeroesTabProps> = ({
-  heroes,
-  loading,
-  onSelectHero,
-}) => {
+const RegionHeroesTab: React.FC<RegionHeroesTabProps> = ({ heroes, loading, onSelectHero }) => {
   return (
     <div>
-      <RegionHeroesList
-        heroes={heroes}
-        loading={loading}
-        onSelectHero={onSelectHero}
-      />
+      <RegionHeroesList heroes={heroes} loading={loading} onSelectHero={onSelectHero} />
     </div>
   );
 };

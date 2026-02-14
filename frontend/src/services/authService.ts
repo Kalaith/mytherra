@@ -1,12 +1,6 @@
-import {
-  User,
-  AuthResponse,
-  LoginUrlResponse,
-  RegisterUrlResponse,
-} from "../entities/auth";
+import { User, AuthResponse, LoginUrlResponse, RegisterUrlResponse } from '../entities/auth';
 
-const apiBaseUrl =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5002/api";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
 class AuthService {
   private static instance: AuthService;
@@ -16,7 +10,7 @@ class AuthService {
   private constructor() {
     // Load token from localStorage on initialization
     try {
-      const storage = localStorage.getItem("auth-storage");
+      const storage = localStorage.getItem('auth-storage');
       if (storage) {
         const parsed = JSON.parse(storage) as { state?: { token?: string } };
         this.token = parsed.state?.token ?? null;
@@ -24,10 +18,7 @@ class AuthService {
     } catch {
       this.token = null;
     }
-    console.log(
-      "AuthService initialized - token from localStorage:",
-      this.token,
-    );
+    console.log('AuthService initialized - token from localStorage:', this.token);
   }
 
   static getInstance(): AuthService {
@@ -43,19 +34,17 @@ class AuthService {
   async getLoginUrl(returnUrl?: string): Promise<string> {
     const params = new URLSearchParams();
     if (returnUrl) {
-      params.append("return_url", returnUrl);
+      params.append('return_url', returnUrl);
     }
 
-    const response = await fetch(
-      `${apiBaseUrl}/auth/login-url?${params.toString()}`,
-    );
+    const response = await fetch(`${apiBaseUrl}/auth/login-url?${params.toString()}`);
     if (!response.ok) {
-      throw new Error("Failed to get login URL");
+      throw new Error('Failed to get login URL');
     }
 
     const data: LoginUrlResponse = await response.json();
     if (!data.success) {
-      throw new Error("Failed to get login URL");
+      throw new Error('Failed to get login URL');
     }
 
     return data.data.login_url;
@@ -67,19 +56,17 @@ class AuthService {
   async getRegisterUrl(returnUrl?: string): Promise<string> {
     const params = new URLSearchParams();
     if (returnUrl) {
-      params.append("return_url", returnUrl);
+      params.append('return_url', returnUrl);
     }
 
-    const response = await fetch(
-      `${apiBaseUrl}/auth/register-url?${params.toString()}`,
-    );
+    const response = await fetch(`${apiBaseUrl}/auth/register-url?${params.toString()}`);
     if (!response.ok) {
-      throw new Error("Failed to get register URL");
+      throw new Error('Failed to get register URL');
     }
 
     const data: RegisterUrlResponse = await response.json();
     if (!data.success) {
-      throw new Error("Failed to get register URL");
+      throw new Error('Failed to get register URL');
     }
 
     return data.data.register_url;
@@ -89,16 +76,14 @@ class AuthService {
    * Handle callback from auth portal with token
    */
   async handleAuthCallback(token: string): Promise<User> {
-    const response = await fetch(
-      `${apiBaseUrl}/auth/callback?token=${encodeURIComponent(token)}`,
-    );
+    const response = await fetch(`${apiBaseUrl}/auth/callback?token=${encodeURIComponent(token)}`);
     if (!response.ok) {
-      throw new Error("Failed to process authentication callback");
+      throw new Error('Failed to process authentication callback');
     }
 
     const data: AuthResponse = await response.json();
     if (!data.success || !data.data) {
-      throw new Error(data.message || "Authentication failed");
+      throw new Error(data.message || 'Authentication failed');
     }
 
     // Store token and user data
@@ -112,7 +97,7 @@ class AuthService {
       },
       version: 0,
     };
-    localStorage.setItem("auth-storage", JSON.stringify(authState));
+    localStorage.setItem('auth-storage', JSON.stringify(authState));
 
     return this.user;
   }
@@ -121,35 +106,35 @@ class AuthService {
    * Get current authenticated user
    */
   async getCurrentUser(): Promise<User | null> {
-    console.log("getCurrentUser called - current token:", this.token);
+    console.log('getCurrentUser called - current token:', this.token);
 
     if (!this.token) {
-      console.log("No token available, returning null");
+      console.log('No token available, returning null');
       return null;
     }
 
     try {
-      console.log("Making request to /auth/me with token");
+      console.log('Making request to /auth/me with token');
       const response = await fetch(`${apiBaseUrl}/auth/me`, {
         headers: {
           Authorization: `Bearer ${this.token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
-      console.log("Response status:", response.status);
+      console.log('Response status:', response.status);
 
       if (!response.ok) {
         if (response.status === 401) {
           // Token is invalid or expired - but don't logout, just return null
-          console.log("401 response - token validation failed");
+          console.log('401 response - token validation failed');
           return null;
         }
-        throw new Error("Failed to get current user");
+        throw new Error('Failed to get current user');
       }
 
       const data = await response.json();
-      console.log("Response data:", data);
+      console.log('Response data:', data);
 
       if (data.success && data.data?.user) {
         this.user = data.data.user;
@@ -158,8 +143,8 @@ class AuthService {
 
       return null;
     } catch (error) {
-      console.error("Error getting current user:", error);
-      console.log("Error occurred - returning null without clearing token");
+      console.error('Error getting current user:', error);
+      console.log('Error occurred - returning null without clearing token');
       return null;
     }
   }
@@ -169,25 +154,25 @@ class AuthService {
    */
   async updatePreferences(preferences: Record<string, unknown>): Promise<void> {
     if (!this.token) {
-      throw new Error("Not authenticated");
+      throw new Error('Not authenticated');
     }
 
     const response = await fetch(`${apiBaseUrl}/auth/preferences`, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
         Authorization: `Bearer ${this.token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ preferences }),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update preferences");
+      throw new Error('Failed to update preferences');
     }
 
     const data = await response.json();
     if (!data.success) {
-      throw new Error(data.message || "Failed to update preferences");
+      throw new Error(data.message || 'Failed to update preferences');
     }
   }
 
@@ -195,7 +180,7 @@ class AuthService {
    * Logout user
    */
   async logout(): Promise<void> {
-    console.log("logout() called - but logout disabled for debugging");
+    console.log('logout() called - but logout disabled for debugging');
     // Logout disabled - keeping token and user data
     // this.token = null;
     // this.user = null;
@@ -228,21 +213,19 @@ class AuthService {
    */
   async redirectToLogin(returnUrl?: string): Promise<void> {
     const loginUrl = await this.getLoginUrl(returnUrl || window.location.href);
-    console.log("REDIRECT DISABLED FOR DEBUG - Would redirect to:", loginUrl);
-    console.log("Current token:", this.token);
-    console.log("Is authenticated:", this.isAuthenticated());
-    console.log("Current user:", this.user);
+    console.log('REDIRECT DISABLED FOR DEBUG - Would redirect to:', loginUrl);
+    console.log('Current token:', this.token);
+    console.log('Is authenticated:', this.isAuthenticated());
+    console.log('Current user:', this.user);
     // window.location.href = loginUrl; // DISABLED FOR DEBUGGING
-    console.log("Redirect to login prevented. URL would be:", loginUrl);
+    console.log('Redirect to login prevented. URL would be:', loginUrl);
   }
 
   /**
    * Redirect to register
    */
   async redirectToRegister(returnUrl?: string): Promise<void> {
-    const registerUrl = await this.getRegisterUrl(
-      returnUrl || window.location.href,
-    );
+    const registerUrl = await this.getRegisterUrl(returnUrl || window.location.href);
     window.location.href = registerUrl;
   }
 
@@ -250,14 +233,14 @@ class AuthService {
    * Check if user has admin role
    */
   isAdmin(): boolean {
-    return this.user?.role === "admin";
+    return this.user?.role === 'admin';
   }
 
   /**
    * Check if user has specific role
    */
   hasRole(role: string): boolean {
-    if (this.user?.role === "admin") {
+    if (this.user?.role === 'admin') {
       return true; // Admin has all roles
     }
     return this.user?.role === role;

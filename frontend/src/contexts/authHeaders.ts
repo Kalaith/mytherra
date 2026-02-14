@@ -2,21 +2,19 @@
 
 let tokenProvider: (() => Promise<string | null>) | null = null;
 
-export const setTokenProvider = (
-  provider: (() => Promise<string | null>) | null,
-) => {
+export const setTokenProvider = (provider: (() => Promise<string | null>) | null) => {
   tokenProvider = provider;
 };
 
 export const getAuthHeaders = async (): Promise<HeadersInit> => {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
 
   if (tokenProvider) {
     try {
       const token = await tokenProvider();
-      if (token) headers["Authorization"] = `Bearer ${token}`;
+      if (token) headers['Authorization'] = `Bearer ${token}`;
       return headers;
     } catch {
       // Fall through to auth-storage
@@ -25,7 +23,7 @@ export const getAuthHeaders = async (): Promise<HeadersInit> => {
 
   let token: string | null = null;
   try {
-    const storage = localStorage.getItem("auth-storage");
+    const storage = localStorage.getItem('auth-storage');
     if (storage) {
       const parsed = JSON.parse(storage) as { state?: { token?: string } };
       token = parsed.state?.token ?? null;
@@ -34,6 +32,6 @@ export const getAuthHeaders = async (): Promise<HeadersInit> => {
     // ignore parse error
   }
 
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   return headers;
 };

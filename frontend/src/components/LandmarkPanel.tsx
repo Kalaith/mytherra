@@ -1,9 +1,9 @@
 // F:\WebDevelopment\Mytherra\frontend\src\components\LandmarkPanel.tsx
-import React, { useState } from "react";
-import { useRegions } from "../contexts/useRegionContext";
-import { Landmark } from "../entities/landmark";
-import LandmarkList from "./LandmarkList";
-import { Region } from "../entities/region";
+import React, { useState } from 'react';
+import { useRegions } from '../contexts/useRegionContext';
+import { Landmark } from '../entities/landmark';
+import LandmarkList from './LandmarkList';
+import { Region } from '../entities/region';
 
 interface LandmarkPanelProps {
   selectedRegion: Region | null;
@@ -11,14 +11,10 @@ interface LandmarkPanelProps {
 
 const LandmarkPanel: React.FC<LandmarkPanelProps> = ({ selectedRegion }) => {
   const { landmarks, isLoading, error, getLandmarksByRegion } = useRegions();
-  const [selectedLandmark, setSelectedLandmark] = useState<Landmark | null>(
-    null,
-  );
+  const [selectedLandmark, setSelectedLandmark] = useState<Landmark | null>(null);
 
   // Filter landmarks by selected region or show all
-  const displayedLandmarks = selectedRegion
-    ? getLandmarksByRegion(selectedRegion.id)
-    : landmarks;
+  const displayedLandmarks = selectedRegion ? getLandmarksByRegion(selectedRegion.id) : landmarks;
 
   return (
     <div className="space-y-4">

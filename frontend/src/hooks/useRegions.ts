@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { Region } from "../entities/region";
-import { getRegions } from "../api/apiService";
+import { useState, useEffect, useCallback } from 'react';
+import { Region } from '../entities/region';
+import { getRegions } from '../api/apiService';
 
 interface UseRegionsOptions {
   autoRefresh?: boolean;
@@ -16,9 +16,7 @@ interface UseRegionsReturn {
   refetch: () => Promise<void>;
 }
 
-export const useRegions = (
-  options: UseRegionsOptions = {},
-): UseRegionsReturn => {
+export const useRegions = (options: UseRegionsOptions = {}): UseRegionsReturn => {
   const { autoRefresh = false, refreshInterval = 30000 } = options;
 
   const [regions, setRegions] = useState<Region[]>([]);
@@ -36,9 +34,9 @@ export const useRegions = (
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("An unknown error occurred while fetching regions.");
+        setError('An unknown error occurred while fetching regions.');
       }
-      console.error("Failed to load regions:", err);
+      console.error('Failed to load regions:', err);
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +46,7 @@ export const useRegions = (
     (region: Region | null) => {
       setSelectedRegion(selectedRegion?.id === region?.id ? null : region);
     },
-    [selectedRegion],
+    [selectedRegion]
   );
 
   const refetch = useCallback(() => {

@@ -1,21 +1,17 @@
 // F:\WebDevelopment\Mytherra\frontend\src\components\SettlementPanel.tsx
-import React, { useState } from "react";
-import { useRegions } from "../contexts/useRegionContext";
-import { Settlement } from "../entities/settlement";
-import SettlementList from "./SettlementList";
-import { Region } from "../entities/region";
+import React, { useState } from 'react';
+import { useRegions } from '../contexts/useRegionContext';
+import { Settlement } from '../entities/settlement';
+import SettlementList from './SettlementList';
+import { Region } from '../entities/region';
 
 interface SettlementPanelProps {
   selectedRegion: Region | null;
 }
 
-const SettlementPanel: React.FC<SettlementPanelProps> = ({
-  selectedRegion,
-}) => {
-  const { settlements, isLoading, error, getSettlementsByRegion } =
-    useRegions();
-  const [selectedSettlement, setSelectedSettlement] =
-    useState<Settlement | null>(null);
+const SettlementPanel: React.FC<SettlementPanelProps> = ({ selectedRegion }) => {
+  const { settlements, isLoading, error, getSettlementsByRegion } = useRegions();
+  const [selectedSettlement, setSelectedSettlement] = useState<Settlement | null>(null);
 
   // Filter settlements by selected region or show all
   const displayedSettlements = selectedRegion
