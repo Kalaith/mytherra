@@ -62,8 +62,11 @@ class JwtAuthMiddleware
                 'exp' => $decodedArray['exp'] ?? null,
                 'iat' => $decodedArray['iat'] ?? null
             ];
+
+            error_log('JwtAuthMiddleware: token decoded for user_id=' . ($authUser['user_id'] ?? 'null'));
             
         } catch (\Exception $e) {
+            error_log('JwtAuthMiddleware: token decode failed - ' . $e->getMessage());
             return $this->unauthorizedResponse($response, 'Invalid token');
         }
         
@@ -76,6 +79,7 @@ class JwtAuthMiddleware
             // Check if User class exists and method exists to avoid crash if model is missing
             if (class_exists(User::class) && method_exists(User::class, 'createOrUpdateFromAuthData')) {
                 $localUser = User::createOrUpdateFromAuthData($authUser);
+                error_log('JwtAuthMiddleware: local user synced id=' . ($localUser->id ?? 'null') . ' auth_user_id=' . ($localUser->auth_user_id ?? 'null'));
             } else {
                  // Fallback if model isn't ready, mostly for testing
                  // But we really need the user. 
@@ -89,16 +93,21 @@ class JwtAuthMiddleware
                 ->withAttribute('user', $localUser);
                 
         } catch (\Exception $e) {
+            error_log('JwtAuthMiddleware: local user sync failed - ' . $e->getMessage());
             return $this->unauthorizedResponse($response, 'User creation failed: ' . $e->getMessage());
         }
     }
 
     private function unauthorizedResponse(Response $response, string $message = 'Unauthorized'): Response
     {
+        $portalBaseUrl = rtrim((string) ($_ENV['AUTH_PORTAL_BASE_URL'] ?? ''), '/');
+        $loginUrl = $_ENV['WEB_HATCHERY_LOGIN_URL'] ?? ($portalBaseUrl !== '' ? $portalBaseUrl . '/login' : '');
+
         $response->getBody()->write(json_encode([
             'success' => false,
             'message' => $message,
-            'error_code' => 'UNAUTHORIZED'
+            'error_code' => 'UNAUTHORIZED',
+            'login_url' => $loginUrl
         ]));
         
         return $response

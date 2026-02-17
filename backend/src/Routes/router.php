@@ -15,8 +15,6 @@ use App\Controllers\StatisticsController;
 use App\Controllers\StatusController;
 use App\Middleware\JwtAuthMiddleware;
 use App\Middleware\AdminAuthMiddleware;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
 return function (Router $router): void {
     $api = '/api';
@@ -32,68 +30,7 @@ return function (Router $router): void {
     $router->get($api . '/auth/register-url', [AuthController::class, 'getRegisterUrl']);
     $router->get($api . '/auth/callback', [AuthController::class, 'callback']);
 
-    /**
-     * Session Endpoint (Replacement for /auth/me)
-     * Mirrors Blacksmith Forge implementation
-     * Strict HS256 validation
-     */
-    $router->get($api . '/auth/session', function ($request, $response) {
-        $authHeader = $request->getHeaderLine('Authorization');
-        $token = null;
-        if ($authHeader && preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
-            $token = $matches[1];
-        } else {
-            $queryParams = $request->getQueryParams();
-            $token = $queryParams['token'] ?? null;
-        }
-
-        $secret = $_ENV['AUTH_PORTAL_JWT_SECRET'] ?? $_ENV['JWT_SECRET'] ?? '';
-        
-        if (!$token || !$secret) {
-             $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
-        }
-
-        try {
-            $decoded = JWT::decode($token, new Key($secret, 'HS256'));
-            // Standardize user data structure
-            $userId = $decoded->user_id ?? $decoded->sub ?? null;
-            $email = $decoded->email ?? '';
-            $role = $decoded->roles[0] ?? $decoded->role ?? 'user';
-            $username = $decoded->username ?? ($email !== '' ? explode('@', $email)[0] : 'user');
-
-            // Format response to match AuthContext expectations
-            // AuthContext expects { data: { user: { ... } } }
-            
-            $userData = [
-                'id' => (int) $userId,
-                'email' => $email,
-                'username' => $username,
-                'role' => $role,
-                // Add literal roles array if needed
-                'roles' => $decoded->roles ?? [$role],
-                'game_preferences' => $decoded->game_preferences ?? [],
-            ];
-
-            $response->getBody()->write(json_encode([
-                'success' => true,
-                'data' => [
-                    'user' => $userData,
-                    'profile' => $userData // Alias for convenience
-                ],
-            ]));
-            return $response->withHeader('Content-Type', 'application/json');
-        } catch (\Exception $e) {
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Invalid token: ' . $e->getMessage()
-            ]));
-            return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
-        }
-    });
+    $router->get($api . '/auth/session', [AuthController::class, 'getCurrentUser'], [JwtAuthMiddleware::class]);
 
     // ===================================
     // PROTECTED ROUTES

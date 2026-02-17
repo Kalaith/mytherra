@@ -92,6 +92,35 @@ class AuthController
         $localUser = $request->getAttribute('user');
 
         if (!$authUser || !$localUser) {
+            error_log(
+                'AuthController::getCurrentUser missing auth context - has_auth_user='
+                . ($authUser ? 'yes' : 'no')
+                . ' has_local_user='
+                . ($localUser ? 'yes' : 'no')
+            );
+
+            if ($authUser) {
+                $response->getBody()->write(json_encode([
+                    'success' => true,
+                    'data' => [
+                        'user' => [
+                            'id' => (int) ($authUser['user_id'] ?? 0),
+                            'auth_user_id' => (int) ($authUser['user_id'] ?? 0),
+                            'email' => $authUser['email'] ?? null,
+                            'username' => $authUser['username'] ?? null,
+                            'display_name' => $authUser['username'] ?? null,
+                            'divine_influence' => 0,
+                            'divine_favor' => 0,
+                            'betting_stats' => [],
+                            'game_preferences' => [],
+                            'role' => $authUser['role'] ?? 'user',
+                            'is_active' => true
+                        ]
+                    ]
+                ]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
             $response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'User not authenticated'

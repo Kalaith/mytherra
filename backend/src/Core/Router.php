@@ -120,30 +120,17 @@ final class Router
                          continue; 
                     }
                     
+                    if ($result instanceof Request) {
+                        $request = $result;
+                        continue;
+                    }
+
                     if ($result instanceof Response) {
-                        // Using the custom Request class 'withAttribute' returns a new instance.
-                        // If the middleware modified the request (e.g. auth), how do we get it back?
-                        // Standard PSR-7 middleware usually calls $next->handle($request).
-                        // Our simple loop doesn't easily support passing the modified request down unless 
-                        // the middleware returns the Request?? No, that's weird.
-                        
-                        // Refined Native Pattern:
-                        // Middleware signature: function(Request $req, Response $res): Request|Response
-                        // If it returns Request, we continue with that request.
-                        // If it returns Response, we stop and emit (error/short-circuit).
-                        
-                        // Let's try this:
-                        if ($result instanceof Request) {
-                            $request = $result;
-                        } elseif ($result instanceof Response) {
-                            // If status code is error, stop.
-                            if ($result->getStatusCode() >= 400) {
-                                $this->emit($this->withCors($result));
-                                return;
-                            }
-                            // Else... ? Usually middleware returns response on the way OUT.
-                        }
-                    } elseif ($result === false) {
+                        $this->emit($this->withCors($result));
+                        return;
+                    }
+
+                    if ($result === false) {
                          // Legacy BSF style shortcut
                          $this->emit($this->withCors($response->withStatus(401)));
                          return;
