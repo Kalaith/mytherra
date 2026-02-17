@@ -37,7 +37,7 @@ class JwtAuthMiddleware
         $token = $matches[1];
         
         // Validate token
-        $secret = $_ENV['AUTH_PORTAL_JWT_SECRET'] ?? $_ENV['JWT_SECRET'] ?? '';
+        $secret = $_ENV['JWT_SECRET'] ?? '';
         if (empty($secret)) {
              return $this->unauthorizedResponse($response, 'Server configuration error');
         }

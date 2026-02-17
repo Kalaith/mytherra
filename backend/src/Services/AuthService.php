@@ -12,7 +12,7 @@ class AuthService
 
     public function __construct()
     {
-        $this->jwtSecret = $_ENV['AUTH_PORTAL_JWT_SECRET'] ?? $_ENV['JWT_SECRET'] ?? '';
+        $this->jwtSecret = $_ENV['JWT_SECRET'] ?? '';
     }
 
     /**
