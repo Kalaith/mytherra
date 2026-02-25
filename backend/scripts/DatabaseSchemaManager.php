@@ -2,7 +2,7 @@
 
 namespace App\Scripts;
 
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 
 /**
  * Manages database schema creation and table dependencies
@@ -58,7 +58,7 @@ class DatabaseSchemaManager
             'RegionClimateType', 'RegionCulturalInfluence',
             'HeroSettlementInteractionType', 'BetConfig', 'BetTargetModifier'
         ];        foreach ($lookupModels as $model) {
-            require_once __DIR__ . "/../src/Models/{$model}.php";
+            require_once __DIR__ . "/../src/models/{$model}.php";
         }
 
         // Load main entity models
@@ -67,7 +67,7 @@ class DatabaseSchemaManager
             'Region', 'Hero', 'Settlement', 'Building', 'Landmark',
             'ResourceNode', 'DivineBet', 'HeroSettlementInteraction'
         ];        foreach ($entityModels as $model) {
-            require_once __DIR__ . "/../src/Models/{$model}.php";
+            require_once __DIR__ . "/../src/models/{$model}.php";
         }
     }
 

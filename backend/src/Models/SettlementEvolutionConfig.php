@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Exception;
 use App\Utils\Logger;
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 use App\Models\EvolutionParameter;
 
 class SettlementEvolutionConfig

@@ -171,7 +171,7 @@ class LandmarkController
         
         try {
             // Initialize repositories needed for this endpoint
-            $landmarkRepo = new \App\External\LandmarkRepository($this->db);
+            $landmarkRepo = new \App\Repositories\LandmarkRepository($this->db);
             $landmarkActions = new LandmarkActions($landmarkRepo);
             
             $success = $landmarkActions->deleteLandmark($id);

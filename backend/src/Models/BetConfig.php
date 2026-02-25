@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use PDO;
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 
 class BetConfig
 {

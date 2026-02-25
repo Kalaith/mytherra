@@ -5,7 +5,7 @@ namespace App\Models;
 use PDO;
 use Exception;
 use App\Utils\Logger;
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 
 class BetTargetModifier
 {

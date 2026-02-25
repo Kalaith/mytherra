@@ -373,7 +373,7 @@ class DivineBet extends Model
      */
     public static function createTable()
     {
-        $db = \App\External\DatabaseService::getInstance();
+        $db = \App\Repositories\DatabaseService::getInstance();
         $sql = "
             CREATE TABLE IF NOT EXISTS divine_bets (
                 id VARCHAR(255) PRIMARY KEY,

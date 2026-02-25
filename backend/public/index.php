@@ -15,14 +15,19 @@ spl_autoload_register(function (string $class): void {
         return;
     }
     $relative = substr($class, strlen($prefix));
-    $file = $baseDir . str_replace('\\', '/', $relative) . '.php';
+    $parts = explode('\\', $relative);
+    // Lowercase all parts except the class name itself
+    for ($i = 0; $i < count($parts) - 1; $i++) {
+        $parts[$i] = strtolower($parts[$i]);
+    }
+    $file = $baseDir . implode('/', $parts) . '.php';
     if (file_exists($file)) {
         require $file;
     }
 }, true, true);
 
 use Dotenv\Dotenv;
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 use App\Utils\ContainerConfig;
 use App\Core\Router;
 

@@ -4,7 +4,7 @@ namespace App\Utils;
 
 use Exception;
 use App\Utils\Logger;
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 
 abstract class BettingBaseRepository extends BaseRepository
 {

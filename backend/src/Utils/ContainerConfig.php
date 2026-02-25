@@ -3,7 +3,7 @@
 namespace App\Utils;
 
 use DI\ContainerBuilder;
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 
 // Controllers
 use App\Controllers\StatusController;

@@ -2,7 +2,7 @@
 
 namespace App\Scripts;
 
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 use App\Models\Region;
 use App\Models\Hero;
 use App\Models\GameEvent;

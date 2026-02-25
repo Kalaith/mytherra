@@ -77,7 +77,7 @@ class RegionActions
     public function getLandmarksByRegion(string $regionId): array
     {
         // Import LandmarkActions to reuse the existing method
-        $landmarkRepo = new \App\External\LandmarkRepository(\App\External\DatabaseService::getInstance());
+        $landmarkRepo = new \App\Repositories\LandmarkRepository(\App\Repositories\DatabaseService::getInstance());
         $landmarkActions = new \App\Actions\LandmarkActions($landmarkRepo);
         
         return $landmarkActions->getLandmarksByRegion($regionId);

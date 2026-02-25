@@ -5,7 +5,7 @@ namespace App\Utils;
 use PDO;
 use Exception;
 use App\Utils\Logger;
-use App\External\DatabaseService;
+use App\Repositories\DatabaseService;
 
 abstract class BaseRepository
 {    protected DatabaseService $db;
