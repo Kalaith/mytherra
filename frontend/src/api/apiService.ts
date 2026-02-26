@@ -6,11 +6,8 @@ import { Building } from '../entities/building';
 import { Landmark } from '../entities/landmark';
 import { ResourceNode } from '../entities/resourceNode';
 import { DivineBet, SpeculationEvent, BettingOdds } from '../entities/divineBet';
-import { getAuthHeaders } from '../contexts/authHeaders';
 import { apiClient } from './apiClient';
 import { ApiError } from './types';
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
 export interface GameStatus {
   currentYear: number;
@@ -20,6 +17,30 @@ export interface GameStatus {
 export interface ApiErrorBody {
   message?: string;
 }
+
+interface WrappedApiResponse<T> {
+  success: boolean;
+  data: T;
+  error?: string;
+}
+
+const isWrappedApiResponse = <T>(value: unknown): value is WrappedApiResponse<T> => {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+  return 'success' in value && 'data' in value;
+};
+
+const isAxiosLikeError = (error: unknown): error is {
+  code?: string;
+  message?: string;
+  response?: {
+    status?: number;
+    data?: { message?: string };
+  };
+} => {
+  return typeof error === 'object' && error !== null;
+};
 
 export const apiService = {
   get: <T>(path: string) => fetchData<T>(path),
@@ -41,17 +62,17 @@ async function fetchData<T>(path: string): Promise<T> {
 
     // Check if response is wrapped in { success: boolean, data: T } format natively
     const data = response.data;
-    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
-      if (!(data as any).success) {
-        throw new ApiError((data as any).error || 'API Error', 500);
+    if (isWrappedApiResponse<T>(data)) {
+      if (!data.success) {
+        throw new ApiError(data.error || 'API Error', 500);
       }
-      return (data as any).data as T;
+      return data.data;
     }
 
     // Otherwise return the parsed response directly
     return data as T;
-  } catch (error: any) {
-    if (error?.code === 'ECONNABORTED' || error?.message === 'canceled') {
+  } catch (error: unknown) {
+    if (isAxiosLikeError(error) && (error.code === 'ECONNABORTED' || error.message === 'canceled')) {
       throw new Error(`Request timeout for ${path}`);
     }
 
@@ -62,7 +83,7 @@ async function fetchData<T>(path: string): Promise<T> {
 
     // Convert Axios errors to standard errors to match legacy behavior
     let errorMessage = `Failed to fetch ${path}`;
-    if (error.response) {
+    if (isAxiosLikeError(error) && error.response) {
       errorMessage = error.response.data?.message || `Status ${error.response.status}`;
       if (error.response.status === 401) {
         throw new Error('AUTHENTICATION_REQUIRED');
@@ -79,21 +100,21 @@ async function postData<T, R>(path: string, body: T): Promise<R> {
 
     // Check if response is wrapped natively
     const data = response.data;
-    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
-      if (!(data as any).success) {
-        throw new ApiError((data as any).error || 'API Error', 500);
+    if (isWrappedApiResponse<R>(data)) {
+      if (!data.success) {
+        throw new ApiError(data.error || 'API Error', 500);
       }
-      return (data as any).data as R;
+      return data.data;
     }
 
     return data as R;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof ApiError) {
       throw error;
     }
 
     let errorMessage = `Failed to post to ${path}`;
-    if (error.response) {
+    if (isAxiosLikeError(error) && error.response) {
       if (error.response.status === 401) {
         console.warn('Authentication required (401) - handled by global interceptor');
         return {} as R;

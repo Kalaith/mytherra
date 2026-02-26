@@ -1,12 +1,19 @@
 import { User, AuthResponse, LoginUrlResponse, RegisterUrlResponse } from '../entities/auth';
 import { apiClient } from '../api/apiClient';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
-
 class AuthService {
   private static instance: AuthService;
   private token: string | null = null;
   private user: User | null = null;
+
+  private static isAxiosLikeError(error: unknown): error is {
+    response?: {
+      status?: number;
+      data?: { message?: string };
+    };
+  } {
+    return typeof error === 'object' && error !== null;
+  }
 
   private constructor() {
     // Load token from localStorage on initialization
@@ -121,9 +128,9 @@ class AuthService {
       }
 
       return null;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error getting current user:', error);
-      if (error.response?.status === 401) {
+      if (AuthService.isAxiosLikeError(error) && error.response?.status === 401) {
         console.log('401 response - token validation failed');
       }
       console.log('Error occurred - returning null without clearing token');
@@ -154,8 +161,11 @@ class AuthService {
       if (!data.success) {
         throw new Error(data.message || 'Failed to update preferences');
       }
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Failed to update preferences');
+    } catch (error: unknown) {
+      if (AuthService.isAxiosLikeError(error)) {
+        throw new Error(error.response?.data?.message || 'Failed to update preferences');
+      }
+      throw new Error('Failed to update preferences');
     }
   }
 

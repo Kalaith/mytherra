@@ -23,6 +23,10 @@ interface SessionResponse {
   } & Partial<User>;
 }
 
+const isAxiosLikeError = (error: unknown): error is { response?: { status?: number } } => {
+  return typeof error === 'object' && error !== null;
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => {
@@ -81,8 +85,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const maybeUser =
         data.data && 'user' in data.data ? data.data.user : (data.data as User | undefined);
       if (data.success && maybeUser) setUser(maybeUser);
-    } catch (error: any) {
-      if (error.response?.status === 401) {
+    } catch (error: unknown) {
+      if (isAxiosLikeError(error) && error.response?.status === 401) {
         console.warn('Backend rejected token (401). Showing login URL instead of redirect.');
       } else {
         console.error('Failed to initialize user:', error);

@@ -19,7 +19,6 @@ import {
 } from '../api/StatisticsService';
 import PageLayout from '../components/PageLayout';
 import { getGameStatus, GameStatus } from '../api/apiService';
-import { getAuthHeaders } from '../contexts/authHeaders';
 import { apiClient } from '../api/apiClient';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
