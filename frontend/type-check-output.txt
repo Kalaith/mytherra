@@ -1,0 +1,5 @@
+﻿
+> mytherra@1.0.0 type-check
+> tsc --noEmit
+
+src/api/apiClient.ts(2,30): error TS2307: Cannot find module '../stores/authStore' or its corresponding type declarations.

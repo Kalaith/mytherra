@@ -1,4 +1,5 @@
 import { User, AuthResponse, LoginUrlResponse, RegisterUrlResponse } from '../entities/auth';
+import { apiClient } from '../api/apiClient';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
@@ -37,12 +38,8 @@ class AuthService {
       params.append('return_url', returnUrl);
     }
 
-    const response = await fetch(`${apiBaseUrl}/auth/login-url?${params.toString()}`);
-    if (!response.ok) {
-      throw new Error('Failed to get login URL');
-    }
-
-    const data: LoginUrlResponse = await response.json();
+    const response = await apiClient.get<LoginUrlResponse>(`/auth/login-url?${params.toString()}`);
+    const data = response.data;
     if (!data.success) {
       throw new Error('Failed to get login URL');
     }
@@ -59,12 +56,8 @@ class AuthService {
       params.append('return_url', returnUrl);
     }
 
-    const response = await fetch(`${apiBaseUrl}/auth/register-url?${params.toString()}`);
-    if (!response.ok) {
-      throw new Error('Failed to get register URL');
-    }
-
-    const data: RegisterUrlResponse = await response.json();
+    const response = await apiClient.get<RegisterUrlResponse>(`/auth/register-url?${params.toString()}`);
+    const data = response.data;
     if (!data.success) {
       throw new Error('Failed to get register URL');
     }
@@ -76,12 +69,9 @@ class AuthService {
    * Handle callback from auth portal with token
    */
   async handleAuthCallback(token: string): Promise<User> {
-    const response = await fetch(`${apiBaseUrl}/auth/callback?token=${encodeURIComponent(token)}`);
-    if (!response.ok) {
-      throw new Error('Failed to process authentication callback');
-    }
+    const response = await apiClient.get<AuthResponse>(`/auth/callback?token=${encodeURIComponent(token)}`);
+    const data = response.data;
 
-    const data: AuthResponse = await response.json();
     if (!data.success || !data.data) {
       throw new Error(data.message || 'Authentication failed');
     }
@@ -115,25 +105,14 @@ class AuthService {
 
     try {
       console.log('Making request to /auth/me with token');
-      const response = await fetch(`${apiBaseUrl}/auth/me`, {
+      const response = await apiClient.get('/auth/me', {
         headers: {
-          Authorization: `Bearer ${this.token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.token}`
         },
       });
 
       console.log('Response status:', response.status);
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          // Token is invalid or expired - but don't logout, just return null
-          console.log('401 response - token validation failed');
-          return null;
-        }
-        throw new Error('Failed to get current user');
-      }
-
-      const data = await response.json();
+      const data = response.data;
       console.log('Response data:', data);
 
       if (data.success && data.data?.user) {
@@ -142,8 +121,11 @@ class AuthService {
       }
 
       return null;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting current user:', error);
+      if (error.response?.status === 401) {
+        console.log('401 response - token validation failed');
+      }
       console.log('Error occurred - returning null without clearing token');
       return null;
     }
@@ -157,22 +139,23 @@ class AuthService {
       throw new Error('Not authenticated');
     }
 
-    const response = await fetch(`${apiBaseUrl}/auth/preferences`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ preferences }),
-    });
+    try {
+      const response = await apiClient.put(
+        '/auth/preferences',
+        { preferences },
+        {
+          headers: {
+            Authorization: `Bearer ${this.token}`
+          }
+        }
+      );
 
-    if (!response.ok) {
-      throw new Error('Failed to update preferences');
-    }
-
-    const data = await response.json();
-    if (!data.success) {
-      throw new Error(data.message || 'Failed to update preferences');
+      const data = response.data;
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to update preferences');
+      }
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to update preferences');
     }
   }
 

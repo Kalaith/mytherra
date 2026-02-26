@@ -20,6 +20,7 @@ import {
 import PageLayout from '../components/PageLayout';
 import { getGameStatus, GameStatus } from '../api/apiService';
 import { getAuthHeaders } from '../contexts/authHeaders';
+import { apiClient } from '../api/apiClient';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
@@ -35,12 +36,11 @@ export const Dashboard: React.FC = () => {
   const handleExport = async () => {
     setExporting(true);
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
-      const response = await fetch(`${apiBaseUrl}/export/full`, {
-        headers: await getAuthHeaders(),
+      const response = await apiClient.get('/export/full', {
+        responseType: 'blob'
       });
 
-      const blob = await response.blob();
+      const blob = response.data as Blob;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -92,47 +92,47 @@ export const Dashboard: React.FC = () => {
 
   const heroRoleChartData = heroStats
     ? {
-        labels: Object.keys(heroStats.roleDistribution),
-        datasets: [
-          {
-            label: 'Heroes by Role',
-            data: Object.values(heroStats.roleDistribution),
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.5)',
-              'rgba(54, 162, 235, 0.5)',
-              'rgba(255, 206, 86, 0.5)',
-              'rgba(75, 192, 192, 0.5)',
-              'rgba(153, 102, 255, 0.5)',
-            ],
-            borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-            ],
-            borderWidth: 1,
-          },
-        ],
-      }
+      labels: Object.keys(heroStats.roleDistribution),
+      datasets: [
+        {
+          label: 'Heroes by Role',
+          data: Object.values(heroStats.roleDistribution),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    }
     : null;
 
   const regionStatusChartData = regionStats
     ? {
-        labels: Object.keys(regionStats.statusDistribution),
-        datasets: [
-          {
-            label: 'Regions by Status',
-            data: Object.values(regionStats.statusDistribution),
-            backgroundColor: [
-              'rgba(75, 192, 192, 0.5)',
-              'rgba(255, 99, 132, 0.5)',
-              'rgba(255, 206, 86, 0.5)',
-            ],
-            borderWidth: 1,
-          },
-        ],
-      }
+      labels: Object.keys(regionStats.statusDistribution),
+      datasets: [
+        {
+          label: 'Regions by Status',
+          data: Object.values(regionStats.statusDistribution),
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    }
     : null;
 
   return (

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState, type ReactNode } from
 import type { User } from '../entities/auth';
 import { AuthContext, type Preferences } from './authContext';
 import { setTokenProvider } from './authHeaders';
+import { apiClient } from '../api/apiClient';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -40,10 +41,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = useCallback(async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login-url?return_url=${encodeURIComponent(window.location.href)}`
+      const response = await apiClient.get<PortalUrlResponse>(
+        `/auth/login-url?return_url=${encodeURIComponent(window.location.href)}`
       );
-      const data = (await response.json()) as PortalUrlResponse;
+      const data = response.data;
       const loginUrl = data.data?.login_url;
       if (data.success && loginUrl) window.location.href = loginUrl;
     } catch (error) {
@@ -53,10 +54,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = useCallback(async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/register-url?return_url=${encodeURIComponent(window.location.href)}`
+      const response = await apiClient.get<PortalUrlResponse>(
+        `/auth/register-url?return_url=${encodeURIComponent(window.location.href)}`
       );
-      const data = (await response.json()) as PortalUrlResponse;
+      const data = response.data;
       const registerUrl = data.data?.register_url;
       if (data.success && registerUrl) window.location.href = registerUrl;
     } catch (error) {
@@ -70,26 +71,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/session`, {
+      const response = await apiClient.get<SessionResponse>('/auth/session', {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
+          Authorization: `Bearer ${authToken}`
+        }
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          console.warn('Backend rejected token (401). Showing login URL instead of redirect.');
-        }
-        return;
-      }
-
-      const data = (await response.json()) as SessionResponse;
+      const data = response.data;
       const maybeUser =
         data.data && 'user' in data.data ? data.data.user : (data.data as User | undefined);
       if (data.success && maybeUser) setUser(maybeUser);
-    } catch (error) {
-      console.error('Failed to initialize user:', error);
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        console.warn('Backend rejected token (401). Showing login URL instead of redirect.');
+      } else {
+        console.error('Failed to initialize user:', error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -144,16 +141,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!user || !token) return;
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/preferences`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ preferences }),
-        });
+        const response = await apiClient.put(
+          '/auth/preferences',
+          { preferences },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
 
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           setUser(prev => (prev ? { ...prev, game_preferences: preferences } : null));
         }
       } catch (error) {

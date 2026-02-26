@@ -7,6 +7,8 @@ import { Landmark } from '../entities/landmark';
 import { ResourceNode } from '../entities/resourceNode';
 import { DivineBet, SpeculationEvent, BettingOdds } from '../entities/divineBet';
 import { getAuthHeaders } from '../contexts/authHeaders';
+import { apiClient } from './apiClient';
+import { ApiError } from './types';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api';
 
@@ -31,92 +33,75 @@ async function fetchData<T>(path: string): Promise<T> {
   const id = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
   try {
-    const response = await fetch(`${apiBaseUrl}/${path}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(await getAuthHeaders()),
-      },
-      signal: controller.signal,
-    });
+    const response = await apiClient.get<T>(path, { signal: controller.signal });
     clearTimeout(id);
 
-    if (!response.ok) {
-      // Handle authentication errors
-      if (response.status === 401) {
-        console.warn('Authentication required (401)');
-        // Throw specific error for auth failure so app can redirect if needed
-        throw new Error('AUTHENTICATION_REQUIRED');
+    // The apiClient already handles 401s via the interceptor, but we still
+    // return the data in the expected format for this legacy wrapper.
+
+    // Check if response is wrapped in { success: boolean, data: T } format natively
+    const data = response.data;
+    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+      if (!(data as any).success) {
+        throw new ApiError((data as any).error || 'API Error', 500);
       }
-
-      // Attempt to parse error message from backend if available
-      let errorMessage = `Failed to fetch ${path}: ${response.statusText}`;
-      try {
-        const errorBody = (await response.json()) as ApiErrorBody;
-        if (errorBody.message) {
-          errorMessage = errorBody.message;
-        }
-      } catch {
-        // Ignore if error body is not JSON or not present
-      }
-      throw new Error(errorMessage);
-    }
-
-    const text = await response.text();
-
-    // Handle cases where backend might return an empty object for a single resource not found
-    if (text === '{}') {
-      // For list endpoints (e.g., /regions), an empty array is expected for no data.
-      // For single item endpoints (e.g., /regions/id), an empty object means not found.
-      // We will return it as is, and components can decide if {} means null or an empty entity.
-      return JSON.parse(text) as T;
-    }
-
-    const parsed = JSON.parse(text);
-
-    // Check if response is wrapped in { success: boolean, data: T } format
-    if (parsed && typeof parsed === 'object' && 'success' in parsed && 'data' in parsed) {
-      return parsed.data as T;
+      return (data as any).data as T;
     }
 
     // Otherwise return the parsed response directly
-    return parsed as T;
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
+    return data as T;
+  } catch (error: any) {
+    if (error?.code === 'ECONNABORTED' || error?.message === 'canceled') {
       throw new Error(`Request timeout for ${path}`);
     }
-    throw error;
+
+    // If it's already an ApiError, just throw it
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
+    // Convert Axios errors to standard errors to match legacy behavior
+    let errorMessage = `Failed to fetch ${path}`;
+    if (error.response) {
+      errorMessage = error.response.data?.message || `Status ${error.response.status}`;
+      if (error.response.status === 401) {
+        throw new Error('AUTHENTICATION_REQUIRED');
+      }
+    }
+    throw new Error(errorMessage);
   }
 }
 
 // Helper function to post data to the backend API
 async function postData<T, R>(path: string, body: T): Promise<R> {
-  const response = await fetch(`${apiBaseUrl}/${path}`, {
-    method: 'POST',
-    headers: await getAuthHeaders(),
-    body: JSON.stringify(body),
-  });
+  try {
+    const response = await apiClient.post<R>(path, body);
 
-  if (!response.ok) {
-    // Handle authentication errors
-    if (response.status === 401) {
-      // Redirect to login - allow app to handle it
-      console.warn('Authentication required (401) - redirect disabled');
-      // throw new Error('Authentication required');
-      return {} as R;
+    // Check if response is wrapped natively
+    const data = response.data;
+    if (data && typeof data === 'object' && 'success' in data && 'data' in data) {
+      if (!(data as any).success) {
+        throw new ApiError((data as any).error || 'API Error', 500);
+      }
+      return (data as any).data as R;
     }
 
-    let errorMessage = `Failed to post to ${path}: ${response.statusText}`;
-    try {
-      const errorBody = (await response.json()) as ApiErrorBody;
-      if (errorBody.message) {
-        errorMessage = `Failed to post to ${path}: ${errorBody.message}`;
+    return data as R;
+  } catch (error: any) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
+    let errorMessage = `Failed to post to ${path}`;
+    if (error.response) {
+      if (error.response.status === 401) {
+        console.warn('Authentication required (401) - handled by global interceptor');
+        return {} as R;
       }
-    } catch {
-      // Ignore if error body is not JSON or not present
+      errorMessage = error.response.data?.message || `Status ${error.response.status}`;
     }
     throw new Error(errorMessage);
   }
-  return response.json() as R;
 }
 
 export const getRegions = (): Promise<Region[]> => {
